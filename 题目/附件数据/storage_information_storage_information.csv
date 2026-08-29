@@ -1,7 +1,7 @@
-﻿Region,StorageCapacity_MWh,MinSOC_MWh,InitialSOC_MWh,MaxChargePower_MW,MaxDischargePower_MW,ChargeEfficiency,DischargeEfficiency,SellLimit_MW,Remarks,MaxGridImport_MW,MaxGridExport_MW,SOC_State_Convention
-RegionA,350,35,157.5,100,100,0.93,0.92,0,不具备新能源外送能力,550,0,SOC_MWh is end-of-hour; InitialSOC_MWh is before Hour 0
-RegionB,320,32,144.0,90,90,0.93,0.92,0,不具备新能源外送能力,520,0,SOC_MWh is end-of-hour; InitialSOC_MWh is before Hour 0
-RegionC,300,30,135.0,85,85,0.93,0.92,0,不具备新能源外送能力,510,0,SOC_MWh is end-of-hour; InitialSOC_MWh is before Hour 0
-RegionD,900,90,405.0,260,260,0.94,0.93,180,具备有限新能源外送能力,510,180,SOC_MWh is end-of-hour; InitialSOC_MWh is before Hour 0
-RegionE,820,82,370.0,240,240,0.94,0.93,220,具备有限新能源外送能力,370,220,SOC_MWh is end-of-hour; InitialSOC_MWh is before Hour 0
-RegionF,850,85,382.5,250,250,0.94,0.93,220,具备有限新能源外送能力,340,220,SOC_MWh is end-of-hour; InitialSOC_MWh is before Hour 0
+﻿区域编号,储能容量,最小荷电状态,初始荷电状态,最大充电功率,最大放电功率,充电效率,放电效率,外送上限,备注,最大购电功率,最大外送功率,荷电状态时点口径
+区域A,350,35,157.5,100,100,0.93,0.92,0,不具备新能源外送能力,550,0,荷电状态为时段末状态；初始荷电状态为第0小时运行前状态
+区域B,320,32,144.0,90,90,0.93,0.92,0,不具备新能源外送能力,520,0,荷电状态为时段末状态；初始荷电状态为第0小时运行前状态
+区域C,300,30,135.0,85,85,0.93,0.92,0,不具备新能源外送能力,510,0,荷电状态为时段末状态；初始荷电状态为第0小时运行前状态
+区域D,900,90,405.0,260,260,0.94,0.93,180,具备有限新能源外送能力,510,180,荷电状态为时段末状态；初始荷电状态为第0小时运行前状态
+区域E,820,82,370.0,240,240,0.94,0.93,220,具备有限新能源外送能力,370,220,荷电状态为时段末状态；初始荷电状态为第0小时运行前状态
+区域F,850,85,382.5,250,250,0.94,0.93,220,具备有限新能源外送能力,340,220,荷电状态为时段末状态；初始荷电状态为第0小时运行前状态
