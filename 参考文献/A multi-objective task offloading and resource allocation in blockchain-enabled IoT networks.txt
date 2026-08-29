@@ -1,0 +1,1531 @@
+--- Page 1 ---
+ 
+Contents lists available at ScienceDirect
+Ad Hoc Networks
+journal homepage: www.elsevier.com/locate/adhoc  
+A multi-objective task offloading and resource allocation in 
+blockchain-enabled IoT networks
+Nasim Nezhadsistani a,b
+ , Naghmeh S. Moayedian a
+ , Arash Bozorgchenani c
+ ,∗, 
+Burkhard Stiller b
+a Department of Electrical and Computer Engineering, Isfahan University of Technology, Isfahan 84156-83111, Iran
+b Department of Informatics, University of Zurich, Switzerland
+c School of Computer Science, University of Leeds, Leeds, UK
+A R T I C L E  I N F O
+Keywords:
+Internet of Things (IoT)
+Multi-objective optimization
+Blockchain
+Mobile Edge Computing (MEC)
+Computational offloading
+NSGA-II
+Resource allocation
+Energy efficiency
+ A B S T R A C T
+The integration of Mobile Edge Computing (MEC) and Blockchain has emerged as an efficient approach to 
+support the development of secure and delay-sensitive Internet of Things (IoT) applications. Despite these 
+advantages, blockchain-enabled IoT systems face a fundamental challenge because the security and trust 
+benefits of blockchain are accompanied by additional computation and communication overheads that can 
+degrade latency and energy efficiency in resource-constrained environments. This paper develops a unified 
+multi-objective optimization framework for task offloading and resource allocation in blockchain-enabled IoT 
+networks. The considered system architecture incorporates IoT devices, MEC servers, and a cloud data center 
+while explicitly modeling blockchain operations as part of the offloading process.
+A multi-objective optimization problem is formulated to jointly minimize total system latency and energy 
+consumption while maximizing the aggregate reputation of the selected blockchain management nodes. 
+To solve this problem, two evolutionary solution approaches are employed. The Non-dominated Sorting 
+Genetic Algorithm II (NSGA-II) is used to identify Pareto-optimal trade-off solutions, and a Genetic Algorithm 
+(GA) is adopted to solve a weighted-sum scalarized formulation. Comprehensive simulation results indicate 
+a demonstrable trade-off between latency and energy consumption. Specifically, the analysis reveals that 
+prioritizing high-reputation nodes for blockchain consensus roles significantly reduces transaction verification 
+latency, thereby enhancing the overall system performance despite the operational overheads. The framework 
+allows stakeholders to select solutions that best meet specific IoT application requirements.
+1. Introduction
+The Internet of Things (IoT) has emerged as an important paradigm 
+in the development of the foundations of the digital infrastructure 
+of the current era, which has enabled the interconnection of a wide 
+range of sensing, computing, and communication technologies in var-
+ious domains such as smart cities, industrial automation, intelligent 
+transportation, healthcare, and environmental monitoring [1,2]. This 
+has generated enormous volumes of data, placing significant pressure 
+on data processing, storage, and management infrastructure [3,4]. 
+Moreover, the IoT devices are generally limited in their computing, 
+storage, and battery capabilities, thereby restricting their ability to 
+process computationally intensive tasks locally [5,6]. Thus, efficient 
+computation offloading has become an important requirement for sat-
+isfying the latency, reliability, and scalability demands of modern IoT 
+applications.
+∗ Correspondence to: School of Computer Science, University of Leeds, Sir William Henry Bragg Building, Woodhouse Lane, Leeds, LS2  9JT, UK.
+E-mail address: a.bozorgchenani@leeds.ac.uk (A. Bozorgchenani).
+Mobile Edge Computing (MEC) has been recognized as an effective 
+architectural solution to these limitations by providing computation 
+and storage resources in close proximity to end devices [7]. By transfer-
+ring task execution from resource-constrained devices to nearby edge 
+servers, MEC can reduce end-to-end latency, relieve backbone network 
+congestion, and improve Quality of Service (QoS) for delay-sensitive 
+applications [8,9]. However, the migration from centralized cloud-
+centric processing to distributed edge environments also introduces 
+important system-level challenges, particularly with respect to trust 
+management, data integrity, privacy preservation, and coordination 
+across multiple administrative entities [10,11].
+Blockchain has gained significant attention as a viable approach to 
+addressing these issues within decentralized IoT ecosystems. Beyond its 
+original association with cryptocurrency systems, blockchain provides a 
+distributed and tamper-resistant ledger that enables transparent record 
+https://doi.org/10.1016/j.adhoc.2026.104361
+Received 28 March 2026; Received in revised form 8 July 2026; Accepted 15 July 2026
+Ad Hoc Networks 193 (2026) 104361 
+Available online 25 July 2026 
+1570-8705/© 2026 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+
+--- Page 2 ---
+N. Nezhadsistani et al.
+keeping, auditable interactions, and decentralized coordination without 
+reliance on a fully trusted central authority [12–15]. Within IoT ecosys-
+tems, these characteristics are particularly valuable for secure data 
+provenance, access control, and trustworthy service interactions among 
+heterogeneous devices and stakeholders [16–18]. However, the incor-
+poration of blockchain into resource-constrained IoT-MEC systems in-
+troduces non-negligible costs. Consensus execution, transaction dissem-
+ination, block generation, block verification, and feedback propagation 
+may impose considerable latency and energy overheads, which can sig-
+nificantly degrade system performance in delay-sensitive and energy-
+constrained applications, particularly when computationally intensive 
+consensus mechanisms are employed [19,20].
+Although the literature on MEC-based task offloading and the lit-
+erature on blockchain-enabled IoT security have both developed sub-
+stantially, their intersection remains insufficiently investigated from an 
+integrated system optimization perspective. In many existing studies, 
+offloading and resource allocation are optimized while security-related 
+processing costs are simplified or ignored. On the other hand, research 
+focused on blockchain applications tends to emphasize the security 
+benefits of blockchain architecture without explicitly modeling detailed 
+operational costs in performance-concerned optimization models. Such 
+a distinction is not suitable in a secure IoT-MEC environment, where 
+computation offloading and blockchain operations compete for limited 
+communication and computational resources and jointly affect latency 
+and energy performance. An integrated optimization framework is thus 
+required to consider computation offloading decisions and detailed 
+latency and energy costs of blockchain operations.
+To address this research gap, this article proposes a unified multi-
+objective optimization model for secure task offloading in blockchain-
+enabled IoT-MEC systems. In particular, the proposed optimization 
+model accounts for both computational tasks and blockchain operations 
+and explicitly considers trade-offs among latency, energy consumption, 
+and blockchain management quality through node reputation. In terms 
+of solution approaches, both Pareto evolutionary and scalar optimiza-
+tion are employed to tackle the proposed optimization model. The 
+main novelty of this work should be interpreted at the system-modeling 
+and optimization-framework level. In particular, this paper does not 
+claim that NSGA-II or GA are newly invented algorithms. Instead, these 
+algorithms are used as solution engines for the proposed mixed-integer 
+nonlinear optimization problem. The primary contribution is a uni-
+fied blockchain-aware IoT–MEC optimization framework that explicitly 
+couples task offloading, computational resource allocation, blockchain-
+stage latency/energy overheads, and reputation-aware consensus-role 
+assignment. The main contributions of this work are summarized as 
+follows:
+• An integrated architecture combining IoT, MEC, and cloud ser-
+vices has been developed, which incorporates blockchain mecha-
+nisms. In this setup, MEC/cloud nodes function as both computa-
+tional servers and blockchain management nodes.
+• A comprehensive multi-objective optimization problem has been 
+formulated to minimize system latency and total energy con-
+sumption while maximizing the overall reputation of the se-
+lected blockchain management nodes. This formulation explicitly 
+links computation offloading, CPU resource allocation, and the 
+assignment of blockchain consensus roles.
+• Blockchain operational overhead is modeled in a stage-wise man-
+ner, including block generation, block transmission, verification, 
+broadcasting, and feedback propagation. This avoids the over-
+simplified assumption of a fixed blockchain delay or a single 
+aggregated blockchain cost.
+• A constraint-aware evolutionary solution framework has been de-
+veloped. NSGA-II is employed to approximate the Pareto-optimal 
+trade-off surface, while a Genetic Algorithm (GA) is utilized 
+to identify a scalarized operating point based on the prefer-
+ence weights specified by the network operator. To enhance the 
+practicality of the solution process, techniques such as feasibility-
+preserving initialization, constraint-repair, and penalty-based
+handling are integrated.
+• Extensive performance evaluation is provided, including com-
+parisons with representative baselines, ablation studies, sensi-
+tivity analysis, dynamic channel conditions, verifier-node fail-
+ures, computational-complexity analysis, and implementation-
+overhead discussion.
+Each component of the proposed framework serves a distinct role. 
+The MEC offloading process is designed to decrease the time needed for 
+completing tasks through transferring computations from constrained 
+IoT devices to adjacent edge servers. Blockchain technology offers 
+decentralization, trustworthiness, data immutability, and auditing for 
+the results of performed tasks and their associated services. Reputation-
+aware selection helps obtain better consensus node selections since it 
+favors more reliable and competent nodes. NSGA-II can find Pareto-
+optimal solutions, while GA-based scalarized formulation gives an op-
+timal solution point under given criteria.
+The remainder of this paper is organized as follows. Section 2 re-
+views the most relevant literature. Section 3 presents the system model. 
+Section 4 formulates the optimization problem. Section 5 describes 
+the proposed solution methods. Section 6 reports and discusses the 
+simulation results. Finally, Section 7 concludes the paper and outlines 
+future research directions.
+2. Related work
+The challenges of resource allocation and task offloading in IoT and 
+MEC environments have been extensively investigated, with a parallel 
+stream of research exploring the integration of blockchain for enhanced 
+security:
+2.1. Task offloading and resource allocation in MEC
+Early studies on task offloading predominantly concentrated on 
+single-objective optimization, such as minimizing latency [29] or en-
+ergy consumption [30]. These problems are typically formulated as 
+Mixed-Integer Non-Linear Programming (MINLPs) and are known as 
+NP-hard. As a result, heuristic and meta-heuristic algorithms have 
+gained extensive adoption. Numerous studies have utilized Genetic 
+Algorithms (GA) [31], Particle Swarm Optimization (PSO) [32], and 
+simulated annealing to identify near-optimal solutions. Recently, Re-
+inforcement Learning (RL) and Deep Reinforcement Learning (DRL) 
+have acquired prominence for their capacity to execute dynamic of-
+floading judgments in fluctuating contexts [33,34]. However, single-
+objective RL methods frequently encounter difficulties when attempting 
+to concurrently balance several conflicting objectives. To address this, 
+multi-objective approaches have been proposed to jointly optimize 
+latency and energy consumption, for instance, by utilizing NSGA-II 
+to find Pareto-optimal fronts [29]. Nevertheless, such existing multi-
+objective frameworks typically do not account for the additional com-
+putation and communication overheads introduced by security and 
+privacy mechanisms like blockchain.
+Coordinated resource allocation, task scheduling and intelligent 
+offloading are also heavily highlighted in recent studies in hetero-
+geneous edge systems. In CPSS, SerFlow explores the end-edge-cloud 
+collaboration workflow applications and emphasizes the necessity of 
+a service-enhanced scheduling and resource coordination in resource-
+limited collaborative systems [35]. There have also been attempts on 
+the joint offloading decisions and computation resource allocation for 
+vehicular-fog computing systems, where both computation and com-
+munication resources are jointly optimized for vehicular services with 
+delay sensitivity [36]. Further, the optimization for digital-twin-aided 
+vehicular networks by using the SAC-based offloading and resource-
+allocation optimization is found to be an important research field for 
+Ad Hoc Networks 193 (2026) 104361 
+2 
+
+--- Page 3 ---
+N. Nezhadsistani et al.
+Table 1
+Comparison between the proposed framework and representative related studies.
+ Study MEC offloading Resource allocation Blockchain overhead Reputation-aware consensus Multi-objective Dynamic evaluation 
+ MEC offloading studies [21,22] ✓ ✓ – – Partial Partial  
+ Blockchain-enabled MEC studies [23,24] ✓ Partial Aggregated/fixed Partial – Partial  
+ Multi-objective offloading studies [25,26] ✓ ✓ – – ✓ Partial  
+ DRL-based secure offloading [27] ✓ ✓ Partial Partial Scalarized ✓  
+ MOEA/D-based offloading [28] ✓ ✓ – – ✓ Partial  
+ Proposed framework ✓ ✓ Stage-wise ✓ ✓ ✓  
+dynamic vehicular edge systems [37]. The reliability-aware computa-
+tion offloading for delay-sensitive MEC-enabled aerial computing also 
+shows that reliability must be taken into account in addition to delay 
+and energy goals in MEC scenarios [38].
+2.2. Blockchain integration in IoT and MEC
+Blockchain has been employed in IoT systems for secure data shar-
+ing [39], access control [40], and supply chain management [41]. 
+Several studies have proposed integrating blockchain with MEC to 
+establish a secure and decentralized edge-cloud computing contin-
+uum [42,43]. For instance [44] proposed a blockchain-based data shar-
+ing framework for MEC, and the authors in [45] designed a lightweight 
+blockchain mechanism for industrial IoT. However, many of these stud-
+ies focus mainly on security architectures while giving limited attention 
+to the performance implications of blockchain integration (e.g., the 
+latency and energy overheads incurred by block generation, consen-
+sus, and propagation). This oversight may lead to underestimated 
+costs when the blockchain is deployed in latency and energy-sensitive 
+systems [46].
+2.3. Multi-objective optimization for joint problems
+The authors in [47] proposed an NSGA-II-based approach for task 
+scheduling in a UAV-enabled MEC system, deriving a set of trade-
+off solutions under UAV-assisted edge constraints rather than a single 
+operating point. [6] employed NSGA-II for task offloading and re-
+source scheduling in mobile edge-cloud computing, leveraging task 
+prediction and an edge-competition mechanism to better capture the 
+energy-latency trade-off in dynamic environments. [48] presented a 
+blockchain-based resource allocation mechanism that explicitly aims at 
+balancing efficiency and security, illustrating how blockchain consider-
+ations can reshape allocation priorities in vehicular networks.
+Despite these advances, comparatively fewer studies provide a uni-
+fied optimization model that simultaneously captures computation of-
+floading decisions and detailed blockchain processing overheads in IoT-
+MEC systems [30,49,50]. In many existing formulations, the latency 
+and energy implications of Blockchain Offloading Processes (BOPs) 
+are either omitted or represented at a level of abstraction that limits 
+the realism of system-level evaluation. Moreover, prior studies of-
+ten assess security-enhanced offloading frameworks under simplified 
+assumptions on blockchain processing dynamics, such as fixed con-
+sensus delay or aggregated communication cost, which can obscure 
+the actual trade-offs in heterogeneous environments where blockchain 
+functions and application tasks compete for limited resources. Conse-
+quently, the feasibility and efficiency of secure offloading strategies 
+may be overestimated when detailed blockchain-stage costs are not 
+explicitly modeled. In contrast, the present study develops a unified 
+multi-objective formulation that jointly models computation offloading 
+and blockchain-related latency-energy overheads, while also incor-
+porating the reputation of blockchain management nodes into the 
+optimization process.
+As shown in Table  1, most research work focuses on offloading 
+computation tasks and allocation of system resources in an MEC en-
+vironment where minimizing latency and energy consumption can 
+be considered scalarized objectives or partial multiple-objectives [21,
+22]. The use of blockchain to enhance MEC improves data reliabil-
+ity, trustworthiness, or transaction management; however, blockchain 
+overhead is indirectly addressed in terms of blockchain system-level 
+metrics or through blockchain architecture design for enhanced secu-
+rity, rather than stage-by-stage latency-energy cost calculation [23,24]. 
+Offloading research that considers multi-objective MEC environments 
+can optimize delay, energy cost, or other performance metric using 
+Pareto optimization approach; still, they do not consider blockchain 
+consensus cost or reputation-driven node participation in blockchain 
+consensus procedure [25,26]. Likewise, approaches based on DRL and 
+MOEA/D offer more robustness in dynamic network environments 
+through their respective algorithms but ignore blockchain overhead 
+costs and reputation-driven node selection for the blockchain layer [27,
+28]. 
+3. System model
+A hierarchical, blockchain-based IoT architecture for computational 
+offloading is considered, as seen in Fig.  1. The system consists of 
+four main entities: IoT devices, MEC servers, a central cloud server, 
+and a decentralized blockchain network. IoT devices including sen-
+sors, actuators, and other intelligent nodes, collect data and execute 
+computation-intensive operations. According to their limited local re-
+sources, these tasks are offloaded to nearby MEC servers. The MEC 
+servers provide computational capacity and operate as nodes inside 
+the blockchain network. A central cloud server, symbolizing a primary 
+data center, provides almost limitless processing capacity and concur-
+rently engages in the blockchain network. The blockchain provides 
+the foundation of the decentralized trust framework, offering a secure, 
+unchangeable, and auditable public ledger for all essential transactions 
+(e.g., task outcomes, data access records). The network comprises MEC 
+servers and a cloud server, functioning as blockchain nodes. Within 
+the overall framework of this architecture, the servers assume two key 
+roles: one as computational platforms for executing tasks that were 
+offloaded, and another as nodes of the blockchain that are engaged 
+in validating transactions and executing consensus. This level of func-
+tional integration is critical in ensuring that there is efficiency in the 
+system, but at the same time raises more stringent demands in terms of 
+resource management and coordination [51]. Once the tasks have been 
+executed, transactions are created and propagated to the blockchain in 
+order to log the outcomes of tasks or metadata associated with tasks. A 
+block manager is responsible for aggregating a set of transactions into 
+a candidate block that is appended to the blockchain after consensus 
+among verifier nodes.
+The task allocation and the distribution of resources are expressed 
+by the binary task assignment matrix 𝐗 ∈ {0, 1}(𝑁+2)×(𝑀+1), and the 
+non-negative resource allocation matrix 𝐅 ∈ R(𝑁+2)×(𝑀+1)
+≥0 , as depicted 
+by (1)–(2), respectively. The columns 1∶𝑀 denote the MEC servers, 
+whereas the 𝑚 =𝑀+1 represents the cloud. The rows 1∶𝑁 correspond 
+to the device tasks, and the last two rows (𝑁+1 and 𝑁+2) correspond 
+to selecting the block manager and the verifier(s) of the blockchain 
+network, respectively. The entry 𝑥𝑛,𝑚 = 1 implies that the task or the 
+role of the blockchain in row 𝑛 is assigned to the MEC server 𝑚. The 
+entries 𝑓𝑛,𝑚 denote the CPU frequency, in cycles per second, allocated 
+to the task or role of the blockchain network by the MEC server 𝑚. 
+It is assumed that each task is assigned to only one column of matrix 
+Ad Hoc Networks 193 (2026) 104361 
+3 
+
+--- Page 4 ---
+N. Nezhadsistani et al.
+Fig. 1. System architecture for blockchain-based computational offloading in IoT network.
+𝐗; i.e., each task is assigned to only one MEC server or the cloud. 
+The block-manager row has a single ‘‘1’’ among MEC columns, and the 
+verifier row may contain one or more ‘‘1’’s. Resource feasibility requires ∑𝑁+2
+𝑛=1 𝑓𝑛,𝑚 ≤ 𝐹 max
+𝑚  for each server 𝑚 (and similarly for the cloud), and 
+consistency enforces 𝑓𝑛,𝑚 = 0 whenever 𝑥𝑛,𝑚 = 0. The key notations are 
+summarized in Table  2. 
+𝐗 =
+⎡
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢⎣
+𝑥1,1 𝑥1,2 ⋯ 𝑥1,𝑀 𝑥1,𝑀+1
+𝑥2,1 𝑥2,2 ⋯ 𝑥2,𝑀 𝑥2,𝑀+1
+⋮ ⋮ ⋱ ⋮ ⋮
+𝑥𝑁,1 𝑥𝑁,2 ⋯ 𝑥𝑁,𝑀 𝑥𝑁,𝑀 +1
+𝑥𝑁+1,1 𝑥𝑁+1,2 ⋯ 𝑥𝑁+1,𝑀 𝑥𝑁+1,𝑀+1
+𝑥𝑁+2,1 𝑥𝑁+2,2 ⋯ 𝑥𝑁+2,𝑀 𝑥𝑁+2,𝑀+1
+⎤
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥⎦
+IoT Device 1
+IoT Device 2
+⋮
+IoT Device 𝑁
+Block Manager
+Verifier
+(1)
+𝐅 =
+⎡
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢⎣
+𝑓1,1 𝑓1,2 ⋯ 𝑓1,𝑀 𝑓1,𝑀+1
+𝑓2,1 𝑓2,2 ⋯ 𝑓2,𝑀 𝑓2,𝑀+1
+⋮ ⋮ ⋱ ⋮ ⋮
+𝑓𝑁,1 𝑓𝑁,2 ⋯ 𝑓𝑁,𝑀 𝑓𝑁,𝑀 +1
+𝑓𝑁+1,1 𝑓𝑁+1,2 ⋯ 𝑓𝑁+1,𝑀 𝑓𝑁+1,𝑀+1
+𝑓𝑁+2,1 𝑓𝑁+2,2 ⋯ 𝑓𝑁+2,𝑀 𝑓𝑁+2,𝑀+1
+⎤
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥⎦
+IoT Device 1
+IoT Device 2
+⋮
+IoT Device 𝑁
+Block Manager
+Verifier
+(2)
+3.1. Task offloading model
+The system consists of 𝑁 IoT devices, denoted by the set  =
+{1, 2, …,𝑁 }, and 𝑀 MEC servers, denoted by the set  = {1, 2, …,𝑀 }. 
+Each task 𝑛 ∈  generated by an IoT Device is characterized by a 
+tuple ⟨𝐷𝑛,𝐶𝑛,𝑙𝑛⟩, where 𝐷𝑛 is the size of the input data (in bits), 𝐶𝑛 is 
+the computational workload (in CPU cycles required for completion), 
+and 𝑙𝑛 is the task’s maximum tolerable delay, or deadline (in seconds). 
+This deadline parameter inherently categorizes the incoming workload 
+into varying levels of priority, effectively creating the urgent and non-
+urgent task flows depicted in the system architecture (Fig.  1). By 
+incorporating 𝑙𝑛 into the optimization constraints, the system ensures 
+that delay-sensitive (urgent) tasks are prioritized appropriately.
+A flexible offloading strategy is employed where a task can be 
+offloaded to either one of the 𝑀 MEC servers or to the central cloud 
+server (denoted as server 𝑀 + 1). The decision is based on optimizing 
+system-wide objectives such as latency and energy consumption.
+3.2. Communication model
+The wireless communication links between the IoT Devices and MEC 
+servers are modeled. The uplink data transmission rate from IoT Device 
+𝑛 to MEC server 𝑚 is determined by the Shannon-Hartley theorem: 
+𝑟𝑛𝑚 =𝐵𝑛𝑚 log2
+(
+1 + 𝑃𝑛|𝑔𝑛𝑚|2
+𝜔
+)
+(3)
+where 𝐵𝑛𝑚 is the allocated channel bandwidth, 𝑃𝑛 is the transmission 
+power of IoT Device 𝑛, 𝑔𝑛𝑚 is the channel gain between them, and 𝜔 is 
+the background noise power.
+Similarly, the backhaul communication rate from MEC server 𝑚 to 
+the cloud server is given by: 
+𝑟𝑐
+𝑚 =𝐵𝑐
+𝑚 log2
+(
+1 +
+𝑃𝑚|𝑔𝑐
+𝑚|2
+𝜔
+)
+(4)
+where 𝑃𝑚 is the transmission power of MEC server 𝑚 and 𝐵𝑐
+𝑚 is its 
+backhaul bandwidth.
+3.3. Computational offloading latency and energy model
+The total time to execute task 𝑛 on MEC server 𝑚 consists of the 
+transmission time and the computation time: 
+𝑇 MEC
+𝑛𝑚 = 𝐷𝑛
+𝑟𝑛𝑚
++ 𝐶𝑛
+𝑓𝑛𝑚
+(5)
+If the task is offloaded to the cloud via MEC server 𝑚, the total time 
+includes the ID-to-MEC transmission, MEC-to-cloud transmission, and 
+cloud computation time: 
+𝑇 Cloud
+𝑛 = 𝐷𝑛
+𝑟𝑛𝑚
++ 𝐷𝑛
+𝑟𝑐
+𝑚
++ 𝐶𝑛
+𝑓𝑛,𝑀+1
+(6)
+Ad Hoc Networks 193 (2026) 104361 
+4 
+
+--- Page 5 ---
+N. Nezhadsistani et al.
+Table 2
+Nomenclature.
+ Notation Description  
+  = {1, …,𝑁 } IoT devices (size 𝑁).  
+  = {1, …,𝑀 } MEC servers (size 𝑀).  
+ ⟨𝐷𝑛,𝐶𝑛, 𝓁𝑛⟩ Task 𝑛: input 𝐷𝑛 (bits), workload 𝐶𝑛 (cycles), deadline 𝓁𝑛 (s).  
+ 𝐵𝑛𝑚 Uplink bandwidth from device 𝑛 to MEC server 𝑚.  
+ 𝑃𝑛 Transmission power of device 𝑛 (W).  
+ 𝑔𝑛𝑚 Channel gain between device 𝑛 and MEC server 𝑚.  
+ 𝑟𝑛𝑚 Uplink rate from device 𝑛 to MEC server 𝑚 (bit/s).  
+ 𝐵𝑐
+𝑚 Backhaul bandwidth from MEC server 𝑚 to cloud.  
+ 𝑃𝑚 Transmission power of MEC server 𝑚 (W).  
+ 𝑔𝑐
+𝑚 Backhaul channel gain between MEC server 𝑚 and cloud.  
+ 𝑟𝑐
+𝑚 Backhaul rate from MEC server 𝑚 to cloud (bit/s).  
+ 𝐅 CPU allocation matrix; 𝑓𝑛,𝑚 is the CPU allocated by server 𝑚 to task 𝑛 (cycles/s). 
+ 𝑘comp
+𝑚 , 𝑘comp
+𝑐 CPU capacitance coefficients of MEC server 𝑚 and cloud.  
+ 𝑊 (𝐗) Total reputation of selected blockchain nodes.  
+ 𝑛Tr Number of transactions per block.  
+ 𝐷Tr Average transaction size (bits).  
+ 𝐶Tr CPU cycles per bit for block creation.  
+ 𝐶ver CPU cycles required for verification.  
+ 𝑂 Feedback size (bits).  
+ 𝑟𝑑, 𝑟𝑢 Average downlink and uplink rates (bit/s).  
+ 𝜓 Broadcast overhead factor.  
+ 𝑝𝑚, 𝑝𝑣 Transmission power of MEC server 𝑚 and verifier 𝑣 (W).  
+ 𝐹𝑚, 𝐹𝑐 Maximum CPU capacity of MEC server 𝑚 and cloud (cycles/s).  
+ 𝑆𝑇 Slot length (s).  
+ 𝑉 Number of verifiers.  
+Fig. 2. Workflow of the Enhanced Delegated Proof of Stake (EDPoS) consensus mechanism used in the IoT network.
+Thus, the total offloading latency for task 𝑛, 𝑇 Off
+𝑛 , is: 
+𝑇 Off
+𝑛 (𝐗, 𝐅) =
+𝑀∑
+𝑚=1
+𝑥𝑛,𝑚𝑇 MEC
+𝑛𝑚 +𝑥𝑛,𝑀+1𝑇 Cloud
+𝑛 (7)
+The energy consumed by the IoT Device for transmitting the task to 
+an MEC server is 𝐸tx
+𝑛,𝑚 =𝑃𝑛
+𝐷𝑛
+𝑟𝑛𝑚
+. The energy consumed by the MEC server 
+for computation is 𝐸comp
+𝑛,𝑚 =𝑘comp
+𝑚 (𝑓𝑛𝑚)2𝐶𝑛, where 𝑘comp
+𝑚  is the effective 
+switched capacitance coefficient of the server’s CPU architecture [6]. 
+The total energy for MEC offloading is: 
+𝐸MEC
+𝑛𝑚 =𝑃𝑛
+𝐷𝑛
+𝑟𝑛𝑚
++𝑘comp
+𝑚 (𝑓𝑛𝑚)2𝐶𝑛 (8)
+For cloud offloading, the energy includes IoT Device transmission, MEC 
+transmission, and cloud computation: 
+𝐸Cloud
+𝑛 =𝑃𝑛
+𝐷𝑛
+𝑟𝑛𝑚
++𝑃𝑐
+𝑚
+𝐷𝑛
+𝑟𝑐
+𝑚
++𝑘comp
+𝑐 (𝑓𝑛,𝑀+1)2𝐶𝑛 (9)
+The total offloading energy for task 𝑛, 𝐸Off
+𝑛 , is: 
+𝐸Off
+𝑛 (𝐗, 𝐅) =
+𝑀∑
+𝑚=1
+𝑥𝑛,𝑚𝐸MEC
+𝑛𝑚 +𝑥𝑛,𝑀+1𝐸Cloud
+𝑛 (10)
+3.4. Blockchain system model
+An Enhanced Delegated Proof of Stake (EDPoS) consensus mecha-
+nism is adopted, inspired by [52], which is more energy-efficient and 
+Ad Hoc Networks 193 (2026) 104361 
+5 
+
+--- Page 6 ---
+N. Nezhadsistani et al.
+scalable for IoT environments than Proof of Work. As illustrated in 
+Fig.  2, the workflow of the consensus mechanism can be divided into 
+four major steps. First, the network performs a reputation-based vot-
+ing operation. Second, using the reputation information, MEC servers 
+with high reputations are selected as candidates for the role of block 
+manager (miner). Third, after the selected candidate creates the block, 
+the verifier nodes verify it. Finally, the created block is added to the 
+blockchain.
+The considered blockchain layer will enhance the trustworthy col-
+laboration between MEC/cloud nodes by offering a tamper-resistant 
+way to record the task result, a decentralized verification system, and 
+an auditable history of the services rendered. Some of the threats 
+addressed in this work are unreliable or selfish nodes, inconsistent 
+verifier verification behavior, verifier-node failures, and tampering or 
+disputes of task-result records since execution. The blockchain ledger 
+helps overcome these challenges by maintaining the metadata and ver-
+ification data for the tasks in an append-only manner, while using the 
+reputation-aware EDPoS mechanism to lower the possibility of selecting 
+low-reputation nodes to perform the critical consensus tasks. Hence, the 
+security analysis does not aim at giving a comprehensive cryptographic 
+proof of security against all potential attacks by an adversary, but rather 
+on the data integrity, the auditability, the reliability of the consensus, 
+and the trusted selection of the roles.
+In this model, MEC servers and the cloud server are candidates 
+to become block managers or verifiers. The selection is based on a 
+reputation score, which is modeled separately from the instantaneous 
+computational capacity of each node. In this work, the reputation 
+score reflects trust-related factors such as network reliability, uptime, 
+successful verification history, failure behavior, and historical service 
+consistency, whereas computational capability is captured indepen-
+dently through the CPU-frequency allocation variables and capacity 
+constraints. The total reputation of the selected block manager and 
+verifiers is a key objective to maximize: 
+𝑊 (𝐗) =
+𝑀+1∑
+𝑖=1
+𝑤𝑖(𝑥𝑁+1,𝑖 +𝑥𝑁+2,𝑖) (11)
+where 𝑤𝑖 is the reputation score of node 𝑖. Since 𝑥𝑁+1,𝑖 and 𝑥𝑁+2,𝑖
+are binary decision variables, this objective function strictly aggregates 
+the total reputation of the chosen nodes. The exact number of block 
+managers and verifiers is explicitly controlled by constraints 𝐶3 and 𝐶4
+in Section 4.
+The total latency of the blockchain process, 𝑇𝐵, for creating and 
+validating one block is the sum of latencies from several stages: block 
+generation (𝑇 generate), transmission to verifiers (𝑇 transmit), parallel veri-
+fication (𝑇 verify), broadcasting of verification results (𝑇 broadcasting), and 
+feedback to the block manager (𝑇 feedback). 
+𝑇𝐵(𝐗, 𝐅) = 𝑇 gen +𝑇 tx +𝑇 ver +𝑇 bc +𝑇 f b, (12)
+where 
+𝑇 gen =
+𝑀+1∑
+𝑚=1
+𝑥𝑁+1,𝑚
+𝑛Tr𝐷Tr𝐶Tr
+𝑓𝑁+1,𝑚
+, (13)
+𝑇 tx = 𝑛Tr𝐷Tr
+𝑟𝑑 , (14)
+𝑇 ver = max
+𝑣∶𝑥𝑁+2,𝑣=1
+{ 𝐶ver
+𝑓𝑁+2,𝑣
+}
+, (15)
+𝑇 bc = 𝜓𝑛 Tr𝐷Tr
+𝑟𝑑
+𝑀+1∑
+𝑣=1
+𝑥𝑁+2,𝑣, (16)
+and 
+𝑇 f b = 𝑂
+𝑟𝑢. (17)
+This decomposition explicitly separates block generation, block trans-
+mission, parallel verification, broadcasting, and feedback propagation.
+where 𝑛𝑇𝑟 is the number of transactions per block, 𝐷𝑇𝑟 is the 
+average transaction size, 𝐶𝑇𝑟 is the processing cycles per bit for block 
+generation, 𝐶ver is the total cycles for verification, 𝑂 is the feedback 
+message size, and 𝑟𝑑,𝑟𝑢 are average downlink/uplink rates within the 
+edge network.
+Similarly, the total energy consumed by the blockchain process, 𝐸𝐵, 
+is the sum of energy consumed in each stage: 
+𝐸𝐵(𝐗, 𝐅) = 𝐸gen +𝐸tx +𝐸ver +𝐸bc +𝐸f b, (18)
+where 
+𝐸gen =
+𝑀+1∑
+𝑚=1
+𝑥𝑁+1,𝑚𝑘comp
+𝑚 𝑓 2
+𝑁+1,𝑚𝑛Tr𝐷Tr𝐶Tr, (19)
+𝐸tx = 𝑛Tr𝐷Tr
+𝑟𝑑
+𝑀+1∑
+𝑚=1
+𝑝𝑚𝑥𝑁+1,𝑚, (20)
+𝐸ver =
+𝑀+1∑
+𝑣=1
+𝑥𝑁+2,𝑣𝑘comp
+𝑣 𝑓 2
+𝑁+2,𝑣𝐶ver, (21)
+𝐸bc = 𝜓𝑛 Tr𝐷Tr
+𝑟𝑑
+𝑀+1∑
+𝑣=1
+𝑝𝑣𝑥𝑁+2,𝑣, (22)
+and 
+𝐸f b = 𝑂
+𝑟𝑢
+𝑀+1∑
+𝑣=1
+𝑝𝑣𝑥𝑁+2,𝑣. (23)
+Where, 𝐸gen represents the energy consumed for block genera-
+tion, 𝐸tx is the energy consumed for transmission, 𝐸ver is the energy 
+consumed for block verification, 𝐸bc is the energy consumed for dis-
+seminating the verification results, and 𝐸f b is the energy consumed 
+for sending the verification feedback. The coefficients 𝑘comp
+𝑚  and 𝑘comp
+𝑣
+denote the computational energy factors of the block producer and 
+verifier nodes, respectively. The parameters 𝑝𝑚 and 𝑝𝑣 indicate the 
+transmit power of MEC server 𝑚 and of the 𝑣th verifier, respectively.
+4. Problem formulation
+To jointly analyze task offloading and blockchain processing under 
+a synchronized decision horizon, the system is modeled in discrete 
+time slots of duration 𝑆𝑇 . This slot-based representation is appropri-
+ate because both the offloading of a task batch and the processing 
+of a blockchain block consume shared communication and computa-
+tional resources over a bounded operational interval. Under steady-
+state pipelined operation, the effective latency per slot is determined 
+by the slower of these two parallel processes. 
+𝑇 Tot(𝐗, 𝐅) = max
+(
+max
+𝑛∈
+𝑇 Off
+𝑛 (𝐗, 𝐅),𝑇 𝐵(𝐗, 𝐅)
+)
+(24)
+This total latency, 𝑇 Tot, is used to determine the feasible time slot 
+duration 𝑆𝑇 for the current workload batch and is the main objective 
+to be minimized in Problem P1. Note that decreasing the duration of 
+the time slots 𝑆𝑇 also reduces the overall worst-case system latency. 
+The total system energy consumption per time slot is the sum of the 
+offloading energy for all tasks and the blockchain processing energy. 
+𝐸Tot(𝐗, 𝐅) =
+∑
+𝑛∈
+𝐸Off
+𝑛 (𝐗, 𝐅) +𝐸𝐵(𝐗, 𝐅) (25)
+The primary goal is to find the optimal task allocation matrix 𝐗 and 
+resource allocation matrix 𝐅 that solve the following multi-objective 
+optimization problem (P1). 
+P1: min
+𝐗,𝐅
+𝑆𝑇 (26a)
+min
+𝐗,𝐅
+𝐸Tot(𝐗, 𝐅) (26b)
+max
+𝐗,𝐅
+𝑊 (𝐗) (26c)
+subject to:
+𝐶1 ∶ 𝑥𝑛,𝑚 ∈ {0, 1}, ∀𝑛 ∈ {1, …,𝑁 + 2}, ∀𝑚 (26d)
+Ad Hoc Networks 193 (2026) 104361 
+6 
+
+--- Page 7 ---
+N. Nezhadsistani et al.
+𝐶2 ∶
+𝑀+1∑
+𝑚=1
+𝑥𝑛,𝑚 = 1, ∀𝑛 ∈  (26e)
+𝐶3 ∶
+𝑀+1∑
+𝑚=1
+𝑥𝑁+1,𝑚 = 1 (26f)
+𝐶4 ∶
+𝑀+1∑
+𝑚=1
+𝑥𝑁+2,𝑚 =𝑉 (26g)
+𝐶5 ∶
+𝑁∑
+𝑛=1
+𝑥𝑛,𝑚𝑓𝑛,𝑚 +𝑥𝑁+1,𝑚𝑓𝑁+1,𝑚
++ 𝑥𝑁+2,𝑚𝑓𝑁+2,𝑚 ≤𝐹𝑚, ∀𝑚 = 1, …,𝑀 (26h)
+𝐶6 ∶
+𝑁∑
+𝑛=1
+𝑥𝑛,𝑀+1𝑓𝑛,𝑀+1 +𝑥𝑁+1,𝑀+1𝑓𝑁+1,𝑀+1
++ 𝑥𝑁+2,𝑀+1𝑓𝑁+2,𝑀+1 ≤𝐹𝑐 (26i)
+𝐶7 ∶ 𝑇 Off
+𝑛 (𝐗, 𝐅) ≤𝑙𝑛 −𝑠𝑏, ∀𝑛 ∈  (26j)
+𝐶8 ∶ 𝑇𝐵(𝐗, 𝐅) ≤𝑆𝑇 (26k)
+𝐶9 ∶ 𝑇 Off
+𝑛 (𝐗, 𝐅) ≤𝑆𝑇 (26l)
+𝐶10 ∶ 𝑛𝑇𝑟 = min
+(
+𝑛max
+𝑇𝑟
+, 𝑛Total
+𝑇𝑟
+)
+(26m)
+Constraint (26d) defines the decision variables as binary. (26e) 
+ensures each task is offloaded to exactly one server. (26f) ensures 
+exactly one block manager is selected. (26g) sets the number of verifiers 
+to a constant 𝑉 . (26h) and (26i) represent the total computational 
+capacity constraints for each MEC server and the cloud server, respec-
+tively, ensuring that the allocated CPU frequencies do not exceed the 
+available capacity. (26j) is the task deadline constraint. (26k) and (26l) 
+ensure that blockchain and offloading latencies are within the time slot 
+duration 𝑆𝑇 . (26m) specifies the permissible range for the number of 
+transactions in each block.
+For cases where a single solution is desired, a weighted-sum single-
+objective problem is formulated by normalizing and combining the 
+objectives into a unified cost function: 
+min
+𝐗,𝐅
+Cost =𝛼 𝐸Tot
+𝐸norm
++𝛽 𝑆𝑇
+𝑆𝑇 _norm
+− (1 −𝛼 −𝛽) 𝑊
+𝑊norm
+(27)
+where 𝛼,𝛽 ∈ [0, 1], 𝛼 +𝛽 ≤ 1 are weighting factors which illustrate 
+the relative importance of each objective. The normalization constants 
+𝐸norm , 𝑆𝑇 _norm , and 𝑊norm are static scaling factors for each simulation 
+scenario, and are calculated based on maximum or typical values of the 
+energy feasible range, the latency feasible range, and the reputation 
+range, respectively. These constants are constants and do not change 
+during optimization. They are only used to allow the objectives to 
+be compared in comparable numbers, and not because they have 
+relationships with each other in physical units.
+5. Proposed solution
+The formulated optimization problem P1 is an MINLP problem. 
+The combination of binary decision variables (for allocation) and con-
+tinuous variables (for resource distribution), along with non-linear 
+objective functions and constraints, makes this problem NP-hard [53]. 
+Exact solvers are computationally intractable for even moderately sized 
+networks. Therefore, two solution methodologies based on powerful 
+meta-heuristic evolutionary algorithms are proposed (Fig.  3).
+5.1. NSGA-II for multi-objective optimization
+The NSGA II is a well-established elitist multi-objective evolutionary 
+algorithm used to find a set of non-dominated solutions, known as 
+the Pareto front [54]. It is particularly suitable for this problem, as it 
+can identify the optimal trade-offs among latency, energy consumption, 
+and reputation. The implementation is detailed in Algorithm 1 and 
+comprises the following core components.
+1. Chromosome Representation: Each chromosome represents a 
+potential solution, encoding the task allocation matrix 𝐗 and 
+the resource allocation matrix 𝐅. These matrices define which 
+server handles each task, the designation of the block manager 
+and verifiers, and the allocated CPU frequencies.
+2. Initialization: An initial population of size 𝑃 is generated ran-
+domly, ensuring that each individual solution complies with all 
+system constraints (e.g., C1–C5).
+3. Fitness Evaluation: For each individual, the three objective 
+functions latency (𝑆𝑇 ), total energy (𝐸Tot), and reputation (𝑊 ) 
+are calculated.
+4. Non-Dominated Sorting: The population is partitioned into 
+non-domination levels (fronts). The first front (𝐹1) contains solu-
+tions that are not dominated by any other solution. The second 
+front (𝐹2) contains solutions dominated only by those in 𝐹1, and 
+so on.
+5. Crowding Distance: To maintain diversity and ensure a well-
+distributed Pareto front, a crowding distance is calculated for 
+each solution within a front. This metric estimates the density 
+of neighboring solutions, and individuals in less crowded regions 
+are prioritized.
+6. Selection: A binary tournament selection operator is employed, 
+which prioritizes solutions based on their non-domination rank. 
+If two solutions have the same rank, the one with the larger 
+crowding distance is selected.
+7. Genetic Operators: Offspring are generated by applying
+crossover and mutation:
+• Crossover: Uniform crossover is applied to the binary al-
+location matrix 𝐗, and a simulated binary crossover (SBX) 
+is used for the continuous resource allocation values in 𝐅.
+• Mutation: Random alterations are introduced into off-
+spring. For 𝐗, this involves flipping bits, while for 𝐅, 
+polynomial mutation adjusts the CPU frequency values.
+8. Elitism: The parent and offspring populations are combined. The 
+best 𝑃 individuals are selected for the next generation based 
+on their non-domination rank and crowding distance, which 
+guarantees that the best-found solutions are preserved across 
+generations.
+9. Termination: The algorithm runs for a fixed number of gener-
+ations (𝐺). The final output is the first Pareto front (𝐹1), which 
+contains the set of optimal trade-off solutions.
+5.2. Genetic algorithm for single-objective optimization
+For the single-objective formulation, which minimizes the weighted-
+sum cost function in (27), a standard GA is employed. This formulation 
+allows the network operator to explicitly encode the relative priorities 
+of latency, energy consumption, and reputation through the weighting 
+coefficients 𝛼 and 𝛽. The overall GA procedure is summarized in Algo-
+rithm 2. The proposed GA adopts the same chromosome representation, 
+population initialization strategy, and genetic operators (i.e., crossover 
+and mutation) as the NSGA-II framework.
+In contrast to NSGA-II, however, the fitness evaluation and parent-
+selection mechanisms are simplified due to the scalar nature of the 
+objective function. Specifically, the fitness of each individual is com-
+puted as the inverse of its cost value defined in (27). Parent selection is 
+then carried out using standard selection schemes, such as tournament 
+selection or roulette-wheel selection, in which candidate solutions are 
+chosen directly according to this scalar fitness value. Elitism is ad-
+ditionally incorporated to retain the best solution identified in each 
+generation. After 𝐺 generations, the algorithm outputs the best fea-
+sible solution that minimizes the weighted-sum cost function for the 
+specified parameter setting.
+Ad Hoc Networks 193 (2026) 104361 
+7 
+
+--- Page 8 ---
+N. Nezhadsistani et al.
+Fig. 3.  NSGA-II and GA Flowchart for Task Offloading in BIoT Network Optimization.
+5.3. Computational complexity analysis
+Let 𝑃 denote the population size, 𝐺 the number of generations, 𝑄
+the number of objectives, and 
+𝐷 = (𝑁 + 2)(𝑀 + 1) (28)
+the main chromosome dimension associated with the assignment and 
+resource-allocation matrices. For NSGA-II, the non-dominated sorting 
+requires 𝑂(𝑄𝑃 2) operations per generation and crowding-distance cal-
+culation requires 𝑂(𝑄𝑃 log𝑃 ). The crossover, mutation, repair, and 
+objective-evaluation operations require 𝑂(𝑃𝐷 +𝑃𝐶 eval) for a generation, 
+where 𝐶eval is the cost of computing latency, energy, reputation, and 
+constraint violations for one individual. So the total complexity of the 
+NSGA-II based method is: 
+𝑂 (𝐺 (𝑄𝑃 2 +𝑄𝑃 log𝑃 +𝑃𝐷 +𝑃𝐶 eval
+)). (29)
+For the GA-based scalarized formulation, selection and elitist re-
+placement require at most 𝑂(𝑃 log𝑃 ) per generation, while crossover, 
+mutation, repair, and cost evaluation require 𝑂(𝑃𝐷 +𝑃𝐶 eval). Hence, 
+the total complexity of the GA-based method is 
+𝑂 (𝐺 (𝑃 log𝑃 +𝑃𝐷 +𝑃𝐶 eval
+)). (30)
+These expressions show that NSGA-II is more computationally expen-
+sive due to non-dominated sorting, whereas GA is more suitable when 
+a single scalarized operating point is sufficient.
+5.4. Implementation considerations
+The proposed framework is intended for periodic network-level 
+resource orchestration rather than per-packet scheduling. For practical 
+applications, the NSGA-II component can be run in an offline manner 
+or on longer intervals to derive Pareto-optimal operating points under 
+typical network conditions. At the online stage, the network admin-
+istrator can choose from among candidate solutions based on current 
+needs regarding latency, energy consumption, and trust metrics. The 
+formulation based on GA scalarization can also be considered when the 
+user sets certain preference weights.
+Ad Hoc Networks 193 (2026) 104361 
+8 
+
+--- Page 9 ---
+N. Nezhadsistani et al.
+Algorithm 1: NSGA-II for Multi-Objective Task Offloading in 
+BIoT Network
+Input :  Network parameters; Algorithm parameters 
+(Population size 𝑃 , Generations 𝐺, Crossover 
+probability 𝑝𝑐 , Mutation probability 𝑝𝑚).
+Output: Pareto-optimal front 𝐹1 minimizing 𝑆𝑇 , 𝐸Tot and 
+maximizing 𝑊 .
+1 Step 1: Initialization;
+2 Generate an initial population of size 𝑃 with random, valid 
+task and resource allocations;
+3 Evaluate objectives (𝑆𝑇,𝐸 Tot,𝑊 ) for each individual;
+4 for 𝑔 ← 1 to 𝐺 do
+5 Step 2: Non-Dominated Sorting;
+6 Classify the population into Pareto fronts 𝐹1,𝐹 2, … ;
+7 Step 3: Crowding Distance Calculation;
+8 Compute the crowding distance for every individual in 
+each front;
+9 Step 4: Selection;
+10 Create a mating pool using crowded tournament 
+selection based on rank and crowding distance;
+11 Step 5: Genetic Operators;
+12 Apply crossover and mutation operators to the mating 
+pool to generate an offspring population;
+13 Step 6: Population Update;
+14 Combine parent and offspring populations;
+15 Select the best 𝑃 individuals for the next generation 
+using non-dominated sorting and crowding distance 
+(elitism);
+16 Step 7: Output;
+17 Return the final non-dominated front 𝐹1;
+Algorithm 2: Genetic Algorithm for Single-Objective Task 
+Offloading
+Input :  Network parameters; Algorithm parameters 
+(Population size 𝑃 , Generations 𝐺, Crossover 
+probability 𝑝𝑐 , Mutation probability 𝑝𝑚); Weights 
+𝛼,𝛽 .
+Output: The solution (𝑋,𝐹 ) that minimizes the Cost
+function.
+1 Step 1: Initialization;
+2 Generate an initial population of size 𝑃 with random, valid 
+allocations;
+3 Evaluate the Cost for each individual;
+4 for 𝑔 ← 1 to 𝐺 do
+5 Step 2: Selection;
+6 Select parents from the population based on their fitness 
+(inverse of Cost);
+7 Step 3: Genetic Operators;
+8 Apply crossover and mutation to the selected parents to 
+produce an offspring population;
+9 Step 4: Population Update;
+10 Combine parent and offspring populations;
+11 Retain the top 𝑃 individuals with the best fitness for the 
+next generation (elitism);
+12 Step 5: Output;
+13 Return the best solution found that minimizes Cost;
+The main implementation overheads include collecting task meta-
+data, estimating channel states, updating node reputation scores, and 
+exchanging blockchain coordination messages. Overheads associated 
+with the optimization are practical in terms of MEC-enabled IoT net-
+works, as the optimization takes place at MEC or cloud orchestration 
+Table 3
+Simulation Parameters.
+ Parameter Value  
+ Channel bandwidth (𝐵𝑛𝑚, 𝐵𝑐
+𝑚) 20 MHz  
+ IoT Device transmit power (𝑃𝑛) 0.5 W  
+ MEC server transmit power (𝑃𝑚) 2 W  
+ Noise power density (𝜔0) 10−17 W/Hz  
+ Energy coefficient (𝑘comp
+𝑚 , 𝑘comp
+𝑐 ) 10−26  
+ Task data size (𝐷𝑛) Uniform in [1, 5] Mb  
+ Task workload (𝐶𝑛) Uniform in [0.5, 2] Gcycles 
+ Transaction size (𝐷Tr ) 2 Kb  
+ Block size 1 Mb  
+ Verification cycles (𝐶ver) 107 cycles  
+ Number of verifiers (𝑉 ) 6  
+ Population size (𝑃 ) 100  
+ Number of generations (𝐺) 500  
+ Crossover/mutation probability 0.9/0.1  
+nodes, but not on IoT devices themselves. However, in highly dynamic 
+conditions, care must be taken that the execution time is lower than 
+the length of a control slot.
+6. Simulation results and analysis
+Extensive simulations were conducted using Python to evaluate the 
+performance of the proposed framework. The simulation parameters, 
+chosen based on typical values from related literature [6,27,47], are 
+summarized in Table  3. These values are also suitable for the consid-
+ered blockchain-enabled IoT-MEC setting because they reflect realistic 
+communication, computation, and verification scales. The simulation 
+parameters are selected based on existing standard values for MEC and 
+IoT offloading literature. Particularly, the effective switched capaci-
+tance is assumed to be 10−26. This is one of the values used in the 
+modeling of the CPU frequency-based energy consumption of the MEC 
+system. The values of task data size, workload, wireless bandwidth, 
+and power consumed in transmitting these tasks have been determined 
+based on the typical scenario of IoT computation offloading systems. 
+The values of the blockchain system are chosen accordingly.
+A network with 𝑀 = 10  MEC servers and one cloud server is 
+considered. The number of IoT tasks 𝑁 is varied from 10 to 40 to 
+simulate different network loads. For heterogeneous resource scenarios, 
+a reputation vector of 𝑊 = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1] and a correspond-
+ing processing capacity vector of 𝐹𝑚 = [0.4, 0.5, 0.7, 0.9, 1, 2, 3, 4, 5, 6, 20]
+GHz are assumed.
+The experimental evaluation is organized to progressively examine 
+different aspects of the proposed framework. First, the Pareto-front 
+results show the intrinsic trade-off between latency and energy across 
+various network loads and processing capacities. Second, the single 
+objective analysis examines the impact of the preference weights on 
+the selected operating point. Third, the reputation and computational-
+capacity analyses make the effects of the blockchain-role selection and 
+available processing resources clear. Fourth, the comparative baseline 
+evaluation shows the overall performance gain of the proposed joint 
+optimization framework. Finally, the contribution of each component, 
+their robustness under different conditions, their reliability of con-
+sensus, and the practical implementation overhead are analyzed by 
+the ablation, sensitivity, dynamic-channel, verifier-failure, and runtime 
+analysis.
+Fig.  4 presents the Pareto optimal fronts obtained by the multi-
+objective optimization algorithm, which demonstrates the tradeoff be-
+tween total system latency and energy consumption. The analysis as-
+sumes three network load cases, as represented by the number of user 
+devices (𝑁 ∈ {10, 20, 40}), and four cases of fixed processing capacities 
+for the MEC servers (𝐹𝑚 ∈ {1 , 5} GHz). Each point on the curve 
+represents the set of non-dominated solutions, meaning that improving 
+one objective results in the degradation of the other objective. The 
+Ad Hoc Networks 193 (2026) 104361 
+9 
+
+--- Page 10 ---
+N. Nezhadsistani et al.
+Fig. 4. Pareto fronts for latency vs. energy with varying task numbers (𝑁) and maximum MEC processing frequencies (𝐹max). (a) 𝐹max = 1 GHz, (b) 𝐹max = 5 GHz.
+analysis of the obtained fronts provides the following key insights on 
+the system’s performance:
+1. Impact of Network Load (N): For any fixed processing fre-
+quency, increasing the number of tasks from 𝑁 = 10 to 𝑁 = 40 causes 
+the Pareto front to shift upwards and to the right. This indicates that 
+a higher network load results in a degradation of achievable perfor-
+mance. At a constant latency, the total energy consumption increases 
+with 𝑁, as more tasks require offloading and processing. Concurrently, 
+for a fixed energy budget, the minimum achievable latency increases 
+with 𝑁 due to greater resource contention.
+2. Impact of Processing Frequency (𝐹𝑚): A significant change in 
+the performance envelope is observed as the server frequency increases 
+from 1 GHz (Fig.  4a) to 5 GHz (Fig.  4b).
+• Latency Reduction: The minimum latency that is attainable 
+reduces considerably. At 𝐹𝑚 = 1 GHz, the minimum latency that 
+is attainable is about 1 s. On the other hand, for an Fm of 5 GHz, 
+it is clear that latencies that are less than 0.5 s are attainable. 
+This demonstrates the direct performance benefit that arises from 
+more powerful computing resources.
+• Energy Cost: This increase in speed comes at the cost of energy 
+consumption. At 𝐹𝑚 = 1  GHz, the energy consumption that is 
+attainable is about 40 Joules. On the other hand, at 𝐹𝑚 = 5 GHz, 
+the energy consumption that is attainable is between 500 and 550 
+Joules. This highlights a critical trade-off. High-frequency servers 
+are faster, but they are significantly less energy-efficient when 
+performing the same tasks.
+From the results presented, it is evident that an increase in the 
+available processing frequency 𝐹max from 1 GHz to 5 GHz causes a 
+significant shift downward and to the left of the Pareto front, indicating 
+that lower latency and energy values are simultaneously achievable. 
+For instance, with 𝑁 = 40  tasks, the minimum achievable latency 
+drops from over 2 s at 1 GHz to under 0.5 s at 5 GHz. However, this 
+improvement is associated with a significant increase in possible energy 
+consumption. For any given frequency, an increase in the number of 
+tasks 𝑁 shifts the Pareto front to the right and upward, as a higher 
+network load demands more resources and energy.
+6.1. Single-objective performance analysis
+Fig.  5 demonstrates the effect of the weighting factor 𝛼 on the 
+optimal latency and energy values achieved by the single-objective 
+genetic algorithm. In this context, 𝛽 = 1 −𝛼, and exclude the reputation 
+component to focus on the traditional energy-latency trade-off.
+As 𝛼 increases, greater emphasis is placed on energy minimiza-
+tion. Consequently, the GA chooses solutions with reduced energy 
+consumption, which typically entails assigning lower CPU frequencies 
+and sometimes offloading to more remote yet energy-efficient servers, 
+resulting in increased delay (Fig.  5(a)). Conversely, when 𝛼 approaches 
+0, the emphasis transitions to minimizing delay, leading to assertive 
+resource allocation and consequently increased energy consumption 
+(Fig.  5(b)).
+This trade-off is increasingly evident in systems with increased 
+resource availability (higher 𝐹max). At 𝐹max = 15 GHz, changing 𝛼 from 
+0.1 to 0.9 results in a reduction of energy consumption exceeding 60%, 
+illustrating that the capacity for energy savings has been substantially 
+improved in high-performance systems. These results confirm that the 
+weighting factor 𝛼 provides an effective and flexible mechanism for 
+tuning the GA behavior according to application-specific QoS priorities, 
+energy-latency requirements, and available system resource conditions.
+6.2. Impact of blockchain node reputation (W)
+The selection of reputable nodes to perform roles such as block 
+manager and verifier is critical for security and performance. As defined 
+in Section 3.4, the total reputation 𝑊  is the aggregate of the individual 
+reputation scores (𝑤𝑖) of the selected nodes. In the heterogeneous 
+simulation setup, some high-reputation nodes also have higher pro-
+cessing capacities; therefore, the discussion distinguishes the effect of 
+computational capacity on latency from the effect of reputation on 
+trustworthy blockchain-role selection. Fig.  6 illustrates the Pareto fronts 
+for two scenarios: one in which low-reputation nodes are selected (𝑊 =
+22, total 5.1 GHz processing power for blockchain roles), and another 
+in which high-reputation nodes are selected (𝑊 = 62 , allocating 
+27 GHz). When high-reputation nodes are selected for blockchain tasks, 
+the system achieves significantly lower latencies. This is because these 
+powerful nodes can generate and verify blocks much faster, reducing 
+the 𝑇𝐵 component of the total latency. This suggests that a well-
+designed reputation system can directly improve system performance 
+by intelligently allocating critical roles in the blockchain to the most 
+capable nodes. It should be noted that reputation and computational 
+capacity are conceptually different in the proposed formulation. Com-
+putational capacity directly affects block-generation and verification 
+latency through the allocated CPU-frequency variables, while repu-
+tation affects the trustworthiness and reliability of blockchain role 
+selection. Therefore, the reputation objective should not be interpreted 
+as merely selecting high-computing-capacity nodes; rather, it guides the 
+selection of more trustworthy consensus participants under the resource 
+constraints of the system.
+Ad Hoc Networks 193 (2026) 104361 
+10 
+
+--- Page 11 ---
+N. Nezhadsistani et al.
+Fig. 5. Impact of the energy weight parameter 𝛼 on (a) total system latency and (b) total system energy for different maximum processing frequencies.
+Fig. 6. Impact of total reputation (𝑊 ) of blockchain nodes on the latency-energy Pareto front for 𝑁 = 5, 20.
+6.3. Impact of computational capacity and network load
+To further analyze the system’s behavior, Fig.  7 illustrates the 
+minimum achievable latency as a function of the total computational 
+capabilities (𝐹𝑚) for varying network loads (𝑁). From the results, it is 
+evident that as computational capabilities increase, latency decreases. 
+However, the rate of reduction is greater at lower frequency levels, 
+indicating a diminishing rate of return as computational capabilities 
+increase. At very high frequency levels, communication delay is a 
+significant bottleneck. For a given level of computational capabili-
+ties, higher values of 𝑁 result in higher latency, requiring adequate 
+computational resources to handle large numbers of tasks.
+6.4. Comparative analysis and convergence
+The convergence behavior of the genetic algorithm is illustrated 
+in Fig.  8 for a given scenario, where 𝑁 = 10 , 𝐹𝑚 = 2  GHz, 𝛼 =
+0.1. The cost function value is shown as a function of the number 
+of iterations. Initially, the cost function value is high. However, as 
+the algorithm iterates, it is observed that better configurations are 
+found. Consequently, the cost function decreases significantly, and the 
+cost function value is reduced before converging towards an optimal 
+value. This trajectory verifies that the algorithm effectively navigates 
+the solution space and converges on an improved solution.
+6.5. Comparative baseline evaluation
+The proposed framework is compared with five representative
+benchmark methods: Random Allocation, Greedy-Latency, Greedy-
+Fig. 7. Impact of maximum MEC computational capacity (𝐹max) on minimum 
+achievable latency for different network loads (𝑁).
+Energy, Reputation-Only Selection, and PSO-based optimization. Ran-
+dom Allocation assigns tasks and blockchain roles randomly among fea-
+sible nodes and is used as a lower-bound benchmark. Greedy-Latency 
+assigns each task to the node that provides the lowest immediate 
+execution latency, whereas Greedy-Energy assigns each task to the node 
+that provides the lowest immediate energy consumption. Reputation-
+Only Selection assigns blockchain management roles mainly according 
+to node reputation, while task offloading and CPU-frequency allocation 
+are optimized separately. PSO-based optimization is included as a 
+representative meta-heuristic benchmark because PSO has been widely 
+Ad Hoc Networks 193 (2026) 104361 
+11 
+
+--- Page 12 ---
+N. Nezhadsistani et al.
+Fig. 8. Convergence of the GA cost function (𝑁 = 10,𝐹𝑚 = 2 GHz, 𝛼 = 0.1).
+Fig. 9. Baseline comparison in terms of total system latency under different 
+numbers of IoT tasks.
+Fig. 10. Baseline comparison in terms of total energy consumption under 
+different numbers of IoT tasks.
+used for computation offloading and resource-allocation problems in 
+MEC systems [32]. All benchmark methods are evaluated under the 
+same network, workload, and blockchain settings.
+Fig.  9 presents the comparison between the latency achieved by the 
+proposed framework and Random Allocation, Greedy-Latency, Greedy-
+Energy, Reputation-Only Selection, and PSO-based optimization when 
+the number of IoT tasks is increased. The latency experienced by all 
+approaches grows as 𝑁 increases since a greater number of tasks 
+implies higher levels of competition over available communication 
+and computing resources. The highest value of latency is obtained 
+by Random Allocation due to the lack of information about channel 
+conditions, the computing capability of the server nodes, and the 
+compatibility of selected blockchain roles. Greedy-Latency offers good 
+latency values for light workloads, but as the value of 𝑁 increases, 
+its performance deteriorates due to the local nature of the decision 
+making process without joint consideration of overhead and resource 
+availability. On the other hand, Reputation-Only Selection enhances 
+blockchain role selection without optimizing task offloading and CPU 
+frequencies. PSO-based optimization offers better results compared 
+to random and greedy techniques but does not attain the balanced 
+latency-energy-reputation ratio of the proposed approach.
+Fig.  10 presents the total energy consumed by different schemes 
+according to the increase of task workload. As 𝑁 increases, energy 
+consumption is increasing due to more tasks needing to transmit and 
+compute their results. Latency-oriented greedy scheme has higher en-
+ergy consumption than the other schemes because the algorithm prefers 
+to have tasks run at high frequencies to decrease latency. On the other 
+hand, the energy-oriented greedy scheme results in reduced energy 
+consumption; however, it results in increased latency, as depicted in 
+Fig.  9. This confirms that the proposed joint optimization model can 
+achieve a better latency-energy trade-off than single-objective or locally 
+greedy strategies.
+6.6. Coordination overhead metrics
+To quantify the additional coordination cost introduced by the pro-
+posed framework, we define the control-message overhead per decision 
+slot as 
+𝑂ctrl =𝑁𝑂 task + (𝑀 + 1)𝑂rep +𝑉𝑂 vote +𝑂f b, (31)
+where 𝑂task denotes the metadata size required for each task request, 
+𝑂rep is the reputation-update message size per blockchain node, 𝑂vote
+denotes the voting/verification coordination message size per verifier, 
+and 𝑂f b is the feedback message size. We also report the algorithm 
+execution time as a computational overhead metric: 
+𝑇alg =𝑡end −𝑡start. (32)
+A solution is considered suitable for online orchestration if 𝑇alg ≤𝑇ctrl , 
+where 𝑇ctrl is the control interval.
+Fig.  11 presents the ablation study of the proposed framework. The 
+full model is compared with several reduced variants, including the 
+model without the reputation objective, without explicit blockchain-
+overhead modeling, with separate optimization of offloading and
+blockchain-role assignment, with random verifier selection, and with-
+out the repair mechanism. Removing the reputation objective decreases 
+the trustworthiness of selected blockchain management nodes. Ignoring 
+blockchain overhead produces optimistic latency and energy values 
+but does not reflect the actual cost of block generation, verifica-
+tion, broadcasting, and feedback. Separate optimization also degrades 
+performance because task offloading and blockchain-role assignment 
+compete for the same computational and communication resources. 
+The random-verifier variant reduces the quality of consensus-role se-
+lection, while removing the repair mechanism increases infeasible or 
+inefficient allocations. These results confirm that the performance im-
+provement of the proposed framework comes from the joint integration 
+of offloading, resource allocation, blockchain-overhead modeling, and 
+reputation-aware role selection.
+6.7. Sensitivity analysis
+Fig.  12 illustrates the sensitivity of the scalarized objective function 
+with respect to different combinations of energy weight 𝛼 and latency 
+weight 𝛽. The rest of the weight, 1 −𝛼 −𝛽, is assigned to the reputation 
+objective. We exclude infeasible combinations with 𝛼 + 𝛽 > 1. The 
+Ad Hoc Networks 193 (2026) 104361 
+12 
+
+--- Page 13 ---
+N. Nezhadsistani et al.
+Fig. 11. Ablation study showing the impact of key components on normalized 
+latency, energy consumption, and trustworthiness.
+Fig. 12. Sensitivity of the normalized scalarized cost to different combinations 
+of the energy weight 𝛼 and latency weight 𝛽. Invalid combinations with 
+𝛼 +𝛽 >1 are excluded.
+results show that the operating point is sensitive to the choice of 
+preference weights. As 𝛼 increases, the energy saving becomes more 
+important to the optimizer, which usually leads to the reduction of 
+energy consumption but can increase the latency. When 𝛽 increases, the 
+optimizer cares more about reducing latency and tends to allocate more 
+computational resources, which may increase energy consumption. The 
+analysis shows that the proposed weighted-sum formulation provides a 
+flexible mechanism to select application-specific operating points.
+6.8. Dynamic channel and node-failure evaluation
+Fig.  13 evaluates the robustness of the proposed framework under 
+different channel conditions. The average SNR is varied to emulate 
+poor, moderate, and favorable wireless environments. For all methods, 
+latency decreases as SNR increases because a higher SNR improves the 
+uplink transmission rate and reduces task-uploading delay. Under poor 
+channel conditions, the random and greedy strategies experience larger 
+latency degradation because they do not jointly adapt task assignment, 
+computation allocation, and blockchain-role selection. The proposed 
+framework maintains lower latency across different SNR levels by 
+selecting more suitable computing nodes and allocating resources while 
+accounting for both communication and blockchain-processing costs.
+As illustrated in Fig.  14, it is shown that the consensus-failure 
+probability increases with the increase in the verifier-node failure 
+probability (𝑝𝑓 ). With the increase in the probability of failure of 
+Fig. 13. Robustness evaluation under dynamic channel conditions: total sys-
+tem latency versus average SNR.
+Fig. 14. Consensus-failure probability under different verifier-node failure 
+probabilities.
+Fig. 15. Algorithm execution time under different numbers of IoT tasks.
+the nodes, the likelihood of having insufficient numbers of verifier 
+nodes increases, thereby increasing the probability of consensus failure. 
+The random verification approach demonstrates poor resilience due 
+to the potential selection of nodes with low reliability and capacity. 
+Reputation-based alone performs better due to the preference of select-
+ing high-reputation nodes without taking into account task offloading 
+and resource allocation.
+Ad Hoc Networks 193 (2026) 104361 
+13 
+
+--- Page 14 ---
+N. Nezhadsistani et al.
+6.9. Computational and communication overhead
+Fig.  15 reports the algorithm execution time as the number of 
+IoT tasks increases. The runtime of all evolutionary methods increases 
+with 𝑁 because the chromosome dimension and objective-evaluation 
+cost grow with the number of task-assignment and resource-allocation 
+variables. NSGA-II requires higher execution time than the scalar GA 
+because non-dominated sorting and crowding-distance calculation in-
+troduce additional computational cost. However, NSGA-II provides a 
+Pareto set of trade-off solutions, which is useful for offline or periodic 
+network-level orchestration. The GA-based scalar formulation is com-
+putationally lighter and is more suitable when the operator requires 
+a single operating point. These results clarify the practical trade-off 
+between solution diversity and computational overhead.
+7. Summary and conclusions
+This study examines the main problem associated with resource 
+allocation in blockchain-based IoT networks. It suggests a system model 
+with a comprehensive optimization framework achieves minimal la-
+tency and energy consumption while maximizing network reputation. 
+The model holistically captures the interplay between computational 
+offloading via MEC and the operational overheads of blockchain, in-
+cluding a detailed analysis of the consensus process costs.
+From a holistic system optimization perspective, this work presents 
+both an NSGA-II-based multi-objective and a GA-based single-objective 
+approach. The NSGA-II algorithm is capable of identifying the Pareto-
+optimal front, which can give network operators clear ideas about 
+fundamental trade-offs related to latency and energy. It can further 
+facilitate well-informed, flexible decisions by system operators with 
+respect to application-specific requirements. The simulation results ver-
+ify the effectiveness of the proposed framework. For performance and 
+energy cost, a quantifiable trade-off was realized. More importantly, it 
+can be observed that by utilizing a reputation system in assigning high-
+capacity nodes to critical blockchain roles, system performance can be 
+significantly enhanced. From these findings, it became evident that, for 
+complex IoT systems, resource allocation policies should be balanced 
+with an integrated perspective.
+In the future, this framework can be extended by incorporating 
+machine learning techniques to achieve real-time dynamic resource 
+allocation. Another promising research direction is the integration of 
+smart contracts that will automate the enforcement of allocation poli-
+cies on the blockchain. Finally, specific large-scale IoT case studies, 
+such as autonomous vehicle networks or smart city infrastructures, 
+should be addressed through this framework in order to validate its 
+performance and scalability in real-world scenarios.
+CRediT authorship contribution statement
+Nasim Nezhadsistani: Writing – review & editing, Writing 
+– original draft, Visualization, Validation, Software, Methodology, 
+Investigation, Formal analysis, Conceptualization. Naghmeh S. 
+Moayedian: Writing – review & editing, Supervision, Project admin-
+istration, Methodology, Conceptualization. Arash Bozorgchenani: 
+Writing – review & editing, Writing – original draft, Supervision, 
+Methodology, Conceptualization. Burkhard Stiller: Writing – review 
+& editing, Supervision, Project administration.
+Declaration of competing interest
+The authors declare that they have no known competing finan-
+cial interests or personal relationships that could have appeared to 
+influence the work reported in this paper.
+Data availability
+No data was used for the research described in the article.
+References
+[1] J. Gubbi, R. Buyya, S. Marusic, M. Palaniswami, Internet of things (IoT): A vision, 
+architectural elements, and future directions, Future Gener. Comput. Syst. (ISSN: 
+0167-739X) 29 (7) (2013) 1645–1660.
+[2] A. Al-Fuqaha, M. Guizani, M. Mohammadi, M. Aledhari, M. Ayyash, Internet 
+of things: A survey on enabling technologies, protocols, and applications, IEEE 
+Commun. Surv. Tutor. 17 (4) (2015) 2347–2376.
+[3] M. Chen, S. Mao, Y. Liu, Big data: A survey, Mob. Netw. Appl. 19 (2) (2014) 
+171–209.
+[4] Y. Qiao, Y. Xue, Y. Zhai, D. Zhang, B. Chen, A.V. Vasilakos, M.S. Hossain, S. 
+Mumtaz, A secure and efficient sharing scheme for medical IoT data based on 
+consortium blockchain, IEEE Internet Things J. 12 (23) (2025) 51422–51437.
+[5] Y. Mao, C. You, J. Zhang, K. Huang, K.B. Letaief, A survey on mobile edge 
+computing: The communication perspective, IEEE Commun. Surv. Tutor. 19 (4) 
+(2017) 2322–2358.
+[6] S. Tian, K. Xu, S. Xiang, X. Dai, Z. Xiao, L. Zeng, Task offloading and resource 
+scheduling in mobile edge-cloud computing based on edge competition and task 
+prediction, IEEE Trans. Serv. Comput. 18 (5) (2025) 3262–3275.
+[7] P. Ranaweera, A.D. Jurcut, M. Liyanage, Survey on multi-access edge computing 
+security and privacy, IEEE Commun. Surv. Tutor. 23 (2) (2021) 1078–1124.
+[8] A. Kumar, A. Pal, A survey on computation offloading and current trends, IEEE 
+Access 13 (2025) 185318–185356.
+[9] Q. He, Z. Xi, Z. Feng, Y. Teng, L. Ma, Y. Cai, K. Yu, Telemedicine monitoring 
+system based on fog/edge computing: A survey, IEEE Trans. Serv. Comput. 18 
+(1) (2025) 479–498.
+[10] M. Mukherjee, L. Shu, D. Wang, Survey of fog computing: Fundamental, network 
+applications, and research challenges, IEEE Commun. Surv. Tutor. 20 (3) (2018) 
+1826–1857.
+[11] D. Sabella, K. Maloor, N. Smith, M. Vanderveen, A. Kourtis, Edge computing 
+cybersecurity standards: Protecting infrastructure and applications, IEEE Access 
+12 (2024) 185328–185335.
+[12] M. Belotti, N. Božić, G. Pujolle, S. Secci, A vademecum on blockchain tech-
+nologies: When, which, and how, IEEE Commun. Surv. Tutor. 21 (4) (2019) 
+3796–3838.
+[13] Z. Zheng, S. Xie, H. Dai, X. Chen, H. Wang, An overview of blockchain tech-
+nology: Architecture, consensus, and future trends, in: 2017 IEEE International 
+Congress on Big Data (BigData Congress), 2017, pp. 557–564.
+[14] H.N. Dai, Z. Zheng, Y. Zhang, Blockchain for internet of things: A survey, IEEE 
+Internet Things J. 6 (5) (2019) 8076–8094.
+[15] J. Singh, S. Rani, P. Kumar, Blockchain and smart contracts: Evolution, chal-
+lenges, and future directions, ICKECS, in: 2024 International Conference on 
+Knowledge Engineering and Communication Systems, vol. 1, 2024, pp. 1–5.
+[16] A. Dorri, S.S. Kanhere, R. Jurdak, P. Gauravaram, Blockchain for IoT security and 
+privacy: The case study of a smart home, in: 2017 IEEE International Conference 
+on Pervasive Computing and Communications Workshops (PerCom Workshops), 
+2017, pp. 618–623.
+[17] A. Reyna, C. Martín, J. Chen, E. Soler, M. Díaz, On blockchain and its integration 
+with IoT. Challenges and opportunities, Future Gener. Comput. Syst. 88 (2018) 
+173–190.
+[18] D.K.J.B. Saini, S. Kumar, A. Bhatt, R. Gupta, K. Joshi, D. Siddharth, 
+Blockchain-based IoT applications, platforms, systems and framework, in: 2023 
+14th International Conference on Computing Communication and Networking 
+Technologies, ICCCNT, 2023, pp. 1–6.
+[19] O. Novo, Blockchain meets IoT: An architecture for scalable access management 
+in IoT, IEEE Internet Things J. 5 (2) (2018) 1184–1195.
+[20] Y. Zuo, Exploring the synergy: AI enhancing blockchain, blockchain empowering 
+AI, and their convergence across IoT applications and beyond, IEEE Internet 
+Things J. 12 (6) (2025) 6171–6195.
+[21] J. Zhang, X. Hu, Z. Ning, E.C.H. Ngai, L. Zhou, J. Wei, J. Cheng, B. Hu, Energy-
+latency tradeoff for energy-aware offloading in mobile edge computing networks, 
+IEEE Internet Things J. 5 (4) (2018) 2633–2645, http://dx.doi.org/10.1109/
+JIOT.2017.2786343.
+[22] L. Cui, C. Xu, S. Yang, J.Z. Huang, J. Li, X. Wang, Z. Ming, N. Lu, Joint 
+optimization of energy consumption and latency in mobile edge computing 
+for internet of things, IEEE Internet Things J. 6 (3) (2019) 4791–4803, http:
+//dx.doi.org/10.1109/JIOT.2018.2869226.
+[23] X. Xu, X. Zhang, H. Gao, Y. Xue, L.T. Qi, W. Dou, Become: Blockchain-enabled 
+computation offloading for IoT in mobile edge computing, IEEE Trans. Ind. 
+Inform. 16 (6) (2020) 4187–4195, http://dx.doi.org/10.1109/TII.2019.2936869.
+[24] J. Feng, F.R. Yu, Q. Pei, X. Chu, J. Du, L. Zhu, Cooperative computation of-
+floading and resource allocation for blockchain-enabled mobile-edge computing: 
+A deep reinforcement learning approach, IEEE Internet Things J. 7 (7) (2020) 
+6214–6228, http://dx.doi.org/10.1109/JIOT.2019.2961707.
+Ad Hoc Networks 193 (2026) 104361 
+14 
+
+--- Page 15 ---
+N. Nezhadsistani et al.
+[25] A. Bozorgchenani, F. Mashhadi, D. Tarchi, S. Salinas Monroy, Multi-objective 
+computation sharing in energy and delay constrained mobile edge computing 
+environments, IEEE Trans. Mob. Comput. 20 (10) (2021) 2992–3005, http:
+//dx.doi.org/10.1109/TMC.2020.2994232.
+[26] P. Wang, K. Li, B. Xiao, K. Li, Multi-objective optimization for joint task 
+offloading, power assignment, and resource allocation in mobile edge computing, 
+IEEE Internet Things J. 9 (14) (2022) 11737–11748, http://dx.doi.org/10.1109/
+JIOT.2021.3132080.
+[27] D. C. Nguyen, P. N. Pathirana, M. Ding, A. Seneviratne, Secure computation 
+offloading in blockchain based IoT networks with deep reinforcement learning, 
+IEEE Trans. Netw. Sci. Eng. 8 (4) (2021) 3192–3208.
+[28] Z.-Y. Chai, X. Liu, Y.-L. Li, A computation offloading algorithm based on multi-
+objective evolutionary optimization in mobile edge computing, Eng. Appl. Artif. 
+Intell. 121 (2023) 105966, http://dx.doi.org/10.1016/j.engappai.2023.105966.
+[29] A. Bozorgchenani, S. Maghsudi, D. Tarchi, E. Hossain, Computation offloading in 
+heterogeneous vehicular edge networks: On-line and off-policy bandit solutions, 
+IEEE Trans. Mob. Comput. 21 (12) (2022) 4233–4248.
+[30] T.X. Tran, D. Pompili, Joint task offloading and resource allocation for multi-
+server mobile-edge computing networks, IEEE Trans. Veh. Technol. 68 (1) (2019) 
+856–868.
+[31] H.T. Ciptaningtyas, A.M. Shiddiqi, D. Purwitasari, A systematic literature review 
+of genetic algorithm-based approaches for cloud task scheduling, in: 2023 14th 
+International Conference on Information & Communication Technology and 
+System, ICTS, 2023, pp. 319–324.
+[32] D. Basu, V. Krishnakumar, U. Ghosh, R. Datta, DeepCare: Deep learning-
+based smart healthcare framework using 5g assisted network slicing, in: 2022 
+IEEE International Conference on Advanced Networks and Telecommunications 
+Systems, ANTS, 2022, pp. 201–206.
+[33] Z. Shi, Z. Zhang, M. Dai, Z. Xia, H. Wen, F. Huang, Deep reinforcement 
+learning-based task offloading for multi-user distributed edge computing, in: 
+2024 30th International Conference on Mechatronics and Machine Vision in 
+Practice (M2VIP), 2024, pp. 1–6.
+[34] H. Hu, D. Wu, F. Zhou, S. Jin, R.Q. Hu, Dynamic task offloading in MEC-
+enabled IoT networks: A hybrid DDPG-d3qn approach, in: 2021 IEEE Global 
+Communications Conference, GLOBECOM, 2021, pp. 1–6.
+[35] B. Zhao, K. Peng, K. Zhang, H. Sun, SerFlow: A multi-stage service-enhanced 
+mechanism for workflow applications in CPSs with end-edge-cloud collaboration, 
+IEEE Internet Things J. (2025) http://dx.doi.org/10.1109/JIOT.2025.3577233.
+[36] B. Hu, J. Du, J. Zhang, X. Chu, Computation offloading and resource allocation in 
+mixed cloud/vehicular-fog computing systems, IEEE Trans. Mob. Comput. (2025) 
+http://dx.doi.org/10.1109/TMC.2025.3556315.
+[37] B. Hu, W. Zhang, Y. Yin, J. Du, F.R. Yu, X. Chu, Soft actor-critic-based offloading 
+and resource allocation optimisation for digital twin-aided vehicular networks, 
+IEEE Trans. Veh. Technol. (2026) http://dx.doi.org/10.1109/TVT.2026.3656450.
+[38] K. Peng, B. Zhao, M. Bilal, X. Xu, Reliability-aware computation offloading 
+for delay-sensitive applications in MEC-enabled aerial computing, IEEE Trans. 
+Green Commun. Netw. 6 (3) (2022) 1511–1519, http://dx.doi.org/10.1109/
+TGCN.2022.3162584.
+[39] Y. Cheng, J. Ma, Z. Liu, Z. Li, Y. Wu, C. Dong, R. Li, A privacy-preserving and 
+reputation-based truth discovery framework in mobile crowdsensing, IEEE Trans. 
+Dependable Secur. Comput. 20 (6) (2023) 5293–5311.
+[40] C. Li, C. Liu, P. Liu, X. Li, W. Qiu, L. Lei, Y. Jin, Blockchain-based privacy-
+preserving and accountable mobile edge outsourcing computing framework for 
+the metaverse, IEEE Trans. Green Commun. Netw. 9 (2) (2025) 711–724.
+[41] F. Tian, An agri-food supply chain traceability system for China based on rfid 
+& blockchain technology, in: 2016 13th International Conference on Service 
+Systems and Service Management, ICSSSM, 2016, pp. 1–6.
+[42] Y. Liu, F.R. Yu, X. Li, H. Ji, V.C.M. Leung, Blockchain and machine learning 
+for communications and networking systems, IEEE Commun. Surv. Tutor. 22 (2) 
+(2020) 1392–1431.
+[43] Z. Xiong, Y. Zhang, D. Niyato, P. Wang, Z. Han, When mobile blockchain meets 
+edge computing, IEEE Commun. Mag. 56 (8) (2018) 33–39.
+[44] M.M. Salim, J.H. Park, Federated learning-based secure electronic health record 
+sharing scheme in medical informatics, IEEE J. Biomed. Health Inform. 27 (2) 
+(2023) 617–624.
+[45] M. Li, F.R. Yu, P. Si, W. Wu, Y. Zhang, Resource optimization for delay-tolerant 
+data in blockchain-enabled IoT with edge computing: A deep reinforcement 
+learning approach, IEEE Internet Things J. 7 (10) (2020) 9399–9412.
+[46] A. Lakhan, M.A. Mohammed, S. Kozlov, J.J. Rodrigues, Mobile-fog-cloud assisted 
+deep reinforcement learning and blockchain-enable IoMT system for healthcare 
+workflows, Trans. Emerg. Telecommun. Technol. 35 (4) (2024) e4363.
+[47] J. Zhu, X. Wang, H. Huang, S. Cheng, M. Wu, A NSGA-II algorithm for task 
+scheduling in UAV-enabled MEC system, IEEE Trans. Intell. Transp. Syst. 23 (7) 
+(2022) 9414–9429.
+[48] Z. Hu, B. Liu, A. Shen, J. Luo, Blockchain-based resource allocation mechanism 
+for the internet of vehicles: Balancing efficiency and security, IEEE Trans. Netw. 
+Serv. Manag. 21 (4) (2024) 3971–3987.
+[49] F. Zhao, Y. Chen, Y. Zhang, Z. Liu, X. Chen, Dynamic offloading and resource 
+scheduling for mobile-edge computing with energy harvesting devices, IEEE 
+Trans. Netw. Serv. Manag. 18 (2) (2021) 2154–2165.
+[50] X. Yang, X. Yang, X. Yi, I. Khalil, X. Zhou, D. He, X. Huang, S. Nepal, Blockchain-
+based secure and lightweight authentication for internet of things, IEEE Internet 
+Things J. 9 (5) (2022) 3321–3332.
+[51] B. Mao, Y. Liu, Z. Wei, H. Guo, Y. Xun, J. Wang, J. Liu, N. Kato, A blockchain-
+enabled cold start aggregation scheme for federated reinforcement learning-based 
+task offloading in zero trust LEO satellite networks, IEEE J. Sel. Areas Commun. 
+43 (6) (2025) 2172–2182.
+[52] D. Larimer, Delegated proof-of-stake (DPOS). Bitshare whitepaper (2014), 2014.
+[53] P. Belotti, C. Kirches, S. Leyffer, J. Linderoth, J. Luedtke, A. Mahajan, 
+Mixed-integer nonlinear optimization, Acta Numer. 22 (2013) 1–131.
+[54] K. Deb, A. Pratap, S. Agarwal, T. Meyarivan, A fast and elitist multiobjective 
+genetic algorithm: NSGA-II, IEEE Trans. Evol. Comput. 6 (2) (2002) 182–197.
+Ad Hoc Networks 193 (2026) 104361 
+15 

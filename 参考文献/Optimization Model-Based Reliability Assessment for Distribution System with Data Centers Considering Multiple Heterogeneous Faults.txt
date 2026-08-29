@@ -1,0 +1,1792 @@
+--- Page 1 ---
+Academic Editor: Daniel
+Morinigo-Sotelo
+Received: 29 April 2026
+Revised: 25 June 2026
+Accepted: 8 July 2026
+Published: 13 July 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Optimization Model-Based Reliability Assessment for
+Distribution System with Data Centers Considering Multiple
+Heterogeneous Faults
+Weiliang Zhong 1, Yongbiao Liang 1, Wei Huang 1, Lieliang Hu 1, Kaining Pan 1, Sineng Li 1, Qingjian Li 2, Tao Yu2
+and Wencong Xiao 2,*
+1 Shaoguan Power Supply Bureau of Guangdong Power Grid Co., Ltd., Shaoguan 512000, China;
+zwl723964241@163.com (W.Z.); lywatch@163.com (Y.L.); hw498981675@163.com (W.H.);
+hll275923149@163.com (L.H.); pkn290417223@163.com (K.P .); lsn_549142455@163.com (S.L.)
+2 School of Electric Power Engineering, South China University of Technology, Guangzhou 510641, China;
+lqj_working@163.com (Q.L.); taoyu1@scut.edu.cn (T.Y.)
+* Correspondence: 202311083113@mail.scut.edu.cn
+Abstract
+The integration of data centers (DCs) into distribution systems introduces new challenges
+for reliability assessment. It also provides operational flexibility through the spatial migra-
+tion of computational workloads. However, existing reliability assessment methods have
+not sufficiently captured the joint effects of DC workload flexibility, post-fault network re-
+configuration, and multiple heterogeneous faults. To address this gap, this paper proposes
+an optimization model-based reliability assessment framework for distribution systems
+with integrated DCs. A DC workload dispatch model is first developed by considering
+server operation, cooling demand, backup requirements, and inter-DC workload transfer
+limits. The post-fault operation process is then formulated as a two-stage optimization
+problem, including fault isolation and service restoration. The proposed framework co-
+optimizes network reconfiguration and DC workload migration under line faults, node
+faults, and remote-controlled switch failures. The resulting problem is reformulated as
+a mixed-integer linear programming model and solved using commercial solvers. Case
+studies on a modified IEEE 123-node test feeder show that DC workload migration can
+significantly reduce expected energy not supplied by exploiting the spatial flexibility of
+interconnected DCs. The results also demonstrate that neglecting node faults and switch
+failures may lead to overly optimistic reliability estimates. Additional tests on a modified
+356-node regional distribution system further verify the applicability and scalability of the
+proposed framework. The proposed method provides a physically interpretable reliability
+assessment tool for active distribution systems with DC integration and heterogeneous
+fault mechanisms.
+Keywords: data center workload migration; distribution system reliability assessment;
+heterogeneous faults; network reconfiguration; service restoration
+1. Introduction
+The rapid proliferation of the Internet of Things, artificial intelligence, and cloud com-
+puting has accelerated the expansion of data centers (DCs) as the primary computational
+backbone [1,2]. However, the continuous operation and intensive energy consumption
+of DCs pose significant challenges to distribution networks. In 2021, the total electricity
+Energies 2026, 19, 3288 https://doi.org/10.3390/en19143288
+
+--- Page 2 ---
+Energies 2026, 19, 3288 2 of 24
+consumption of DCs in China reached 216.6 TWh, representing approximately 2.99% of the
+national total demand [3,4]. This figure is projected to exceed 700 TWh by 2035. As critical
+infrastructure for digital transformation, DCs support essential sectors such as healthcare
+and transportation [5,6]. Consequently, power supply interruptions triggered by distri-
+bution network contingencies directly jeopardize the operational security of DCs. Such
+outages entail substantial socio-economic losses and potentially catastrophic systemic risks.
+Therefore, it is imperative to develop precise reliability assessment models for distribution
+systems that explicitly account for DC integration.
+DCs are characterized by intensive power demand, concentrated spatial distribution,
+and highly controllable operational attributes. Crucially, DCs possess significant energy
+flexibility [7]. Leveraging cloud interconnections and data center networks, interconnected
+DCs enable the spatial migration of computational workloads. This capability effectively
+reconfigures the power load distribution across the distribution network. In the event
+of network contingencies that threaten DC operations, computational tasks can be trans-
+ferred to unaffected sites [8,9]. Such proactive load redistribution enhances overall system
+reliability and ensures the secure operation of the power grid.
+Distribution system reliability assessment has been extensively studied. Existing
+methods can be broadly classified into analytical methods, Monte Carlo simulations, and
+optimization-based approaches. Analytical methods are computationally efficient and
+can provide closed-form or semi-analytical reliability indices [ 10–12]. They are suitable
+for systems with relatively fixed topology, predefined restoration rules, and limited un-
+certainty representation. Monte Carlo simulation is more flexible in modeling stochastic
+component failures, repair processes, renewable generation uncertainty, and time-varying
+operating conditions [13–15]. It should be noted that modern Monte Carlo-based reliability
+assessment is not limited to purely heuristic restoration logic. Some recent implemen-
+tations incorporate optimization-based restoration models to better represent post-fault
+operational decisions [16]. Nevertheless, analytical and simulation-based methods may
+still face limitations when complex restoration actions, multiple flexible resources, and
+cyber-physical coupling need to be represented explicitly.
+To address these limitations, optimization-based reliability assessment has attracted
+increasing attention in recent years [17–21]. These methods embed post-fault restoration
+decisions into explicit mathematical programming models. For example, topology-variable-
+based linear formulations have been developed to evaluate distribution system reliability
+while considering switching interruptions [17]. MILP-based models have also been proposed
+for reliability-constrained distribution network planning and expansion, allowing reliability
+indices to be directly incorporated into planning decisions [ 18,19]. More recent studies
+have further extended this line of research. Li et al. developed a linear-programming-
+based reliability assessment method that explicitly considers distribution automation and
+distributed generation [22]. Zhang et al. proposed a generalized MILP model for reliability
+evaluation of cabled active distribution networks with multiple devices [23]. In addition, cyber-
+physical factors and recovery resource decisions have been incorporated into recent reliability
+assessment frameworks for cyber-physical distribution systems [24]. These optimization-based
+approaches can explicitly represent network reconfiguration, load shedding, and service
+restoration decisions. Therefore, they provide a rigorous framework for quantifying the
+reliability contribution of post-fault operational flexibility .
+Despite these advances, existing optimization-based reliability studies still have sev-
+eral limitations when applied to active distribution systems with integrated DCs. First,
+most existing models focus on physical-network-side resources, such as switches, distribu-
+tion automation devices, distributed generators, and energy storage systems. These models
+can explicitly represent network reconfiguration, load shedding, and service restoration.
+https://doi.org/10.3390/en19143288
+
+--- Page 3 ---
+Energies 2026, 19, 3288 3 of 24
+However, they do not fully capture the operational flexibility provided by interconnected
+DCs. In particular, the spatial migration of computational workloads can change the ef-
+fective electrical demand at different locations after faults. This cyber-layer flexibility is
+different from conventional load shedding or local service restoration.
+Second, recent studies on cyber-physical reliability and machine-learning-assisted
+reliability assessment have highlighted the importance of communication systems, data-
+driven prediction, and intelligent restoration decisions [25,26]. These studies provide useful
+tools for modeling cyber-physical interactions and improving computational efficiency.
+Nevertheless, the coordination between cyber-layer computational resource scheduling
+and physical-layer distribution network restoration remains insufficiently represented in
+explicit reliability optimization models. As a result, the reliability contribution of DC
+workload migration cannot be directly quantified by existing frameworks.
+Third, many distribution system reliability studies still represent contingencies mainly
+through line outages or simplified component-failure assumptions. Such simplifications
+are suitable for conventional reliability studies, but they may be insufficient for modern
+active distribution systems with extensive automation devices. In practice, node faults
+and remote-controlled switch failures may change the feasible isolation actions, reduce the
+available restoration paths, and enlarge the outage area. Ignoring these heterogeneous fault
+mechanisms may therefore lead to overly optimistic reliability estimates.
+To address the above research gaps, this paper proposes an optimization model-based
+reliability assessment framework for distribution systems with integrated DCs. The proposed
+framework is not intended to replace existing analytical, Monte Carlo-based, or optimization-
+based reliability assessment methods. Instead, it extends the optimization-based reliability
+assessment paradigm to a new cyber-physical operating context in which DC workload
+migration interacts with post-fault network restoration. The key distinction of this work lies in
+the unified modeling of three coupled factors: physical-layer network reconfiguration, cyber-
+layer DC workload migration, and multiple heterogeneous fault mechanisms. Under the
+assumptions of linearized distribution power flow, equivalent DC workload-transfer capacity ,
+and MILP-representable post-fault operation constraints, the proposed model evaluates
+reliability by explicitly optimizing the fault isolation and service restoration processes. This
+enables the reliability contribution of DC spatial flexibility and the risk impact of node and
+switch failures to be quantified within the same mathematical framework.
+The main contributions of this paper are summarized as follows:
+1. An optimization model-based reliability assessment framework is developed for active
+distribution systems with integrated DCs. Different from conventional reliability
+assessment models that mainly evaluate physical load restoration, the proposed
+framework incorporates DC workload migration into post-fault reliability evaluation.
+This allows the cyber-layer flexibility of interconnected DCs to be quantified in terms
+of its impact on expected energy not supplied.
+2. Multiple heterogeneous faults are explicitly incorporated into the reliability assess-
+ment framework, including line faults, node faults, and remote-controlled switch
+failures. This extends conventional line-fault-oriented reliability evaluation and en-
+ables a more realistic assessment of how different component failures affect fault
+isolation, service restoration, network topology, and reliability indices.
+3. The proposed reliability assessment problem is reformulated as an MILP model and
+tested on modified IEEE 123-node and 356-node distribution systems. The case
+studies quantify the marginal contribution of DC workload migration, the assessment
+bias caused by neglecting heterogeneous faults, and the scalability of the proposed
+formulation. These results provide practical insights for reliability-oriented planning
+and post-fault operation of active distribution systems with DC integration.
+https://doi.org/10.3390/en19143288
+
+--- Page 4 ---
+Energies 2026, 19, 3288 4 of 24
+The remainder of this paper is organized as follows: Section 2 establishes a high-fidelity
+model for DC workload dispatch. Section 3 develops an optimization-based reliability
+assessment model for distribution systems integrated with DCs, where multiple heteroge-
+neous faults are explicitly incorporated. Numerical results and case studies are presented in
+Section 4 to validate the effectiveness of the proposed model. Finally, concluding remarks
+and future work are summarized in Section 5.
+2. Modeling of Data Center Workload Dispatch
+Geographically dispersed DCs can be interconnected to enable coordinated workload
+allocation and migration. Such spatial flexibility of DC loads can be leveraged to enhance
+the reliability of distribution networks. As illustrated in Figure 1, the computational
+workload of DC 1 can be transferred to DC 2 and DC 3 during a power outage at DC 1. This
+spatial task migration effectively reduces the unserved energy and facilitates the post-fault
+restoration of the distribution system.
+DC 1 DC 2
+DC 3
+Workload 
+dispatch
+Information 
+exchange
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1. Workload dispatch for post-fault restoration in distribution networks.
+However, the inter-DC workload migration is not unconstrained. The spatial task
+transfer is strictly governed by multi-dimensional factors, including data volume, computa-
+tional resource availability, and communication bandwidth capacities. Consequently, these
+constraints must be explicitly incorporated into the reliability assessment model to ensure
+feasible and realistic restoration strategies.
+The primary energy-consuming components of a DC include servers, cooling systems,
+and lighting facilities. Among these, servers and cooling infrastructures collectively account
+for approximately 90% of the total electricity consumption. Consequently, this study focuses
+on the energy modeling of servers and cooling systems to characterize the dominant power
+demand of DCs while maintaining computational efficiency. The total power consumption
+of the i-th DC at time t is formulated as:
+PDC
+i,s,t =
+
+PIT
+i,s,t + Pcool
+i,s,t
+
+/λDC (1)
+0 ≤ PDC
+i,s,t ≤ PDC,max
+i (2)
+where PDC
+i,s,t, PIT
+i,s,t, Pcool
+i,s,t denote the total power demand, server power consumption, and
+cooling power of the DC at node i in scenario s at time step t, respectively. λDC is the power
+usage effectiveness coefficient of the DC. PDC,max
+i signifies the maximum power capacity
+limit of the DC at node i.
+The power consumption of the IT infrastructure in the i-th DC, denoted as PIT
+i,s,t, is
+formulated in (3). Specifically, it consists of the total static power of active servers and
+the incremental power proportional to the computational workload. The operational
+constraints of the servers are defined in (4) and (5):
+PIT
+i,s,t = nIT-on
+i,s,t PIT-i
+i +
+
+PIT-p
+i − PIT-i
+i
+ Wi,s,t
+φi
+(3)
+0 ≤ nIT-on
+i,s,t ≤ (1 − ϕ)nIT
+i (4)
+https://doi.org/10.3390/en19143288
+
+--- Page 5 ---
+Energies 2026, 19, 3288 5 of 24
+0 ≤ Wi,s,t
+nIT-on
+i,s,t φi
+≤ Smax
+i (5)
+where PIT-i
+i and PIT-p
+i represent the idle and peak power consumption of a single server,
+respectively; nIT-on
+i,s,t is the integer decision variable representing the number of active servers;
+Wi,s,t denotes the computational workload assigned to the DC; nIT
+i and ϕ signify the total
+number of installed servers and the backup coefficient, respectively; Smax
+i is the upper
+bound of the CPU utilization for a single server; φi represents the processing capacity or
+service rate of each server unit.
+Specifically, (4) enforces the capacity limit on active servers, where a certain proportion
+of the total installed servers, denoted by the backup coefficientϕ, is reserved for redundancy
+and maintenance purposes to ensure high availability. (4) represents the CPU utilization
+constraint, which ensures that the average computational intensity of active servers remains
+within a safe and efficient operational range. By imposing the upper boundSmax
+i , the model
+prevents server performance degradation and hardware overheating caused by excessive
+computational stress.
+The power demand of the cooling system and its associated capacity constraints are
+formulated as follows:
+Pcool
+i,s,t = Hcool
+i,s,t /λcool (6)
+Pcool
+i,s,t ≤ Pcool,max
+i (7)
+where Hcool
+i,s,t represents the heat load generated by the IT equipment at node i in scenario
+s at time t; λcool denotes the coefficient of performance of the cooling system. Pcool,max
+i
+signifies the rated power capacity of the installed cooling infrastructure at node i.
+Next, the workload dispatch process of data centers is modeled. Interconnected DCs
+enable geographical workload migration. Under fault conditions, part of the workload of
+an outage-affected DC can be transferred to other unaffected DCs. This process improves
+service continuity and reduces the impact of power interruptions. The workload dispatch
+is expressed as:
+PDC
+i,s,t+1 = PDC
+i,s,t − ∑
+j̸=i
+PDC
+ij,s,t + ∑
+j̸=i
+PDC
+ji,s,t (8)
+where PDC
+ij,s,t denotes the workload transferred from DC i to DC j.
+To ensure the feasibility of inter-DC workload migration, the amount of migrated
+workload should not exceed the transfer capability supported by the communication link
+between DC i and DC j. In this study, PDC
+ij,s,t denotes the migrated workload from DC i to DC
+j, expressed as the equivalent electrical power demand of the corresponding computational
+workload. Accordingly, BDC
+ij is defined as the maximum transferable equivalent DC load
+allowed by the inter-DC communication link. It is not the raw communication bandwidth
+in bit/s, but an equivalent workload-transfer capacity after converting the available com-
+munication bandwidth, latency requirement, and workload-to-power relationship into the
+same unit as PDC
+ij,s,t. Therefore, the workload migration constraint is formulated as
+PDC
+ij,s,t ≤ BDC
+ij (9)
+Here, BDC
+ij has the same unit asPDC
+ij,s,t, for example MW, and represents the upper bound
+of the equivalent DC load that can be transferred from DC i to DC j within the considered
+time interval. When the constraint in (9) becomes binding, the amount of workload that
+can be migrated from the affected DC to remote DCs is limited by the available equivalent
+transfer capability. The remaining DC demand must then be supplied locally through
+https://doi.org/10.3390/en19143288
+
+--- Page 6 ---
+Energies 2026, 19, 3288 6 of 24
+network reconfiguration if feasible; otherwise, it is treated as unsupplied demand in the
+reliability assessment.
+In summary, (1)–(7) constitute the proposed DC workload dispatch model. This model
+captures the interconnection among data centers and enables the geographical migration
+of computational workloads. It provides the modeling foundation for incorporating DC
+flexibility into the subsequent distribution system reliability assessment.
+3. Optimization Model-Based Reliability Assessment
+In this section, an optimization model-based reliability assessment method is devel-
+oped for active distribution systems with multiple resources. The model explicitly considers
+the integration of DCs and distributed generators (DGs). In particular, it incorporates the
+DC workload dispatch model proposed in Section 2 to capture workload migration under
+fault conditions. In addition, the proposed method accounts for multiple heterogeneous
+faults, including failures of distribution lines, substations, and switches.
+To achieve a more accurate reliability assessment, the post-fault operation process of the
+distribution system is divided into two stages: fault isolation (FI) and service restoration (SR).
+Figure 2 illustrates a typical post-fault operation process. During normal operation (NO), a
+fault occurs on branch 3–4. In the FI stage, branches 3–4 and 4–5 are disconnected to isolate
+the fault. As a result, an island consisting of DG 8, node 4, and DC 9 is formed. Owing to the
+limited capacity of DG 8, it cannot simultaneously supply DC 9 and the loads at nodes 4, 5,
+and 11. Therefore, the loads at nodes 5 and 11 are interrupted, and part of the workload of
+DC 9 is migrated to DC 10. In the SR stage, the switches on branches 4–5 and 5–6 are closed.
+Through network reconfiguration, power supply to all loads is successfully restored.
+1
+23 4 5 6
+7
+DC 9 DC 10
+DG 8
+1
+23 4 5 6
+7
+DC 9 DC 10
+DG 8
+1
+23 4 5 6
+7
+DC 9 DC 10
+DG 8 11
+11
+11
+Normal operation 
+(NO)
+Fault isolation 
+(F I)
+Service restoration
+ (S R)
+RCS
+RCS
+RCS
+ 
+ 
+ 
+Figure 2. Post-fault operation process of the distribution system.
+3.1. Objective Function
+The expected energy not supplied (EENS) is adopted as the reliability index in the
+proposed assessment model. It quantifies the expected amount of unsupplied energy
+caused by system faults and consequent outages over the evaluation horizon. Accordingly,
+the objective function is formulated as:
+min EENS = ∑
+s∈S
+ps ∑
+PH ∈{FI,SR}
+ENS PH
+s (10)
+https://doi.org/10.3390/en19143288
+
+--- Page 7 ---
+Energies 2026, 19, 3288 7 of 24
+where ps denotes the occurrence probability of scenario s; ENS PH
+s denotes the unsupplied
+energy in scenario s at stage PH, including FI and SR; S represents the sets of all scenarios.
+The unsupplied energy ENS PH
+s in scenario s at stage PH is further calculated as:
+ENS PH
+s = ∑
+i∈N
+PL,PH
+i,s · (1 − yPH
+i,s ) · ∆t (11)
+where PL,PH
+i,s,t denotes the load demand at node i in scenario s at stage PH, and yPH
+i,s is a
+binary variable indicating the energization status of node i. Specifically, yPH
+i,s = 1 indicates
+that node i is energized, while yPH
+i,s = 0 indicates that node i is de-energized.
+In the proposed formulation, the trade-off between local electrical load restoration
+and remote DC workload migration is determined endogenously by the optimization
+model. The objective function minimizes EENS, while the constraints jointly describe net-
+work reconfiguration, nodal energization, DG output, DC workload balance, and inter-DC
+workload transfer capability. Therefore, the model does not impose a predefined priority
+between restoring loads locally and migrating computational workloads remotely. In-
+stead, it selects the feasible combination of switching actions, nodal energization decisions,
+and workload transfer decisions that minimizes the total unsupplied energy under both
+physical-network and cyber-layer constraints.
+3.2. Fault Isolation Constraints
+Conventional distribution system reliability assessment usually considers only branch
+faults and neglects the presence of multiple heterogeneous fault types, which may lead to
+inaccurate evaluation results. In contrast, the proposed method explicitly considers multiple
+types of faults. In addition to branch faults, node faults, and remote-controlled switch (RCS)
+failures are also incorporated. A fault indicator variable is introduced as follows:
+F =
+n
+FB
+ij,s, FN
+i,s, FRCS
+ij,s
+o
+(12)
+where FB
+ij,s, FN
+i,s, FRCS
+ij,s denote the fault states of branch ij, node i, and RCS on branch ij in
+scenario s, respectively. A value of 1 indicates that the corresponding component is faulty,
+while a value of 0 indicates normal operation. This definition applies to all considered
+equipment types, including lines, nodes, and switches. Once the set of critical fault scenarios
+is determined, F is treated as a parameter in the proposed model.
+(1) Power flow constraints: The linearized DistFlow model is adopted in this paper [27].
+Equations (13) and (14) describe the active and reactive power balance, while (15) represents
+the linearized voltage drop constraint [ 28]. Equations (16)–(19) indicate that load at de-
+energized nodes will be shed.
+∑
+k:(i,k)
+PFI
+ik,s − ∑
+k:(k,i)
+PFI
+ki,s = PS,FI
+i,s + PDG,FI
+i,s − PDC,FI
+i,s − PL,FI
+i,s (13)
+∑
+k:(i,k)
+QFI
+ik,s − ∑
+k:(k,i)
+QFI
+ki,s = QS,FI
+i,s + QDG,FI
+i,s − QDC,FI
+i,s − QL,FI
+i,s (14)
+−M(1 − zFI
+ij,s) ≤ UFI
+i,s − UFI
+j,s − 2(PFI
+ij,srij + QFI
+ij,sxij ) ≤ M(1 − zFI
+ij,s) (15)
+PL,FI
+i,s ≤ PL
+i,syFI
+i,s (16)
+QL,FI
+i,s ≤ QL
+i,syFI
+i,s (17)
+PDC,FI
+i,s ≤ PDC
+i,s yFI
+i,s (18)
+QDC,FI
+i,s ≤ QDC
+i,s yFI
+i,s (19)
+https://doi.org/10.3390/en19143288
+
+--- Page 8 ---
+Energies 2026, 19, 3288 8 of 24
+where PFI
+ik,s and QFI
+ik,s denote the active and reactive power flow on branch ik during the FI
+phase of scenario s; PS,FI
+i,s and QS,FI
+i,s denote the active and reactive power injection from the
+substation at node i during the FI phase of scenario s; PDG,FI
+i,s and QDG,FI
+i,s denote the active
+and reactive power injection from the DG at node i during the FI phase of scenario s; PL,FI
+i,s
+and QL,FI
+i,s denote the active and reactive power demand at node i during the FI phase of
+scenario s; PDC,FI
+i,s and QDC,FI
+i,s denote the active and reactive power demand of the DC at
+node i during the FI phase of scenario s; rij and xij denote the resistance and inductance
+of branch ij; M denotes a large number; UFI
+i,s denotes the square of voltage magnitude at
+node i during the FI phase of scenario s; zFI
+ij,s is a binary variable, which denotes the status
+of branch ij during the FI phase of scenario s. It should be noted that a DC is essentially
+a type of load. However, it is modeled separately here to facilitate the representation of
+workload dispatch.
+(2) Secure operation constraints: Equations (20) and (21) define the power output
+constraints of DGs. The nonlinear branch power flow model is linearized in (22)–(25) [28].
+Equation (26) imposes the nodal voltage constraint.
+PDG,min
+i yFI
+i,s ≤ PDG,FI
+i,s ≤ PDG,max
+i yFI
+i,s (20)
+QDG,min
+i yFI
+i,s ≤ QDG,FI
+i,s ≤ QDG,max
+i yFI
+i,s (21)
+−Smax
+ij zFI
+ij,s ≤ PFI
+ij,s ≤ Smax
+ij zFI
+ij,s (22)
+−Smax
+ij zFI
+ij,s ≤ QFI
+ij,s ≤ Smax
+ij zFI
+ij,s (23)
+−
+√
+2Smax
+ij zFI
+ij,s ≤ PFI
+ij,s + QFI
+ij,s ≤
+√
+2Smax
+ij zFI
+ij,s (24)
+−
+√
+2Smax
+ij zFI
+ij,s ≤ PFI
+ij,s − QFI
+ij,s ≤
+√
+2Smax
+ij zFI
+ij,s (25)
+Umin
+i
+
+2
+≤ UFI
+i,s ≤ |Umax
+i |2 (26)
+where PDG,max
+i and PDG,min
+i denote the maximum and minimum active power outputs of
+the DG at node i, respectively; QDG,max
+i and QDG,min
+i denote the maximum and minimum
+reactive power outputs of the DG at nodei, respectively;Smax
+ij denotes the maximum capacity
+of branchij; Umax
+i and Umin
+i denote the upper and lower bounds of the voltage at nodei.
+(3) Radial topology constraints: Distribution systems must maintain a radial topology.
+To reduce computational complexity, the radiality constraints are formulated using con-
+tinuous variables [29]. Owing to the controllability of DGs, intentional islanded operation
+is allowed [26]. In addition, since coordinated operation between DGs and substations is
+supported, nodes with DGs are treated as regular load nodes in the radiality constraints.
+f +,FA
+ij,s + f −,FA
+ij,s = zFA
+ij,s (27)
+∑
+j:j→i
+f +,FA
+ji,s + ∑
+j:i→j
+f +,FA
+ij,s ≤ |ΩN| − |ΩS|
+|ΩN| − |ΩS| + 1, ∀i /∈ ΩS (28)
+∑
+i∈ΩS
+"
+∑
+j:j→i
+f +,FA
+ji,s + ∑
+j:i→j
+f +,FA
+ij,s
+#
+≤ |ΩN| − |ΩS|
+|ΩN| − |ΩS| + 1 (29)
+where f +,FI
+ij,s and f −,FI
+ij,s denote the auxiliary variables for the radial constraint on branch ij
+during the FI phase of scenario s; ΩN and ΩS denote the set of all nodes and the set of
+substation nodes, respectively; |·| denotes the size of the set.
+https://doi.org/10.3390/en19143288
+
+--- Page 9 ---
+Energies 2026, 19, 3288 9 of 24
+(4) Switching operation constraints
+1 − xRCS
+ij ≤ zFI
+ij,s (30)
+zFI
+ij,s ≤ zNO
+ij (31)
+zFI
+ij,s ≤ 2 − FB
+ij,s − xRCS
+ij (1 − FRCS
+ij,s ) (32)
+zFI
+ij,s = zNO
+ij FRCS
+ij,s (33)
+nFI
+i,s ≥ FB
+ij,s + zFI
+ij,s − 1 (34)
+nFI
+j,s ≥ FB
+ij,s + zFI
+ij,s − 1 (35)
+nFI
+i,s = FN
+i,s (36)
+nFI
+i,s + zFI
+ij,s − 1 ≤ nFI
+j,s (37)
+nFI
+j,s + zFI
+ij,s − 1 ≤ nFI
+i,s (38)
+yFI
+i,s + zFI
+ij,s − 1 ≤ yFI
+j,s (39)
+yFI
+j,s + zFI
+ij,s − 1 ≤ yFI
+i,s (40)
+yFI
+j,s ≤ 1 − nFI
+j,s (41)
+yFI
+j,s = 1, j ∈ ΩS (42)
+where xRCS
+ij is a binary variable indicating whether an RCS is installed on branch ij. A value
+of xRCS
+ij = 1 indicates that an RCS is installed, while xRCS
+ij = 0 indicates that no RCS is
+installed. zNO
+ij denotes the status of branch ij at the normal operation phase; nFI
+i,s is a binary
+variable indicating whether a node i is involved in a faulted zone. A value of nFI
+i,s = 1
+indicates that a node i is involved in a faulted zone, while nFI
+i,s = 0 indicates that the node is
+not involved in a faulted zone.
+Equation (30) enforces that branches without RCSs remain closed. Equation (31)
+indicates that, during the FI stage, switches can only be opened and cannot be closed.
+Equation (32) ensures that if branch ij is faulty and equipped with an RCS, and the RCS is
+not faulty, the corresponding switch is opened to isolate the fault. Equation (33) indicates
+that if an RCS fails, its switching status in the FI stage remains the same as that in the NO
+stage. Equations (34) and (35) indicate that if branch ij is faulty and remains closed, both
+terminal nodes i and j are classified into the faulted zone. Equation (36) indicates that a
+node is classified as being in the faulted zone if it experiences a fault. Equations (37) and
+(38) ensure that the two terminal nodes of a closed branch belong to the same zone, namely,
+either the faulted zone or the non-faulted zone. Equations (39) and (40) enforce that the
+two terminal nodes of a closed branch have the same energization status. Equation (41)
+indicates that a node in the faulted zone must be de-energized. Equation (42) specifies that
+substation nodes are always energized.
+In summary , during the FI stage, the proposed model isolates faults through remote
+switching of available RCSs, thereby reducing the outage area. Meanwhile, DCs can mitigate
+interrupted demand through workload dispatch. In addition, the proposed model considers
+branch, node, and switch failures, which enables a more refined reliability assessment.
+https://doi.org/10.3390/en19143288
+
+--- Page 10 ---
+Energies 2026, 19, 3288 10 of 24
+3.3. Service Restoration Constraints
+After fault isolation, fast service restoration is implemented through RCS-based switch-
+ing to restore loads outside the faulted zones. The faulted zones must remain isolated from
+the non-faulted zones.
+(1) Power flow constraints: Equations (43) and (44) represent the active and reactive
+power balance constraints, respectively. Equation (45) describes the branch power flow
+equation. Equations (46)–(49) ensure that the loads at de-energized nodes are fully shed.
+∑
+k:(i,k)
+PSR
+ik,s − ∑
+k:(k,i)
+PSR
+ki,s = PS,SR
+i,s + PDG,SR
+i,s − PDC,SR
+i,s − PL,SR
+i,s (43)
+∑
+k:(i,k)
+QSR
+ik,s − ∑
+k:(k,i)
+QSR
+ki,s = QS,SR
+i,s + QDG,SR
+i,s − QDC,SR
+i,s − QL,SR
+i,s (44)
+−M(1 − zSR
+ij,s) ≤ USR
+i,s − USR
+j,s − 2(PSR
+ij,srij + QSR
+ij,sxij ) ≤ M(1 − zSR
+ij,s) (45)
+PL,SR
+i,s ≤ PL
+i,sySR
+i,s (46)
+QL,SR
+i,s ≤ QL
+i,sySR
+i,s (47)
+PDC,SR
+i,s ≤ PDC
+i,s ySR
+i,s (48)
+QDC,SR
+i,s ≤ QDC
+i,s ySR
+i,s (49)
+(2) Secure operation constraints: Equations (50) and (51) define the power output limits
+of DGs. Equations (52)–(55) specify the operational constraints of the network. Equation
+(56) imposes the voltage magnitude limits.
+PDG,min
+i ySR
+i,s ≤ PDG,SR
+i,s ≤ PDG,max
+i ySR
+i,s (50)
+QDG,min
+i ySR
+i,s ≤ QDG,SR
+i,s ≤ QDG,max
+i ySR
+i,s (51)
+−Smax
+ij zSR
+ij,s ≤ PSR
+ij,s ≤ Smax
+ij zSR
+ij,s (52)
+−Smax
+ij zSR
+ij,s ≤ QSR
+ij,s ≤ Smax
+ij zSR
+ij,s (53)
+−
+√
+2Smax
+ij zSR
+ij,s ≤ PSR
+ij,s + QSR
+ij,s ≤
+√
+2Smax
+ij zSR
+ij,s (54)
+−
+√
+2Smax
+ij zSR
+ij,s ≤ PSR
+ij,s − QSR
+ij,s ≤
+√
+2Smax
+ij zSR
+ij,s (55)
+Umin
+i
+
+2
+≤ USR
+i,s ≤ |Umax
+i |2 (56)
+(3) Radial topology constraints: The radial topology constraints are formulated as follows:
+f +,SR
+ij,s + f −,SR
+ij,s = zSR
+ij,s (57)
+∑
+j:j→i
+f +,SR
+ji,s + ∑
+j:i→j
+f +,SR
+ij,s ≤ |ΩN| − |ΩS|
+|ΩN| − |ΩS| + 1, ∀i /∈ ΩS (58)
+∑
+i∈ΩS
+"
+∑
+j:j→i
+f +,SR
+ji,s + ∑
+j:i→j
+f +,SR
+ij,s
+#
+≤ |ΩN| − |ΩS|
+|ΩN| − |ΩS| + 1 (59)
+(4) Switching operation constraints
+1 − xRCS
+ij ≤ zSR
+ij,s (60)
+zSR
+ij,s ≤ 2 − FB
+ij,s − xRCS
+ij (1 − FRCS
+ij,s ) (61)
+https://doi.org/10.3390/en19143288
+
+--- Page 11 ---
+Energies 2026, 19, 3288 11 of 24
+zSR
+ij,s = zNO
+ij FRCS
+ij,s (62)
+nSR
+i,s ≥ FB
+ij,s + zSR
+ij,s − 1 (63)
+nSR
+j,s ≥ FB
+ij,s + zSR
+ij,s − 1 (64)
+nSR
+i,s = FN
+i,s (65)
+nSR
+i,s + zSR
+ij,s − 1 ≤ nSR
+j,s (66)
+nSR
+j,s + zSR
+ij,s − 1 ≤ nSR
+i,s (67)
+ySR
+i,s + zSR
+ij,s − 1 ≤ ySR
+j,s (68)
+ySR
+j,s + zSR
+ij,s − 1 ≤ ySR
+i,s (69)
+ySR
+j,s ≤ 1 − nSR
+j,s (70)
+ySR
+j,s = 1, j ∈ ΩS (71)
+ySR
+j,s ≥ yFA
+j,s (72)
+As shown in (43)–(72), the constraints in the SR stage are largely consistent with
+those in the FI stage. Most variables have the same physical meanings as their FI-stage
+counterparts, and the superscripts FI and SR are used only to distinguish the corresponding
+post-fault operation stages. Specifically, variables with the superscript FI denote the
+decisions or states during the fault isolation stage, whereas variables with the superscript
+SR denote the corresponding decisions or states during the service restoration stage.
+The main differences between the FI and SR formulations are as follows. First, con-
+straint (31) in the FI stage is not included in the SR stage because the SR stage permits
+switch closing for load restoration, whereas the FI stage only allows switch opening for
+fault isolation. Second, constraint (72) requires that loads energized in the FI stage remain
+supplied in the SR stage. This prevents service interruption to already restored loads and
+preserves restoration continuity. Moreover, constraint (72) establishes the coupling between
+the FI and SR stages by linking the load energization status in the SR stage to that in the FI
+stage. Therefore, any load restored during fault isolation must remain energized during
+service restoration.
+3.4. Mixed-Integer Linear Programming Formulation
+The proposed model can be reformulated as a mixed-integer linear programming
+(MILP) problem. Its general form is given as follows:
+min bTx + dTy (73)
+s.t. Ax + Dy ≥ e (74)
+Fx + Gy = f (75)
+where x and y denote the vectors of continuous and binary decision variables, respectively.
+b and d are the corresponding coefficient vectors in the objective function. A, D, F, and G
+are coefficient matrices, while e and f are constant vectors.
+Accordingly, (2), (4), (5), (7), (9), (15)–(26), (28)–(32), (34) and (35), (37)–(41), (45)–(56),
+(58)–(61), (63) and (64), (66)–(70), and (72) correspond to the inequality constraint (74);
+(1), (3), (6), (8), (13) and (14), (27), (33), (36), (42), (43) and (44), (57), (62), (65), and (71)
+correspond to the equality constraint (75); and (10) corresponds to the objective function
+(73). The resulting MILP problem can be solved by branch-and-bound or branch-and-cut
+https://doi.org/10.3390/en19143288
+
+--- Page 12 ---
+Energies 2026, 19, 3288 12 of 24
+algorithms implemented in commercial solvers such as CPLEX and Gurobi. Reformulating
+the proposed reliability assessment model as an MILP improves computational tractability
+and facilitates the use of off-the-shelf optimization solvers. It also provides a flexible
+framework that can be extended to incorporate additional operational measures and
+modeling details.
+The computational complexity of the proposed MILP formulation mainly depends on
+the network size, the number of controllable switches, the number of DCs, and the number
+of fault scenarios. For each fault scenario, increasing the number of nodes and branches
+introduces more power-flow variables, voltage variables, nodal energization variables, and
+branch-status variables. Increasing the number of RCSs enlarges the feasible reconfigu-
+ration space and adds switching-related binary decisions. Increasing the number of DCs
+introduces additional workload allocation and inter-DC migration variables, especially
+when workload transfer among multiple DC pairs is considered. Therefore, the solution
+time generally increases with the physical network scale, the number of controllable de-
+vices, and the cyber-layer workload migration dimension. Although MILP problems have
+exponential worst-case complexity with respect to the number of binary variables, the
+proposed reliability assessment problem is naturally separable across fault scenarios. Once
+the fault state is specified, the post-fault restoration problem for each scenario can be solved
+independently. This feature enables scenario-wise parallel computation and helps maintain
+computational tractability for larger systems.
+3.5. Post-Evaluation of Reliability Indices
+After the optimization problem is solved, the reliability indices can be further evalu-
+ated based on the obtained results. In this paper, the adopted reliability indices include the
+system average interruption duration index (SAIDI), system average interruption frequency
+index (SAIFI), average service availability index (ASAI), and expected energy not supplied
+(EENS). The corresponding formulations are given in (76)–(79).
+SAIDI =
+∑
+i∈N
+NiWi
+∑
+i∈N
+Ni
+(76)
+SAIFI =
+∑
+i∈N
+λiNi
+∑
+i∈N
+Ni
+(77)
+ASAI =
+8760 ∑
+i∈N
+NiWi − ∑
+i∈N
+NiWi
+8760 ∑
+i∈N
+Ni
+(78)
+EENS =
+∑
+i∈N
+PiWi
+∑
+i∈N
+Ni
+(79)
+Here, Ni denotes the number of customers at load point i, Wi denotes the equivalent
+annual average outage duration at load point i, λi denotes the annual failure rate at load
+point i, and Pi denotes the average annual load at load point i. The equivalent annual
+average outage duration Wi is calculated as follows:
+Wi = ∑
+s∈S
+(1 − yFI
+i,s) ∗ τFI + (1 − ySR
+i,s ) ∗ τSR (80)
+where τFI denotes the outage duration associated with the fault isolation stage when
+the node remains de-energized after fault isolation, and τSR denotes the outage duration
+https://doi.org/10.3390/en19143288
+
+--- Page 13 ---
+Energies 2026, 19, 3288 13 of 24
+associated with the service restoration stage when the node is still not restored after service
+restoration. These two terms together characterize the outage duration experienced by the
+load point under a fault scenario.
+4. Case Studies
+In this section, the proposed reliability assessment method is validated on a modified
+IEEE 123-node test feeder [ 30] and a modified 356-node regional system in China [ 31].
+All simulations are conducted on a personal computer equipped with an Intel Core i5
+quad-core processor at 3.00 GHz and 8 GB of RAM. The model is implemented in Python
+3.11 and solved using Gurobi 11.0. The relative optimality gap is set to 0.01%.
+4.1. Setup
+As shown in Figure 3. The 123-node test system consists of two feeders, with sub-
+stations located at nodes 150 and 451. It includes two DGs connected at nodes 195 and
+350, each with a rated capacity of 1.5 MVA. The nodal voltage magnitudes are constrained
+within 0.95–1.05 p.u. The system also includes three DCs located at nodes 123, 124, and 251,
+each with a load demand of 1 MW. In addition, 18 RCSs are installed, and the line capacity
+limit is set to 5 MVA. Under normal operating conditions, the switches on branches 13–152,
+151–300, and 54–94 are open, while all other switches remain closed. τFI and τSR are set to
+0.5 h and 5 h, respectively.
+Figure 3. The modified IEEE 123-node test system.
+The modified 356-node distribution system consists of three feeders, 356 nodes, and
+357 branches. Among these branches, 35 are equipped with RCSs. The system includes five
+DGs, each with a rated capacity of 2.5 MVA. In addition, five DCs are integrated into the
+system, each with a load demand of 1.5 MW.
+For the DC model, the indoor temperature is constrained within 5–25 ◦C to ensure
+desirable hardware performance and energy efficiency. The maximum allowable workload
+delay is set to 500 ms. The ratio of delay-tolerant workloads to latency-sensitive workloads
+is set to 4:1. This setting ensures real-time service requirements while prioritizing delay-
+tolerant workloads to reduce energy costs.
+https://doi.org/10.3390/en19143288
+
+--- Page 14 ---
+Energies 2026, 19, 3288 14 of 24
+4.2. Modified IEEE-123 Node Test System
+(1) Ablation analysis of network reconfiguration and DC workload migration
+To more explicitly distinguish the contribution of network reconfiguration from that of
+DC workload migration, an ablation analysis is conducted in this subsection. Two cases are
+compared under the same fault scenarios, system topology, and operational constraints. In
+Case 1, only network reconfiguration is considered. Specifically, fault isolation and service
+restoration are optimized through switching operations, while DC workload migration
+is disabled. Therefore, each DC must be supplied locally after faults. In Case 2, the
+full proposed model is considered, in which network reconfiguration and DC workload
+migration are jointly optimized. Since network reconfiguration is included in both cases,
+the difference between Case 1 and Case 2 directly quantifies the additional reliability benefit
+provided by DC workload flexibility.
+As shown in Table 1, SAIFI, SAIDI, and ASAI remain unchanged in the two cases,
+whereas EENS decreases from 3.8619 to 1.3895 when DC workload migration is enabled.
+This corresponds to a reduction of approximately 64.0%. Since both cases include the same
+network reconfiguration model, this reduction reflects the marginal contribution of DC
+workload migration under optimized post-fault switching operations.
+Table 1. Ablation comparison between network reconfiguration only and the full model with DC
+workload migration.
+Index Case 1: Network
+Reconfiguration Only
+Case 2: Network Reconfiguration + DC
+Workload Migration
+SAIFI 0.0715 0.0715
+SAIDI 0.2024 0.2024
+ASAI 99.9976% 99.9976%
+EENS 3.8619 1.3895
+The physical interpretation of this result is related to the different meanings of the
+reliability indices. SAIFI and SAIDI mainly characterize the interruption frequency and
+outage duration of physical load points. They are determined by the fault scenarios, the
+fault isolation process, the service restoration topology, and the energization status of nodes.
+In the present case, enabling DC workload migration does not change the fault isolation
+logic, the switching sequence, or the final restored topology of the physical distribution
+network. Therefore, the set of interrupted physical load points and their outage durations
+remains unchanged. As a result, SAIFI and SAIDI are almost unaffected. Since ASAI is
+directly related to the accumulated outage duration, it also remains unchanged.
+By contrast, EENS measures the amount of unsupplied energy. It is therefore sensi-
+tive not only to whether a node is energized, but also to the magnitude of the load that
+remains effectively unsupplied. DC workload migration provides cyber-layer flexibility by
+transferring part of the computational workload from an affected DC to other healthy DCs
+with available power supply and computing capacity. In this way, even if the original DC
+node is still electrically interrupted, part of its computational service can be maintained at
+remote DCs. Therefore, the equivalent unsupplied DC demand is reduced, which directly
+decreases EENS. This explains why DC workload migration significantly reduces EENS
+while having little effect on SAIFI and SAIDI in the present case.
+It should be noted that this observation is case-dependent and does not imply that DC
+workload migration can never affect interruption frequency or outage duration indices. In
+more strongly coupled operating conditions, workload migration may also influence SAIFI
+or SAIDI. For example, if DC service continuity is explicitly counted as part of customer
+interruption statistics, successful workload migration may reduce the interruption frequency
+https://doi.org/10.3390/en19143288
+
+--- Page 15 ---
+Energies 2026, 19, 3288 15 of 24
+or duration experienced by DC-related services. In addition, if migrating DC workload releases
+electrical capacity in a constrained feeder or islanded area, it may enable the restoration of
+additional conventional loads or shorten the duration of load interruption. Furthermore, when
+communication delay , bandwidth degradation, or staged restoration time is explicitly modeled,
+the feasibility and timing of workload migration may affect the service restoration sequence
+and thus influence duration-related reliability indices. These cases will be investigated in
+future work with more detailed cyber-physical restoration modeling.
+To further illustrate the separate roles of network reconfiguration and DC workload
+migration, a representative fault scenario is analyzed. In this scenario, branch 23–21 is
+faulted. As shown in Figure 4, during the fault isolation stage, the switches on branches
+13–18, 18–135, and 23–15 are opened to isolate the faulted section. Several downstream
+loads are disconnected from the healthy part of the network.
+149 1
+3
+4
+5
+6
+78
+12
+9
+1411
+102
+13 152 52 53 54 55 56
+575859
+34
+15 16
+17
+60
+94
+93 91 89 87 8695DG 195
+96 92 90 610 88 76
+61
+160 67
+72
+68 69 70 71
+73 74 75
+77 78 79
+80 81 84 85
+8382
+62
+63
+6465
+66
+97 98 99 100 450 451
+102 103 104
+114
+107106
+109 110
+112
+113101
+197
+105
+108
+300 DG 350 111
+18
+21
+23
+25
+28
+2932
+3133
+27 26
+24
+22
+1920 135 35 37
+4140
+42
+44
+47
+250 DC 251
+49
+45
+43
+46
+50 51 15148
+30
+39
+38
+36
+150
+DC
+123
+DC
+124
+DC workload 
+dispatch
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4. Fault isolation results for the studied scenario with a fault on branch 23–21. Red nodes
+indicate de-energized nodes, whereas blue nodes indicate energized nodes.
+After fault isolation, service restoration is carried out through network reconfiguration.
+As shown in Figure 5, the restored topology shows that the switch on branch 151–300 is
+closed to transfer part of the interrupted loads to an alternative supply path. This confirms
+the role of network reconfiguration in reducing the outage area. However, due to network
+topology and limited restoration resources, network reconfiguration alone cannot fully
+restore all interrupted loads.
+149 1
+3
+4
+5
+6
+78
+12
+9
+1411
+102
+13 152 52 53 54 55 56
+575859
+34
+15 16
+17
+60
+94
+93 91 89 87 8695DG 195
+96 92 90 610 88 76
+61
+160 67
+72
+68 69 70 71
+73 74 75
+77 78 79
+80 81 84 85
+8382
+62
+63
+6465
+66
+97 98 99 100 450 451
+102 103 104
+114
+107106
+109 110
+112
+113101
+197
+105
+108
+300 DG 350 111
+18
+21
+23
+25
+28
+2932
+3133
+27 26
+24
+22
+1920 135 35 37
+4140
+42
+44
+47
+250 DC 251
+49
+45
+43
+46
+50 51 15148
+30
+39
+38
+36
+150
+DC
+123
+DC
+124
+DC workload 
+dispatch
+ 
+ 
+ 
+Figure 5. Restored network topology after service restoration for the studied scenario.
+The quantitative results of the representative fault scenario are summarized in Table 2.
+As shown in Table 2, when only network reconfiguration is considered, the remaining inter-
+rupted load is 1.36 MW. When DC workload migration is further enabled, the interrupted
+https://doi.org/10.3390/en19143288
+
+--- Page 16 ---
+Energies 2026, 19, 3288 16 of 24
+load is reduced to 0.36 MW. Therefore, DC workload migration provides an additional re-
+duction of 1.00 MW, corresponding to approximately 73.5%. This result shows that network
+reconfiguration and DC workload migration contribute to reliability improvement through
+different mechanisms. Network reconfiguration restores loads by modifying the physical
+power supply path, whereas DC workload migration reduces the effective unsupplied
+demand by reallocating computational tasks among interconnected DCs.
+Table 2. Marginal benefit of DC workload migration under network reconfiguration.
+Case 1: Network
+Reconfiguration Only
+Case 2: Network Reconfiguration +
+DC Workload Migration
+Interrupted load 1.36 MW 0.36 MW
+The detailed workload transfer result is reported in Table 3. As shown in Table 3,
+1 MW of workload originally assigned to DC 251 is transferred to DC 123. This indicates
+that DC 123 has sufficient remaining power supply and service capacity to accommodate
+the migrated workload after the fault. Consequently, the interruption of DC 251 does
+not directly lead to the same amount of unsupplied energy. This result verifies that
+geographically distributed DCs can provide additional spatial flexibility beyond physical
+network reconfiguration.
+Table 3. Workload transfer paths of DCs in Case 2.
+Workload Transfer Path Transferred Load
+DC 251 → DC 123 1 MW
+Overall, this ablation analysis explicitly separates the contribution of network recon-
+figuration from that of DC workload migration. The former improves service restoration by
+changing the electrical supply path, while the latter further reduces the effective unsupplied
+DC demand through computational workload redistribution. This confirms that incorpo-
+rating DC workload migration into the reliability assessment framework is necessary for
+accurately quantifying the resilience contribution of flexible DC loads.
+(2) Sensitivity analysis of multiple heterogeneous faults
+To quantify the impact of multiple heterogeneous faults, a sensitivity analysis is
+conducted in this subsection. Four cases are compared under the same distribution network,
+DC configuration, and restoration model. Case 2 represents the full proposed model,
+where line faults, node faults, and RCS failures are all considered. Case 3 considers only
+conventional line faults. Case 4 considers line faults and node faults but excludes RCS
+failures. Case 5 considers line faults and RCS failures but excludes node faults. Therefore,
+the comparison among these four cases identifies both the overall reliability impact of
+heterogeneous faults beyond conventional line outages and the marginal contribution of
+node faults and RCS failures.
+As shown in Table 4, the reliability assessment results become more severe when
+node faults and RCS failures are included. Compared with Case 3, Case 2 increases SAIFI
+from 0.0473 to 0.0715, SAIDI from 0.0558 to 0.2024, and EENS from 0.3589 to 1.3895. The
+corresponding increases are approximately 51.2%, 262.7%, and 287.2%, respectively. Mean-
+while, ASAI decreases from 99.9999% to 99.9976%. These results confirm that reliability
+assessment considering only conventional line faults may produce overly optimistic results.
+https://doi.org/10.3390/en19143288
+
+--- Page 17 ---
+Energies 2026, 19, 3288 17 of 24
+Table 4. Sensitivity analysis of reliability indices under different fault types.
+Index
+Case 2: Multiple
+Heterogeneous
+Faults
+Case 3: Line
+Faults Only
+Case 4: Line
+Faults + Node
+Faults
+Case 5: Line
+Faults + RCS
+Failures
+SAIFI 0.0715 0.0473 0.0660 0.0528
+SAIDI 0.2024 0.0558 0.1705 0.0877
+ASAI 99.9976% 99.9999% 99.9981% 99.9990%
+EENS 1.3895 0.3589 1.0527 0.6957
+The fault-type decomposition further shows that node faults have the greatest marginal
+impact on the severity-oriented indices, especially SAIDI and EENS. When node faults are
+added to the line-fault-only case, EENS increases from 0.3589 to 1.0527, corresponding to
+an increase of approximately 193.3%. SAIDI increases from 0.0558 to 0.1705, corresponding
+to an increase of approximately 205.6%. By contrast, when RCS failures are added to
+the line-fault-only case, EENS increases from 0.3589 to 0.6957, and SAIDI increases from
+0.0558 to 0.0877. Therefore, in the studied system, node faults impose a larger impact on
+outage duration and unsupplied energy than RCS failures.
+This result is physically intuitive. A line fault usually affects the downstream area
+associated with the failed branch and can often be isolated by adjacent switches. In
+contrast, a node fault directly de-energizes the failed node and may also affect all connected
+incident branches. If the failed node is connected to a load, a DC, or a DG, the fault may
+simultaneously reduce load supply, workload migration capability, or local generation
+support. Therefore, node faults tend to enlarge the affected area and increase the amount
+of unsupplied energy.
+RCS failures also have a non-negligible impact, although their effect is mainly reflected
+in the restriction of restoration flexibility. An RCS failure may prevent the intended switch-
+ing operation during fault isolation or service restoration. Consequently, the available
+reconfiguration paths may be reduced, and some non-faulted loads may remain discon-
+nected. This explains why Case 2 produces higher SAIDI and EENS than Case 4. In
+particular, when RCS failures are further considered on the basis of line and node faults,
+EENS increases from 1.0527 to 1.3895, corresponding to an increase of approximately 32.0%.
+Table 5 summarizes the incremental impact of different fault mechanisms. Line faults
+provide the dominant baseline contribution to interruption frequency because distribution
+feeders contain many branches and line outages are the most common contingency type in
+conventional reliability assessment. However, among the additional heterogeneous fault
+types, node faults have the greatest impact on SAIDI and EENS. This is because node faults
+directly interrupt the associated load point and may also affect connected DCs, DGs, and
+adjacent branches. RCS failures mainly affect the restoration process by limiting available
+switching actions. Therefore, their impact is smaller than that of node faults in this case,
+but it remains significant for restoration-oriented reliability evaluation.
+Table 5. Incremental impact of different fault types.
+Fault
+Mechanism
+Comparison
+Basis ∆SAIFI ∆SAIDI ∆EENS Main Impact
+Line faults Case 3 0.0473 0.0558 0.3589 Primary source of interruption frequency
+Node faults Case 4–Case 3 0.0187 0.1147 0.6938 Largest impact on outage duration and
+unsupplied energy
+RCS failures Case 2–Case 4 0.0055 0.0319 0.3368 Reduced switching and
+restoration flexibility
+https://doi.org/10.3390/en19143288
+
+--- Page 18 ---
+Energies 2026, 19, 3288 18 of 24
+Overall, the results indicate that different fault types affect reliability indices through
+different mechanisms. Line faults mainly determine the baseline interruption frequency.
+Node faults significantly increase outage duration and unsupplied energy because they
+directly affect nodal supply and connected resources. RCS failures reduce the effectiveness
+of post-fault reconfiguration and thereby worsen restoration performance. These findings
+confirm the necessity of explicitly modeling multiple heterogeneous faults in reliability
+assessment. The proposed framework provides a more realistic evaluation by incorporating
+these fault mechanisms into the optimization-based restoration model.
+(3) Comparison with a rule-based heuristic restoration strategy
+To further demonstrate the advantage of the proposed optimization-based reliabil-
+ity assessment framework, a representative rule-based heuristic restoration strategy is
+introduced as a benchmark. The heuristic method follows a sequential restoration logic
+commonly used in conventional reliability assessment. After fault isolation, candidate
+switching actions are ranked according to load priority and electrical distance to the nearest
+available source. In this study, the load priority is assigned according to the amount of
+restorable active load, since no differentiated customer interruption cost is specified in the
+test system. The electrical distance is measured by the shortest available path length from
+the candidate restorable section to an energized source, where faulted components and
+unavailable switches are excluded. If several candidate switching actions have the same
+ranking, the action that restores a larger amount of load is selected first; if a tie still exists,
+the action with the smaller branch index is selected to ensure deterministic implementation.
+The tie switches are then closed sequentially if the resulting topology satisfies radiality,
+voltage, branch capacity, and DG output constraints. After each accepted switching action,
+DG outputs are adjusted within their capacity limits to supply the restored loads. If
+the available supply or network capacity is insufficient, the residual load shedding is
+determined according to the same priority order, with lower-priority loads shed first. Once
+the network topology is determined, the remaining interrupted DC workload is transferred
+greedily to healthy DCs with available power supply and service capacity, subject to the
+workload transfer constraints. When multiple healthy DCs are available, the receiving
+DC with the largest remaining service capacity is selected first; if a tie exists, the DC with
+the shorter transfer path is selected. Different from the proposed method, this heuristic
+strategy does not jointly optimize network reconfiguration and DC workload migration.
+The comparison results are summarized in Table 6. The same fault scenarios, component
+failure assumptions, DC parameters, and operational constraints are used for both methods.
+Table 6. Comparison between the proposed optimization-based method and the rule-based heuristic
+restoration method.
+Index Rule-Based Heuristic
+Restoration
+Proposed Optimization-Based
+Method
+SAIFI 0.0715 0.0715
+SAIDI 0.2598 0.2024
+ASAI 99.9970% 99.9976%
+EENS 2.1276 1.3895
+As shown in Table 6, the proposed optimization-based method achieves better reli-
+ability performance than the rule-based heuristic method. The SAIFI values of the two
+methods are identical because both methods consider the same fault scenarios and fault
+isolation process. Therefore, the number of customers initially interrupted by fault events
+remains unchanged. However, the proposed method achieves lower SAIDI and EENS.
+Specifically, SAIDI decreases from 0.2598 to 0.2024, corresponding to a reduction of ap-
+https://doi.org/10.3390/en19143288
+
+--- Page 19 ---
+Energies 2026, 19, 3288 19 of 24
+proximately 22.1%. EENS decreases from 2.1276 to 1.3895, corresponding to a reduction of
+approximately 34.7%.
+The improvement is mainly attributed to the joint optimization of post-fault switching
+operations and DC workload migration. The heuristic strategy restores loads according
+to a predefined priority and local feasibility checks. Although this strategy can generate
+feasible restoration decisions, it may fail to identify the globally preferable combination
+of switching actions and workload transfer paths. In contrast, the proposed MILP-based
+framework optimizes all restoration decisions simultaneously under network security,
+radiality, DG operation, and DC workload transfer constraints. As a result, it can more
+effectively utilize available network capacity and DC spatial flexibility.
+These results confirm that the proposed optimization-based framework provides a
+more effective post-fault restoration assessment than conventional heuristic restoration
+logic. The comparison also supports the necessity of formulating reliability assessment as
+an explicit optimization problem, especially for active distribution systems with flexible
+DC loads and heterogeneous fault conditions.
+4.3. Modified 356-Node Regional System in China
+To further evaluate the scalability of the proposed MILP-based reliability assessment
+framework, an additional case study is conducted on a modified 356-node distribution
+system. In this test, the same modeling framework, restoration logic, and reliability eval-
+uation procedure as those in the modified IEEE 123-node system are adopted. Multiple
+heterogeneous faults are considered, including line faults, node faults, and RCS failures.
+The reliability assessment results are summarized in Table 7.
+Table 7. Reliability assessment results of the modified 356-node distribution system.
+SAIFI SAIDI ASAI EENS
+Modified 356-node system 0.1168 0.3427 99.9961% 5.2846
+As shown in Table 7, the proposed method remains applicable to the larger 356-node
+system. Compared with the modified IEEE 123-node system, the reliability indices become
+worse because the larger system contains more network components, more fault scenarios,
+and a larger amount of DC demand. Specifically, the increased number of branches and
+nodes increases the exposure to component failures. Meanwhile, although additional RCSs
+and DGs improve restoration flexibility, the larger network scale also expands the post-fault
+search space for switching operations and workload migration. As a result, the evaluated
+SAIFI, SAIDI, and EENS are higher than those of the smaller test system, while ASAI
+decreases slightly. This trend is consistent with the expected reliability behavior of larger
+active distribution systems.
+As shown in Table 8, the computational burden increases with the scale of the distri-
+bution system. Compared with the modified IEEE 123-node system, the modified 356-node
+system has approximately 2.9 times more nodes and branches, and the number of RCSs
+increases from 18 to 35. Accordingly, the average solution time per scenario increases
+from 1.24 s to 5.61 s. This increase is reasonable because a larger network introduces more
+power flow variables, nodal energization variables, branch status variables, and switching-
+related binary variables. In addition, the increased number of RCSs enlarges the feasible
+reconfiguration space, which increases the complexity of the MILP solution process.
+https://doi.org/10.3390/en19143288
+
+--- Page 20 ---
+Energies 2026, 19, 3288 20 of 24
+Table 8. Computational comparison between the modified IEEE 123-node and 356-node systems.
+Nodes Branches RCSs Average Solution Time per Scenario
+Modified IEEE 123-node system 123 124 18 1.24 s
+Modified 356-node system 356 357 35 5.61 s
+Although the solution time increases with system size, the proposed method remains
+computationally tractable for the modified 356-node system. The average solution time
+remains within several seconds per scenario, indicating that the proposed MILP formulation
+applies to medium-scale distribution systems. The tractability is supported by three modeling
+choices. First, the nonlinear distribution power-flow equations are approximated using
+a linearized DistFlow formulation. Second, the radiality constraints are modeled using
+continuous auxiliary variables, which avoids introducing excessive additional binary variables.
+Third, the overall reliability assessment is separable across fault scenarios. Once a fault scenario
+is specified, the corresponding post-fault restoration problem can be solved independently .
+This structure enables scenario-wise parallel computation and can further accelerate the
+overall assessment. For very large-scale systems with extensive fault scenario enumeration,
+decomposition, scenario screening, and parallel implementation may be required.
+5. Conclusions
+This paper proposes an optimization model-based reliability assessment framework
+for active distribution systems with integrated data centers (DCs). The proposed framework
+co-optimizes network reconfiguration and DC workload migration during fault isolation
+and service restoration. It also incorporates multiple heterogeneous faults, including line
+faults, node faults, and remote-controlled switch failures. Based on a detailed DC workload
+dispatch model, the reliability assessment problem is reformulated as a mixed-integer
+linear programming problem.
+Case studies on a modified IEEE 123-node test feeder demonstrate the effectiveness
+of the proposed method. The results show that DC workload migration reduces EENS
+from 3.8619 to 1.3895, corresponding to a reduction of approximately 64.0%. This indicates
+that interconnected DCs can reduce unsupplied energy by reallocating computational
+workloads among geographically distributed sites. The results also show that neglecting
+node faults and RCS failures leads to overly optimistic reliability estimates. An additional
+test on a modified 356-node regional distribution system further verifies the applicability
+of the proposed framework to a larger system.
+Overall, the proposed method provides a physically interpretable reliability assess-
+ment tool for distribution systems with DC integration and heterogeneous fault mecha-
+nisms. Future work will further consider time-varying DC workloads, differentiated load
+criticality coefficients, more detailed RCS failure modes, communication delays and failures,
+and decomposition or parallel optimization techniques for very large-scale systems.
+Future work will focus on several directions. First, the current model can be extended
+to incorporate time-varying DC workloads and more detailed workload characteristics,
+such as task priorities, latency constraints, and temporal migration flexibility. In addition,
+differentiated load criticality coefficients may be introduced for conventional loads, critical
+loads, and DC computational workloads. This extension would allow the model to explic-
+itly represent the priority trade-off between restoring local electrical demand and migrating
+computational tasks under constrained restoration resources and limited communication
+bandwidth. Second, more diverse, flexible resources, including energy storage systems,
+demand response, and renewable generation uncertainty, can be integrated into the reliabil-
+ity assessment framework. Third, the modeling of RCS failures can be further refined. In
+https://doi.org/10.3390/en19143288
+
+--- Page 21 ---
+Energies 2026, 19, 3288 21 of 24
+the present study, an RCS failure is represented as the inability of the switch to change its
+normal operating status. Future work may consider more realistic failure modes, including
+stuck-open failures, stuck-closed failures, actuator failures, delayed switching actions, and
+communication-induced operation failures. This extension would allow the reliability
+impact of automation-device failures to be evaluated more comprehensively. Fourth, more
+detailed information and communication system models should be incorporated to better
+characterize cyber-physical coupling in modern distribution systems. In particular, com-
+munication delay, communication-link outage, command transmission failure, bandwidth
+degradation, and delayed or failed DC workload migration may be explicitly modeled.
+Finally, to improve scalability for larger practical systems, future studies may investigate
+decomposition, acceleration, parallel computing, scenario screening, or learning-assisted
+optimization methods for reliability assessment under a large number of fault scenarios.
+Author Contributions: W.Z.: Conceptualization, Methodology , Software, Writing—original draft, Vi-
+sualization. Y .L.: Methodology , Software, Validation, Formal analysis. W.H.: Investigation, Resources,
+Data curation. L.H.: Formal analysis, Validation, Writing—review and editing. K.P .: Software, Data
+curation, Visualization. S.L.: Investigation, Resources, Validation. Q.L.: Resources, Project adminis-
+tration, Writing—review and editing. T.Y .: Supervision, Project administration, Funding acquisition,
+Writing—reviewand editing. W.X.: Conceptualization, Methodology , Supervision, Funding acquisition,
+Writing—review & editing. All authors have read and agreed to the published version of the manuscript.
+Funding: This research was funded by the Special Research Project on Guangdong Power Grid
+Planning, grant number [030200QQ00250002].
+Data Availability Statement: The original contributions presented in this study are included in the
+article. Further inquiries can be directed to the corresponding author.
+Conflicts of Interest: Authors Weiliang Zhong, Yongbiao Liang, Wei Huang, Lieliang Hu, Kaining
+Pan, and Sineng Li were employed by the company Shaoguan Power Supply Bureau of Guangdong
+Power Grid Co., Ltd. The remaining authors declare that the research was conducted in the absence
+of any commercial or financial relationships that could be construed as a potential conflict of interest.
+Abbreviations
+Abbreviations
+DCs Data centers.
+DGs Distributed generators.
+RCSs Remote-controlled switches.
+MILP Mixed-integer linear programming.
+NO Normal operation.
+FI Fault isolation.
+SR Service restoration.
+SAIDI System average interruption duration index.
+SAIFI System average interruption frequency index.
+ASAI Average service availability index.
+EENS Expected energy not supplied.
+Indices
+s Index for fault scenarios.
+i, j, k Index for nodes in the distribution system.
+ij, ji Index for branches in the distribution system.
+Sets
+S Set of all fault scenarios.
+F Set of all faults, including branches, nodes, and RCSs.
+ΩN Set of all nodes in the distribution system.
+ΩS Set of all substation nodes in the distribution system.
+https://doi.org/10.3390/en19143288
+
+--- Page 22 ---
+Energies 2026, 19, 3288 22 of 24
+PH Sets of phases including FI and SR.
+Parameters
+λDC Power usage effectiveness coefficient of the DC.
+PDC,max
+i Maximum power capacity limit of the DC at node i.
+Wi,s,t Computational workload assigned to the DC.
+nIT
+i Total number of installed servers of the DC at node i.
+ϕ Backup coefficient of DCs.
+Smax
+i Upper bound of the CPU utilization for a single server.
+φi Processing capacity of each server unit.
+Hcool
+i,s,t Heat load generated by the IT equipment at node i in scenario s at time t
+λcool Coefficient of performance of the cooling system.
+Pcool,max
+i Rated power capacity of the installed cooling infrastructure at node i.
+Bij Available communication bandwidth between DC i and DC j.
+ps Occurrence probability of scenario s.
+FB
+ij,s
+Fault states of branch i in scenario s. 1 indicates that the branch is faulty,
+0 otherwise.
+FN
+i,s
+Fault states of node i in scenario s. 1 indicates that the node is faulty, 0
+otherwise.
+FRCS
+ij,s
+Fault states of RCS on branch ij in scenario s. 1 indicates that the RCS is
+faulty, 0 otherwise.
+rij/xij Resistance and inductance of branch ij.
+M A large number.
+PDG,max
+i Maximum active power outputs of the DG at node i.
+PDG,min
+i Minimum active power outputs of the DG at node i.
+QDG,max
+i Maximum reactive power outputs of the DG at node i.
+QDG,min
+i Minimum reactive power outputs of the DG at node i.
+Smax
+ij Maximum capacity of branch ij.
+Umax
+i /Umin
+i Upper and lower bounds of the voltage at node i.
+xRCS
+ij Binary: 1 if an RCS is installed on branch ij, 0 otherwise.
+zNO
+ij Status of branch ij at the normal operation phase.
+BDC
+ij
+Maximum transferable equivalent DC load from DC i to DC j, converted
+from communication bandwidth and workload-power relationship.
+Variables
+PDC
+i,s,t Total power demand of the DC at node i in scenario s at time step t.
+PIT
+i,s,t Server power consumption of the DC at node i in scenario s at time step t.
+Pcool
+i,s,t Cooling power of the DC at node i in scenario s at time step t.
+PIT−i
+i Idle power consumption of a single server,
+PIT−p
+i Peak power consumption of a single server.
+nIT−on
+i,s,t Number of active servers of the DC at node i in scenario s at time step t.
+PDC
+ij,s,t Workload transferred from DCi to DC j.
+ENS PH
+s Unsupplied energy in scenario s at stage PH.
+PL,PH
+i,s,t Load demand at node i in scenario s at stage PH.
+yPH
+i,s Binary: 1 if node i is energized, 0 otherwise.
+PPH
+ik,s /QPH
+ik,s
+Active and reactive power flow on branch ik during the PH phase of
+scenario s.
+PS,PH
+i,s /QS,PH
+i,s
+Active and reactive power injection from the substation at node i during
+the PH phase of scenario s.
+PDG,PH
+i,s /QDG,PH
+i,s
+Active and reactive power injection from the DG at node i during the PH
+phase of scenario s.
+PL,PH
+i,s /QL,PH
+i,s
+Active and reactive power demand at node i during the PH phase of
+scenario s.
+PDC,PH
+i,s /QDC,PH
+i,s
+Active and reactive power demand of the DC at node i during the PH
+phase of scenario s.
+https://doi.org/10.3390/en19143288
+
+--- Page 23 ---
+Energies 2026, 19, 3288 23 of 24
+UPH
+i,s Square of voltage magnitude at node i during the PH phase of scenario.
+zPH
+ij,s
+Binary: 1 if the RCS on branch ij is closed during the PH phase of
+scenarios s.
+f +,PH
+ij,s / f −,PH
+ij,s
+Auxiliary variables for the radial constraint on branch ij during the PH
+phase of scenario s.
+nFI
+i,s Binary: 1 if node i is involved in a faulted zone, 0 otherwise.
+References
+1. Li, B.; Wang, S.; Chen, Y.; Han, Y.; Yang, W. Joint network expansion planning with internet data center and charging stations for
+EV sharing system. IEEE Trans. Ind. Inform. 2024, 20, 13251–13261. [CrossRef]
+2. Dong, H.; Wang, L.; Zhang, X.; Zeng, M. A two-stage stochastic collaborative planning approach for data centers and distribution
+network incorporating demand response and multivariate uncertainties. J. Clean. Prod. 2024, 451, 141482. [CrossRef]
+3. Wan, J.; Zhou, J.; Gui, X. Sustainability analysis of green data centers with CCHP and waste heat reuse systems. IEEE Trans.
+Sustain. Comput. 2021, 6, 155–167. [CrossRef]
+4. Huang, Y.; Deng, Z.; Chen, Y.; Zhang, C. Performance investigation of a biomimetic latent heat thermal energy storage device for
+waste heat recovery in data centers. Appl. Energy 2023, 335, 120745. [CrossRef]
+5. Song, M.; Yan, X.Y.; Wang, X.D.; Gao, C.; Zhang, W.; Xia, S. Optimal scheduling strategy of networked data centers in multiple
+transactive energy markets. CSEE J. Power Energy Syst. 2024, early access. [CrossRef]
+6. Chen, M.; Gao, C.W.; Song, M.; Chen, S.; Li, D.; Liu, Q. Internet data centers participating in demand response: A comprehensive
+review. Renew. Sustain. Energy Rev. 2020, 117, 109466. [CrossRef]
+7. Wang, Z.; Wang, Y.; Ji, H.; Hasanien, H.M.; Zhao, J.; Yu, L.; He, J.; Yu, H.; Li, P . Distributionally robust planning for data center
+park considering operational economy and reliability. Energy 2024, 290, 130185. [CrossRef]
+8. Chen, B.; Che, Y.; Takcı, M.T.; Qadrdan, M.; Zhou, Y. Spatial flexibility provision from geographically dispersed data centers
+enabling coordinated operation of multi-local flexibility markets. IEEE Trans. Smart Grid 2026, 17, 1371–1381. [CrossRef]
+9. Jian, J.; Zhao, J.; Ji, H.; Bai, L.; Xu, J.; Li, P .; Wu, J.; Wang, C. Supply restoration of data centers in flexible distribution networks
+with spatial-temporal regulation. IEEE Trans. Smart Grid 2024, 15, 340–354. [CrossRef]
+10. Karngala, K.; Singh, C. Reliability assessment framework for the distribution system including distributed energy resources.
+IEEE Trans. Sustain. Energy 2021, 12, 1539–1548. [CrossRef]
+11. Zhang, D.; Li, G.; Bie, Z.; Fan, K. An analytical method for reliability evaluation of power distribution system with time-varying
+failure rates. Reliab. Eng. Syst. Saf. 2024, 250, 110290. [CrossRef]
+12. Li, G.; Zhang, D.; Bie, Z. An analytical method for reliability and resilience evaluation of power distribution systems with mobile
+power sources. Reliab. Eng. Syst. Saf. 2026, 267, 111817. [CrossRef]
+13. Weng, Z.; Zhou, J.; Zhan, Z. Reliability evaluation of standalone microgrid based on sequential Monte Carlo simulation method.
+Energies 2022, 15, 6706. [CrossRef]
+14. Huang, W.; Hu, B.; Shao, C.; Li, W.; Wang, X.; Xie, K.; Chung, C.Y . Power system reliability evaluation based on sequential Monte
+Carlo simulation considering multiple failure modes of components.J. Mod. Power Syst. Clean Energy2025, 13, 202–214. [CrossRef]
+15. Karngala, K.; Singh, C.; Xie, L. Predictive reliability assessment of distribution grids with residential distributed energy resources.
+CSEE J. Power Energy Syst. 2025, 11, 2598–2609. [CrossRef]
+16. Dong, J.; Zhu, L.; Dong, Q.; Kritprajun, P .; Liu, Y.; Liu, Y.; Tolbert, L.M.; Hambrick, J.C.; Xue, Y.; Ollis, T.B.; et al. Integrating
+transactive energy into reliability evaluation for a self-healing distribution system with microgrid. IEEE Trans. Sustain. Energy
+2022, 13, 122–134. [CrossRef]
+17. Muñoz-Delgado, G.; Contreras, J.; Arroyo, J.M. Reliability assessment for distribution optimization models: A non-simulation-
+based linear programming approach. IEEE Trans. Smart Grid 2018, 9, 3048–3059. [CrossRef]
+18. Li, Z.; Wu, W.; Tai, X.; Zhang, B. Optimization model-based reliability assessment for distribution networks considering detailed
+placement of circuit breakers and switches. IEEE Trans. Power Syst. 2020, 35, 3991–4004. [CrossRef]
+19. Jooshaki, M.; Abbaspour, A.; Fotuhi-Firuzabad, M.; Munoz-Delgado, G.; Contreras, J.; Lehtonen, M.; Arroyo, J.M. An enhanced
+MILP model for multistage reliability-constrained distribution network expansion planning. IEEE Trans. Power Syst. 2022, 37,
+118–131. [CrossRef]
+20. Jooshaki, M.; Lehtonen, M.; Fotuhi-Firuzabad, M.; Muñoz-Delgado, G.; Contreras, J.; Arroyo, J.M. On the explicit formulation of
+reliability assessment of distribution systems with unknown network topology: Incorporation of DG, switching interruptions,
+and customer-interruption quantification. Appl. Energy 2022, 324, 119655. [CrossRef]
+21. Wang, Z.; Zhong, L.; Pan, Z.; Yu, T.; Qiu, X.; Wang, Y. Optimal double Q AC-DC hybrid distribution system planning with explicit
+topology-variable-based reliability assessment. Appl. Energy 2022, 322, 119438. [CrossRef]
+https://doi.org/10.3390/en19143288
+
+--- Page 24 ---
+Energies 2026, 19, 3288 24 of 24
+22. Li, J.; Kong, H.; Wang, W.; Sun, L.; Xiao, W.; Wang, Z. A novel reliability assessment method for distribution networks based on
+linear programming considering distribution automation and distributed generation. IET Renew. Power Gener. 2024, 18, 529–544.
+[CrossRef]
+23. Zhang, J.; Wang, B.; Ma, H.; He, Y.; Wang, Y.; Xue, Z. Reliability evaluation of cabled active distribution network considering
+multiple devices: A generalized MILP model. Processes 2023, 11, 3404. [CrossRef]
+24. Wu, W.; Wang, C.; Wang, Y.; Dong, X.; Yang, M.; Zhang, Y.; Pouresmaeil, E.; Zhong, S.; Zhou, S.; Han, X. Reliability assessment of
+cyber physical distribution systems including sequential scenario simulation correction and recovery resource decisions. Energy
+Convers. Econ. 2026, 7, 37–49. [CrossRef]
+25. Liu, J.; Qin, C.; Yu, Y. A comprehensive resilience-oriented FLISR method for distribution systems.IEEE Trans. Smart Grid 2021,
+12, 2136–2152. [CrossRef]
+26. Liu, J.; Qin, C.; Yu, Y. Enhancing distribution system resilience with proactive islanding and RCS-based fast fault isolation and
+service restoration. IEEE Trans. Smart Grid 2020, 11, 2381–2395. [CrossRef]
+27. Wang, Z.; Lin, D.; Yu, T.; Zeng, G.; Pan, Z. Explicit reliability incorporated switches planning of smart distribution system with
+high flexibility. Int. J. Power Energy Syst. 2023, 145, 108629. [CrossRef]
+28. Chen, X.; Wu, W.; Zhang, B. Robust restoration method for active distribution networks. IEEE Trans. Power Syst. 2016, 31,
+4005–4015. [CrossRef]
+29. Sun, S.; Li, G.; Chen, C.; Bian, Y.; Bie, Z. A novel formulation of radiality constraints for resilient reconfiguration of distribution
+systems. IEEE Trans. Smart Grid 2023, 14, 1337–1340. [CrossRef]
+30. Zhao, T.; Wang, J. Learning Sequential Distribution System Restoration via Graph-Reinforcement Learning.IEEE Trans. Power
+Syst. 2022, 37, 1601–1611. [CrossRef]
+31. Xiao, W.; Luo, Q.; Yu, T.; Wu, Y.; Huang, Z.; Pan, Z. Toward resilient distribution system via microgrid formation: A safe
+hierarchical hybrid reinforcement learning approach. Appl. Energy 2026, 417, 128001. [CrossRef]
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
+https://doi.org/10.3390/en19143288

@@ -1,0 +1,1911 @@
+--- Page 1 ---
+综合智慧能源 
+Integrated Intelligent Energy 
+ISSN 2097-0706,CN 41-1461/TK 
+ 
+ 
+ 
+ 
+《综合智慧能源》网络首发论文 
+ 
+题目： 新疆绿色算力园区源网荷储算协同容量优化 
+作者： 樊小朝，张志豪，王子龙，史瑞静，孙剑桥，王维庆，何山，程志江，程静，
+王永真 
+收稿日期： 2026-06-08 
+网络首发日期： 2026-08-24 
+引用格式： 樊小朝，张志豪，王子龙，史瑞静，孙剑桥，王维庆，何山，程志江，程静，
+王永真．新疆绿色算力园区源网荷储算协同容量优化[J/OL]．综合智慧能源. 
+https://link.cnki.net/urlid/41.1461.tk.20260821.1502.002 
+ 
+ 
+ 
+ 
+ 
+ 
+网络首发：在编辑部工作流程中，稿件从录用到出版要经历录用定稿、排版定稿、整期汇编定稿等阶
+段。录用定稿指内容已经确定，且通过同行评议、主编终审同意刊用的稿件。排版定稿指录用定稿按照期
+刊特定版式（包括网络呈现版式）排版后的稿件，可暂不确定出版年、卷、期和页码。整期汇编定稿指出
+版年、 卷、 期、 页码均已确定的印刷或数字出版的整期汇编稿件。 录用定稿网络首发稿件内容必须符合 《出
+版管理条例》和《期刊出版管理规定》的有关规定；学术研究成果具有创新性、科学性和先进性，符合编
+辑部对刊文的录用要求，不存在学术不端行为及其他侵权行为；稿件内容应基本符合国家有关书刊编辑、
+出版的技术标准，正确使用和统一规范语言文字、符号、数字、外文字母、法定计量单位及地图标注等。
+为确保录用定稿网络首发的严肃性， 录用定稿一经发布， 不得修改论文题目、 作者、 机构名称和学术内容，
+只可基于编辑规范进行少量文字的修改。 
+出版确认：纸质期刊编辑部通过与《中国学术期刊（光盘版） 》电子杂志社有限公司签约，在《中国
+学术期刊 （网络版） 》 出版传播平台上创办与纸质期刊内容一致的网络版，以单篇或整期出版形式， 在印刷
+出版之前刊发论文的录用定稿、排版定稿、整期汇编定稿。因为《中国学术期刊（网络版） 》是国家新闻出
+版广电总局批准的网络连续型出版物（ISSN 2096-4188，CN 11-6037/Z），所以签约期刊的网络版上网络首
+发论文视为正式出版。 
+ 
+
+
+--- Page 2 ---
+第  48  卷   第  8 / 9  期
+2026  年  8  月
+Vol .  48  No .  8 / 9
+Aug .  2026
+新疆绿色算力园区源网荷储算协同容量优化
+Coordinated capacity optimization of source - grid -l oad - storage -c omputing systems in 
+green computing parks in Xinjiang
+樊小朝
+1
+， 张志豪
+2 a*
+， 王子龙
+3
+， 史瑞静
+1
+， 孙剑桥
+2 a
+， 王维庆
+2 b ， 2 c
+，
+何山
+2 c
+， 程志江
+2 a ， 2 b
+， 程静
+2 b
+， 王永真
+4
+FAN Xiaochao
+1
+， ZHANG Zhihao
+2 a *
+， WANG Zilong
+3
+， SHI Ruijing
+1
+， SUN Jianqiao
+2 a
+，
+WANG Weiqing
+2 b ， 2 c
+， HE Shan
+2 c
+， CHENG Zhijiang
+2 a ， 2 b
+，
+CHENG Jing
+2 b
+， WANG Yongzhen
+4
+（ 1 . 新疆工程学院  能源工程学院 ， 乌鲁木齐  830023 ；  2 . 新疆大学  a . 智能科学与技术学院 ；  b . 可再生能源发电与并网
+控制教育部工程研究中心 ；  c . 电气工程学院 ， 乌鲁木齐  830017 ；  3 . 上海第二工业大学 ， 上海  201209 ；  
+4 . 北京理工大学  能源与动力工程系 ， 北京  100081 ）
+（ 1 . School of Energy Engineering ，  Xinjiang Institute of Engineering ，  Urumqi 830023 ，  China ；  2 .  a . School of 
+Intelligent Science and Technology ；  b . Engineering Research Center of Renewable Energy Generation and 
+Grid - Connected Control ，  Ministry of Education ；  c . School of Electrical Engineering ，  Xinjiang University ，  
+Urumqi 830017 ，  China ；  3 . Shanghai Polytechnic University ，  Shanghai 201209 ，  China ；  4 . Department of 
+Energy and Power Engineering ，  Beijing Institute of Technology ，  Beijing 100081 ，  China ）
+摘  要 ：  在 “ 东数西算 ” 工程 、 新型电力系统建设和新疆大型风光基地快速发展的背景下 ， 绿色算力园区正在成为新
+能源就地消纳 、 算力基础设施低碳化和综合智慧能源系统建设的重要载体 。 针对新疆风光出力季节差异显著 、 算
+力负荷连续性强 、 数据中心电能使用效率 （ Power Usage Effectiveness ， PUE ） 环境温度变化 、 储能效率受低温和高温影
+响及传统容量规划难以刻画柔性算力任务的问题 ， 提出了一种面向新疆绿色算力园区的源网荷储算容量优化配置
+方法 。 以风电容量 、 光伏容量 、 储能功率 、 储能容量和数据中心 IT 容量为决策变量 ， 建立包含年化投资成本 、 外购电
+成本 、 碳排放成本 、 弃风弃光惩罚 、 电能质量惩罚和算力服务收益的年化净成本模型 ； 该模型以电 、 冷 、 气 、 热负荷及
+风电 、 光伏时序数据为基础输入 ， 通过新疆地域特征量化模块引入四季风光出力修正 、 动态 PUE 、 储能温度效率修
+正 、 分时电价 、 碳排放因子 、 并网功率约束和绿电供能比例约束 ， 并采用 “ 粗网格筛选—局部细化搜索—帕累托约束
+筛选 ” 的外层容量搜索策略 ； 在给定容量方案下 ， 内层开展四季典型代表日逐时运行仿真 ， 对刚性 IT 负荷 、 柔性算力
+任务 、 储能充放电 、 外购电和弃电进行联合评价 。 以哈密 、 昌吉等新能源基地配套的绿色算力园区为算例 ， 协同优
+化方案配置为风电额定装机容量 70  MW 、 光伏额定装机容量 20  MW 、 储能额定功率和额定能量容量 6  MW/ 16  MW ∙ h
+和数据中心 IT 额定容量 12  MW ， 其中刚性 IT 负荷为 7 . 2  MW ， 柔性算力任务等效平均功率为 3 . 6  MW 。 结果表明 ， 相
+比 无 协 同 基 准 方 案 ， 协 同 优 化 方 案 年 化 净 成 本 降 低 37 . 98 % ， 绿 电 供 能 比 例 提 高 至 93 . 24 % ， 弃 风 弃 光 率 控 制 在
+3 . 32 % ， 碳排放量降低 89 . 44 % 。 研究表明 ， 源网荷储算协同配置能够将新疆风光资源优势转化为稳定的绿色算力供
+给优势 ， 并在经济性 、 低碳性和新能源消纳之间形成较优平衡 。
+关键词 ： 源网荷储算 ； 容量优化 ； 绿色算力 ； 新能源消纳 ； 综合智慧能源系统
+中图分类号 ： TK 01 ： TM 73    文献标志码 ： A    文章编号 ： 2097 - 0706 （ 2026 ） 8 / 9  - 0001  - 12
+Abstract ： Against the backdrop of the "East Data ，  West Computing" project ，  the development of new power systems ，  and 
+the rapid development of large - scale wind and photovoltaic bases in Xinjiang ，  green computing parks are becoming 
+important platforms for local renewable energy consumption ，  low - carbon computing infrastructure ，  and the development of 
+integrated intelligent energy systems .  To address the significant seasonal differences in wind and photovoltaic output in 
+Xinjiang ，  the continuous nature of computing load ，  the variation of power usage effectiveness （ PUE ）  in data centers with 
+ambient temperature ，  the effects of low and high temperatures on energy storage efficiency ，  and the difficulty of traditional 
+capacity planning in characterizing flexible computing 
+tasks ，  a source - grid -l oad - storage - computing capacity 
+optimization configuration method for green computing 
+DOI ： 10 . 3969 /j . issn . 2097 - 0706 . 2026 . 8 / 9 . 001
+基金项目 ： 国家自然科学基金项目 （ 72595833 ）
+National Natural Science Foundation of China （ 72595833 ）
+网络首发时间：2026-08-24 09:15:00       网络首发地址：https://link.cnki.net/urlid/41.1461.tk.20260821.1502.002
+
+--- Page 3 ---
+第  48  卷  
+parks in Xinjiang was proposed .  Wind power capacity ，  photovoltaic capacity ，  energy storage power ，  energy storage 
+capacity ，  and data center IT capacity were used as decision variables to establish an annualized net cost model that 
+included annualized investment costs ，  purchased electricity costs ，  carbon emission costs ，  wind and photovoltaic 
+curtailment penalties ，  power quality penalties ，  and computing service revenue .  The model used time - series data of 
+electric ，  cooling ，  gas ，  and heating loads and wind and photovoltaic generation as basic inputs .  Through the Xinjiang -
+specific regional characteristic quantification module ，  seasonal corrections to wind and photovoltaic output ，  dynamic 
+PUE ，  temperature efficiency correction of energy storage ，  time - of - use electricity prices ，  carbon emission factors ，  grid -
+connected power constraints ，  and green electricity supply ratio constraints were introduced .  An outer - layer capacity search 
+strategy consisting of coarse - grid screening ，  local refinement search ，  and Pareto constraint screening was adopted .  Under 
+the given capacity scheme ，  hourly operational simulations were performed for representative days in four seasons in the 
+inner layer ，  and rigid IT loads ，  flexible computing tasks ，  energy storage charging and discharging ，  purchased electricity ，  
+and curtailed electricity were jointly evaluated .  Green computing parks supporting renewable energy bases in Hami ，  
+Changji ，  and other areas were used as case studies .  The coordinated optimization scheme included 70  MW of rated wind 
+power installed capacity ，  20  MW of rated photovoltaic installed capacity ，  6  MW/ 16  MW · h of rated power and energy 
+storage capacity ，  and 12  MW of rated data center IT capacity ，  with a rigid IT load of 7 . 2  MW and an equivalent average 
+power of 3 . 6  MW for flexible computing tasks .  The results showed that ，  compared with the baseline scheme without 
+coordination ，  the coordinated optimization scheme reduced the annualized net cost by 37 . 98 % ，  increased the green 
+electricity supply ratio to 93 . 24 % ，  controlled the wind and photovoltaic curtailment rate at 3 . 32 % ，  and reduced carbon 
+emissions by 89 . 44 % .  The findings indicate that coordinated source - grid - load - storage - computing  configuration can 
+transform Xinjiang's wind and photovoltaic resource advantages into stable green computing supply advantages while 
+achieving a favorable balance among economic performance ，  low - carbon operation ，  and renewable energy consumption .
+Keywords ： source - grid - load - storage - computing system ；  capacity optimization ；  green computing ；  renewable energy 
+consumption ；  integrated intelligent energy system
+0  引言  
+新疆位于我国西北内陆 ， 戈壁 、 荒漠 、 山口和盆
+地边缘地形广布 ， 风能和太阳能资源富集 ， 是国家
+大型清洁能源基地和能源资源战略保障基地的重
+要组成部分 。 近年来 ， 哈密 、 昌吉 、 准东等新疆地区
+新能源基地建设加快推进 ， 风电 、 光伏装机规模持
+续扩大 ， 但新能源出力具有显著的日内波动和季节
+差异特征
+［ 1 ］
+； 在送出通道 、 调峰资源和本地负荷承接
+能力受限时 ， 风光资源优势难以完全转化为有效电
+量 。 如何在新疆本地构建能够消纳绿电 、 承接产业
+增值并兼顾供电质量的综合智慧能源系统 ， 是新能
+源 基 地 由 “ 资 源 开 发 ” 向 “ 绿 电 转 化 ” 升 级 的 关 键
+问题 。
+与此同时 ， 人工智能训练 、 云计算 、 数据备份 、
+工业互联网和政务数据处理等业务推动算力基础
+设施快速扩张 。 国家推进 “ 东数西算 ” 和算力与绿
+色电力协同发展的政策要求 ， 为西部新能源基地建
+设绿色算力园区提供了方向
+［ 2 - 3 ］
+。 与一般工业负荷
+不同 ， 数据中心既具有连续运行的刚性 IT 负荷 ， 又
+存在可延迟 、 可转移的柔性算力任务 ； 同时 ， 制冷 、
+通风和配电等辅助能耗使数据中心实际用电量受
+电 能 使 用 效 率 （ Power Usage Effectiveness ，  PUE ） 影
+响明显 。 新疆昼夜温差大 、 夏季局部高温和冬季低
+温并存 ， 若仍采用固定 PUE 或对全年平均风光出力
+进行容量规划 ， 容易低估夏季冷却能耗 、 高估冬季
+储能可用效率 ， 从而影响容量配置的经济性和可
+靠性 。
+围绕新能源消纳和综合能源协同 ， 已有研究从
+源网荷储协调 、 综合能源系统调度 、 分布式新能源
+并网 、 电能质量监测和储能优化配置等方面开展了
+大量探索 。 文献 ［ 4 - 5 ］ 表明 ， 需求响应和多场景调
+度能够提升综合能源系统运行灵活性 ； 文献 ［ 6 - 7 ］
+从并网逆变器 、 继电保护 、 微电网稳定性 、 敏感负荷
+识别和电能质量大数据分析角度揭示了分布式新
+能源接入后的运行约束 ； 文献 ［ 8 ］ 进一步说明 ， 储能
+规划和多目标优化有助于缓解新能源不确定性对
+经济性和供电质量的影响 。 另外 ， 数据中心能效管
+理和地理负荷转移研究表明 ， PUE 、 分时电价 、 碳排
+放因子和任务调度对数据中心用能成本与低碳运
+行具有重要影响
+［ 9 - 10 ］
+。
+本文面向新疆哈密 、 昌吉等新能源基地配套绿
+色算力园区 ， 提出一种源网荷储算容量优化配置方
+法 。 本文主要研究内容如下 ： （ 1 ） 构建包含风光资
+源层 、 园区电网耦合层 、 储能调节层 、 刚柔性算力负
+荷层和容量优化决策层的系统框架 ， 明确绿色算力
+园区中电力流 、 信息流和算力任务流的耦合关系 ；
+（ 2 ） 在数学模型中引入动态 PUE 、 储能温度效率修
+·· 2
+
+--- Page 4 ---
+第  8 / 9  期 樊小朝 ， 等 ： 新疆绿色算力园区源网荷储算协同容量优化
+正 、 风光季节波动系数 、 柔性任务能量守恒和绿电
+供能比例约束 ， 使新疆地域特征能够进入容量优化
+计算过程 ； （ 3 ） 采用 “ 粗网格筛选—局部细化搜索—
+帕累托 （ Pareto ） 约束筛选 ” 的外层容量搜索策略 ， 并
+在内层开展四季典型代表日逐时运行仿真 ， 从经济
+性 、 低碳性 、 消纳性和并网运行质量角度验证协同
+配置方案的优势 。
+1  系统框架  
+1 . 1 　 源网荷储算协同架构 　
+本文构建的系统由新疆风光资源层 、 园区电网
+耦合层 、 调节与算力负荷层及容量优化决策层组
+成 ， 如图 1 所示 。 风电和光伏系统通过园区交流母
+线 接 入 、 公 共 并 网 点 （ Point of Common Coupling ，  
+PCC ） ， 储能系统既可吸纳新能源富余电量 ， 也可在
+风光低谷时放电支撑算力中心 ； 容量优化平台根据
+典型日场景 、 分时电价 、 碳排放因子和质量约束 ， 输
+出风 、 光 、 储 、 算的容量组合及运行评价指标 。
+典型绿电算力协同模式对比见表 1 。 由表 1 可
+知 ， 现有工作多侧重电力侧源网荷储协同 、 数据中
+心能效管理或绿电交易机制中的某一环节 ， 对 “ 新
+能源出力时空分布 - 储能调节能力 - 算力任务柔性 -
+数据中心辅助能耗 ” 之间的容量比例匹配刻画仍不
+够充分 。 特别是在新疆场景下 ， 风光资源季节互
+补 、 昼夜温差大 、 冬季气温低 、 夏季冷却负荷增加及
+新能源基地外送与本地消纳并存等因素会共同影
+响风 、 光 、 储和算力容量的最优配比 。 因此 ， 有必要
+建立能够同时反映新疆地域特征 、 数据中心动态
+PUE 和 柔 性 算 力 任 务 的 源 网 荷 储 算 容 量 优 化
+模型 。
+1 . 2 　 容量优化流程 　
+容量优化采用 “ 粗网格筛选—局部细化搜索—
+Pareto 约束筛选 ” 的外层搜索策略 。 外层搜索以风
+电容量 、 光伏容量 、 储能功率 、 储能容量和 IT 容量为
+长期规划变量 ； 每生成一个容量组合 ， 内层即开展
+四季典型代表日逐时运行仿真 ， 计算绿电比例 、 弃
+电率 、 失供量 、 外购电成本 、 碳排放量和电能质量惩
+罚 。 粗网格阶段以较大步长遍历候选组合 ， 快速剔
+除绿电比例不足 、 弃电率过高或存在失供的方案 ；
+局部细化阶段围绕低成本可行解缩小步长搜索 ；
+Pareto 约束筛选阶段综合考虑年化净成本 、 碳排放
+量 、 弃电率和绿电供能比例 。 选取满足工程约束且
+综合表现最优的容量组合 。
+2  系统结构  
+新疆绿色算力园区具有明显的区域耦合特征 。
+源侧以大规模风电和光伏为主 ； 网侧依托园区公共
+并网点 、 外部电网和电力市场交易实现功率支撑 ；
+荷侧除常规园区负荷外 ， 还包括连续运行的数据中
+心 IT 负荷 ； 储侧通过电化学储能平滑风光波动 、 降
+低 并 网 功 率 峰 值 并 提 升 绿 电 供 算 比 例 ， 如 图 2
+所示 。
+2 . 1 　 源侧结构 　
+源侧包括风电单元和光伏单元 。 风电容量 E
+w
+用于刻画园区可接入的风电装机规模 ， 其出力在冬
+季和夜间具有较高贡献 ； 光伏容量 E
+pv
+用于刻画光伏
+阵列规模 ， 其出力受日照和季节影响明显 ， 在夏季
+午间承担主要绿电供给
+［ 14 ］
+。 为体现新疆区域差异 ，
+本文将春季风电高发 、 夏季光伏高发 、 秋季过渡和
+冬季风电偏强设置为代表日场景 。
+2 . 2 　 网侧结构 　
+网侧由园区交流母线 、 PCC 和外部电网组成 。
+园区母线实现风光 、 储能和算力负荷的统一接入 ，
+PCC 承担购电容量 、 电压偏差和功率波动约束 。 考
+虑数据中心对供电可靠性要求较高 ， 模型允许外部
+电网在风光不足时提供补充电力 ， 但外购电量会带
+ G + 5
+C +
+ 
+0
+G
+
+T
+	
+   
+
+0
+F
+
+T
+	
+ )
+
+0
+B
+ 
+ 
+%
+B
+   
+1  C 9
+ 7 3 5
+)4
+ G
+
+%
+C
+N + 3 5
+ G
+
+%
+W
+5 8 A 1
+ 5
+ 	  
+ 
+  3 5
+ 	  # ! 4
+
+   5 &
+
+0##
+ G
+
+%
+PV
+图 1 　 新疆算电协同容量优化系统结构
+Fig . 1 　 Structure of coordinated electricity-computing capacity 
+optimization system in Xinjiang
+表 1 　 典型绿电算力协同模式对比
+［ 11 - 14 ］
+Table 1 　 Comparison of typical green electricity-computing coordination modes
+对比维度
+系统定位
+耦合方式
+算力特性
+Google 24 / 7  CFE
+跨区算力 + 绿电合约
+信息流跨区算力调度
+空间可调 ， 无本地时序柔性
+乌兰察布绿电直供
+本地风光直供数据中心
+电力系统单向耦合
+视作刚性负荷
+本文新疆协同框架
+新疆风光基地配套算力园区一体化配置
+电 - 算双层联合建模
+区分刚性 / 柔性时序算力
+·· 3
+
+--- Page 5 ---
+第  48  卷  
+来电费和碳排放成本 ， 因此其使用应受经济和低碳
+目标的共同约束 。
+2 . 3 　 储能与算力负荷结构 　
+储 能 系 统 由 额 定 功 率 P
+b
+和 额 定 容 量 E
+b
+描 述 。
+储能在新能源富余或低价时段充电 ， 在风光低谷 、
+负荷高位或电价较高时段放电 。 算力负荷由刚性
+IT 负荷和柔性算力任务组成 ， 其中刚性负荷用于
+维持服务器基础运行和在线业务 ， 柔性任务主要
+对 应 AI 训 练 、 离 线 渲 染 、 数 据 清 洗 和 批 处 理 等 可
+延迟任务 。 柔性算力任务在满足任务总能量需求
+的 前 提 下 ， 可 根 据 绿 电 可 用 性 和 电 价 进 行 时 段
+转移 。
+2 . 4 　 容量优化决策平台 　
+容量优化平台接收资源曲线 、 负荷预测 、 储能
+技术参数 、 电价 、 碳排放因子和并网质量约束 ， 输出
+容量组合 、 典型日运行策略和评价指标 。 与单纯新
+能源装机规划不同 ， 本文将数据中心 IT 容量纳入规
+划变量 ， 使模型能够判断 “ 多大的算力负荷能够被
+本地绿电经济承接 ” ， 从而避免新能源容量过大导
+致弃电增加或算力容量过大导致外购电量和碳排
+放量上升 。
+3  数学建模  
+如图 3 所示 ， 本文容量优化数学模型由模型输
+入与容量变量 、 逐时运行仿真及约束校核与结果输
+出 3 部 分 构 成 （ 图 中 ： P
+w
+( t ) 为 t 时 段 的 风 电 出 力 ；
+P
+p v
+( t ) 为 t 时段的光伏出力 ； P
+c h
+( t ) ， P
+d i s
+( t ) 分别为 t 时
+储能充 、 放电功率 ； P
+w ， 1
+( t ) 为 t 时段的归一化风电出
+力 ； P
+p v ， 1
+( t ) 为 t 时段的归一化光伏出力 ； S
+O C
+( t ) 为 t 时
+段的储能荷电状态 （ State of Charge ，  SOC ） ） 。
+3 . 1 　 决策变量与运行变量 　
+容量优化决策变量表示为
+［ 15 ］
+X = { E
+w
+， E
+p v
+， P
+b
+， E
+b
+， E
+c
+} 。 （ 1 ）
+逐时运行变量包括 P
+w
+( t ) ， P
+p v
+( t ) ， P
+c h
+( t ) ， P
+d i s
+( t ) ，
+P
+f
+( t ) ， S
+O C
+( t ) ， 外 购 电 功 率 P
+g
+( t ) 和 弃 风 弃 光 功 率
+P
+c u r
+( t ) 。 本文所涉及到的风 、 光设备出力模型在现
+有研究中已近乎完善 ， 详见文献 ［ 16 - 19 ］ 。
+3 . 2 　 算力负荷模型 　
+园区总负荷由常规负荷 P
+p a r k
+( t ) 、 P
+f
+( t ) 、 刚性 IT
+负荷 P
+c r i
+( t ) 及数据中心辅助能耗共同组成
+［ 20 ］
+， 如
+P
+l o a d ( t ) = P
+p a r k
+( t ) + η
+U E [ P
+c r i ( t ) + P
+f ( t ) ] ， （ 2 ）
+式中 ： η
+UE
+为数据中心电能使用效率 ； P
+load
+（ t） 为园区 t
+时段的总等效电负荷 。
+考虑新疆夏季冷却能耗增加 、 冬季可利用自然
+冷源及昼夜温差较大的特点 ， 本文不再采用固定
+PUE ， 而采用季节 - 温度修正形式
+P
+U E ， s
+( t ) = c l i p
+é
+ë
+ê
+ê
+ê
+ê
+ê
+ê
+ê
+ê ù
+û
+ú
+ú
+ú
+ú
+ú
+ú
+ú
+úP
+U E ， 0
++ k
+c
+m a x ( t
+s
+( t ) - t
+r e f
+， 0 ) -
+k
+f
+m a x ( t
+r e f
+- t
+s
+( t ) ， 0 )
+P
+U E ， m i n
+， P
+U E ， m a x
+，（ 3 ）
+式中 ： clip ( ⋅ ) 为限幅函数 ； t
+s
+（ t） 为 t 时段的室外温度 ， t
+ref
+为参考温度 ； P
+U E ， s
+( t ) 为第 s 个季节场景中 t 时段的数
+据中心 PUE ； k
+c
+为高温冷却修正系数 ； k
+f
+为低温自然
+N + 	 
+
+%
+W
+	
+  	 
+
+%
+PV
+	
+5 
+9 
+5   
+
+C +  
+
++ 	   ) #  4 
+5   	  . F >
+ 	  . C 9
+ 	  E  A 
+ ? + 7 M "
+1 #
+!)
+A 4
+
+/ 4 $ 
+
+  $ #
+
+  *
+
+ L 5 + 
+ + 
+F >  ! E 0
+   
+)4
+C 9
+   4  
+  1   
+0##
+ G + 5
+  N + E 
+
+    Q 
+N 
+
+   
+  +  )
+ 	  +
+5 +  1
+
+ + 
+
+7 G # 
+
+C + > 
+- 
+
+ 4 # 
+
+ .    7 $ # 4  L  ) 	 
+  
+ G  	  1  
+ 7 $     +
+
+N   B   +
+
+ 7  ) 
+0
+B
+ 
+ 7  G 
+%
+B
+ +
+
+ + B 8
+$ 
+ 	  # ! 4
+E 
+C $  4
+C 9 N #
+ 7 	 
++  .    5 C G 4 
+E 
+N   1  G 4 
+   F > 1 +
+A   
+  	 
+图 2 　 源网荷储算系统结构
+Fig . 2 　 Structure of source-grid-load-storage-computing system
+·· 4
+
+--- Page 6 ---
+第  8 / 9  期 樊小朝 ， 等 ： 新疆绿色算力园区源网荷储算协同容量优化
+冷源修正系数 ； P
+U E ， 0
+为为数据中心的基准电能使用
+效率 ， 取 1 . 25 ； P
+U E ， m i n
+和 P
+U E ， m a x
+分别为限幅函数中的
+最小 、 最大值 ， 取 1 . 15 和 1 . 35 。 得到春 、 夏 、 秋 、 冬 4
+个 季 节 的 平 均 PUE 分 别 为 1 . 23 、 1 . 32 、 1 . 24
+和 1 . 18 。
+数据中心 IT 容量 E
+c
+进一步划分为刚性 IT 负荷
+和柔性算力任务 。 刚性负荷用于在线业务和基础
+服务器运行 ， 按下式计算
+P
+c r i
+( t ) = ρ
+c r i
+E
+c ， （ 4 ）
+式中 ： ρ
+cri
+为刚性 IT 负荷占 IT 总容量的比例 。
+柔性任务满足日能量守恒 ， 并受小时最大可调
+功率约束 。
+3 . 3 　 电化学储能 　
+储能 S O C 状态转移方程为
+S
+O C ( t + 1 ) = S
+O C ( t ) + η
+c
+P
+c h ( t ) Δ t -
+P
+d i s ( )t Δ t
+η
+d
+，（ 5 ）
+式中 ： η
+c
+为充电效率 ； η
+d
+为放电效率 ； Δ t 为时间步长 ，
+本文一般取 1  h 。
+考虑新疆冬季低温和夏季局部高温对电化学
+储能充放电效率的影响 ， 储能效率按下式所示进行
+修正
+η
+c
+= η
+c ， 0
+k
+T ， s
+， （ 6 ）
+η
+d
+= η
+d ， 0
+k
+T ， s
+， （ 7 ）
+式中 ： η
+c ， 0
+和 η
+d ， 0
+分别为充 、 放电额定工况下的效率 ；
+k
+T ， s
+为第 s 类 （ 春 、 夏 、 秋 、 冬 ） 典型代表日温度修正系
+数 。 该处理使储能可用能量和充放电损耗更接近
+新疆复杂温度环境下的运行场景 。
+此外 ， 为保证储能系统安全运行 ， 其充放电功
+率和荷电状态需满足以下约束
+ì
+í
+î
+ïïïï
+ï
+ïï
+ï
+0 ≤ P
+c h
+( t ) ≤ P
+b
+0 ≤ P
+d i s
+( t ) ≤ P
+b
+S
+O C ， m i n
+≤ S
+O C ( )t ≤ S
+O C ， m a x
+， （ 8 ）
+式中 ： S
+O C ， m i n
+， S
+O C ， m a x
+分别为 储能荷电状态的下 、 上限 。
+3 . 4 　 目标函数 　
+优化目标为年化净成本最小
+m i n F = C
+i n v
++ C
+o m
++ C
+g r i d
++ C
+c a r b o n
++
+C
+c u r
++ C
+q
+- R
+c o m p u t e
+， （ 9 ）
+式中 ： F 为总成本 ； C
+i n v
+为风电 、 光伏 、 储能和数据中
+心的年化投资成本 ； C
+o m
+为运维成本 ； C
+g r i d
+为外购电
+成本 ； C
+c a r b o n
+为碳排放成本 ； C
+c u r
+为弃风弃光惩罚 ； C
+q
+为功率波动 、 电压偏差等运行质量惩罚 ； R
+c o m p u t e
+为算
+力服务收益 。
+外购电成本为
+C
+g r i d
+= ∑
+t
+π
+g ( )t P
+g ( )t Δ t
+， （ 10 ）
+式中 ： π
+g
+为分时电价 。
+碳排放成本为
+C
+c a r b o n
+= ∑
+t
+π
+c
+κ ( )t P
+g ( )t Δ t
+， （ 11 ）
+式中 ： π
+c
+为碳成本系数 ； κ ( t ) 为 t 时段的电网购电碳
+排放因子 ； P
+g
+（ t） 为 t 时段的外购电功率 。
+3 . 5 　 约束条件 　
+功率平衡约束为
+P
+w ( t ) + P
+p ( t ) + P
+g ( t ) + P
+d i s ( t ) = P
+l o a d ( t ) +
+P
+c h ( t ) + P
+c u r ( t ) ，（ 12 ）
+同时 ， PCC 并网功率 、 功率爬坡率和电压偏差需
+满足园区接入条件 。 对超出阈值的波动和电压偏
+差设置质量惩罚项 ， 以反映新能源大规模接入对数
+据中心供电质量的影响 。
+为体现算力任务可调的特征 ， 柔性算力在全日
+范围内满足任务总量约束 ， 柔性算力任务约束可表
+示为
+∑
+t
+P
+f ( )t Δ t = E
+f ， （ 13 ）
+0 ≤ P
+f
+( t ) ≤ P
+m a x
+f ， （ 14 ）
+式中 ： P
+m a x
+f
+为柔性算力任务在单个时段内允许达到
+A
+  E    G 
+ G
+B
+F  F >  -
+C
+4     E 
+ +    >   
+h
+  + 
+
+.  
+ 05%
+  4 # 	 
+h
+A   
+
+ 5 C G L 
+h
+N +  G
+
+%
+W
+
+   G
+
+%
+PV
+
+ 7  )
+
+0
+B
+ G  1 
+ G
+
+7
+h
+ 7  G
+%
+B
+
+ )4
+ G
+
+%
+C
+h
+0
+W
+
+T
+	
+%
+W
+0
+W
+
+T
+	
+0
+PV
+
+T
+	
+%
+PV
+0
+PV
+
+T
+	
+N   
+h
+  
+
+5 + " 
+
++ )
+
+.  
+h
+  C +  )
+
+F > C G
+h
+	  1  5 
+  
+ G 4 
+  A   
+h
+3
+/#
+
+T
+	
++
+
+0
+CH
+
+T
+	
+
+
+0
+DIS
+
+T
+	
+F 
+ 7 ( 
+h
+ )  >
+ 3/#
+E +
+
+
+ 7   +  )
+7 G  A  4 
+h
+  1   
+
+0
+F
+
+T
+	
+
+5 +       ! E 0
+1  B 8
+h
+     *
+
+G     )
+h
+    F 5 
+1    4 
+h
+N 
+
+ C +
+
+ +
+
+ 	 C 9
+
+ +
+
++
+
+ )  >
+h0##
+ )
+
+(  )
+
++ 	  
+h
+5 +  7 " 
+ 5  5 8 4 
+h
+ C
+
+F 5
+
+C +
+
+.  
+h
++  5
+
+C G  5
+
+1     ,
+
+ 	     
+h
+  N + Q 
+
+    Q 
+h
+/  E 
+
+  N +  
+图 3 　 容量优化数学模型逻辑
+Fig . 3 　 Logic of mathematical model for capacity optimization
+·· 5
+
+--- Page 7 ---
+第  48  卷  
+的最大功率 ； E
+f
+为一天内必须完成的柔性算力任务
+总量 。
+绿电供能比例约束为
+W
+g r e e n
+W
+l o a d
+≥ α
+m i n ， （ 15 ）
+式中 ： W
+green
+为系统被实际利用的新能源电量 ； W
+load
+为
+园 区 总 用 电 量 ； α
+min
+为 规 划 要 求 的 最 低 绿 电 供 能
+比例 。
+3 . 6 　 评价指标 　
+为全面评价容量配置效果 ， 本文选取年化净成
+本 、 绿电供能比例 、 弃风弃光率 、 碳排放量 、 最大购
+电功率 、 最大电压偏差和单位算力综合成本作为评
+价指标
+［ 21 ］
+。 其中 ， 绿电供能比例定义为被园区实际
+利用的新能源电量与园区总用电量之比 ， 弃风弃光
+率定义为弃电量与新能源总发电量之比 ， 单位算力
+综合成本定义为年化净成本与数据中心年 IT 用电
+量之比
+［ 22 - 24 ］
+。 为避免单一经济目标掩盖低碳性和消
+纳性差异 ， 本文在可行解集中进一步计算综合评
+分 ， 如下式所示
+M = w
+1
+C
+*
+n e t
++ w
+2
+E
+*
+c a r b o n
++ w
+3
+R
+*
+c u r
++ w
+4
+( 1 - α
+*
+) ，（ 16 ）
+式中 ： M 为综合评分 ； w
+1
+， w
+2
+， w
+3
+， w
+4
+分别为年化净成
+本 、 碳排放量 、 弃电率和绿电供能比例的权重 ， 分别
+取 0 . 40 ， 0 . 25 ， 0 . 20 和 0 . 15 ； C
+*
+n e t
+， E
+*
+c a r b o n
+， R
+*
+c u r
+， α
+*
+分 别
+为归一化年化净成本 、 碳排放量 、 弃电率和绿电供
+能比例 。
+单位算力综合成本定义为年化净成本与数据
+中心年 IT 用电量之比
+［ 25 - 27 ］
+， 即
+C
+I T
+=
+C
+a n n
+n e t
+W
+a n n
+I T
+， （ 17 ）
+式中 ： C
+IT
+为单位算力综合成本 ； C
+a n n
+n e t
+为年化净成本 ；
+W
+a n n
+I T
+为数据中心年 IT 用电量 。
+结合代表日加权计算 ， 年 IT 用电量可进一步
+写为
+W
+a n n
+I T
+= ∑
+s ∈ S
+N
+s ∑
+t = 1
+2 4
+P
+I T
+( s ， t ) Δ t ， （ 18 ）
+式中 ： S 为季节场景集合 ； N
+s
+为该类典型日在全年中
+的折算天数 ； P
+IT
+（ s ， t） 为第 s 类典型代表日 t 时段的数
+据中心 IT 功率 ； Δ t 通常取 1  h 。
+4  仿真分析  
+本文采用电负荷 、 冷负荷 、 气负荷 、 热负荷 、 归
+一化风电出力 、 归一化光伏出力 6 类逐时数据作为
+基础输入 ， 并通过新疆地域特征量化模块构建哈
+密 、 昌吉等新能源基地配套绿色算力园区案例 ， 如
+图 4 所示 （ 电 、 冷 、 热 、 气负荷折算为综合等效负荷 ；
+风电与光伏作为逐时容量因子输入 ）
+［ 28 - 29 ］
+。 随后 ， 利
+用 Matlab R 2024 b 仿真平台对容量优化配置模型进
+行求解与分析 。
+4 . 1 　 算例设置 　
+考虑新疆地域气候对系统运行的影响 ， 本文进
+一步引入风电季节波动系数 、 光伏季节波动系数 、
+储能温度效率修正系数和数据中心动态 PUE ， 取值
+见表 2 。
+由表 2 可知 ， 冬季风电修正系数较高而光伏修
+正系数较低 ， 体现了新疆冬季风电偏强 、 光伏有效
+出力时长缩短的特点 ； 夏季光伏修正系数较高 ， 但
+    
+ L
+
+
+
+
+
+ G  
+    
+ L
+ L
+    
+    
+ L
+A
+N + F   G  
+A(OURLYCAPACITYFACTOROFWINDPOWER■
+
+
+
+
+
+
+ G  
+B
+  F   G  
+B(OURLYCAPACITYFACTOROFPHOTOVOLTAIC
+
+
+
+
+
+
+ )
+-7
+C
+ 	 1  C 9 F   4
+c  
+(OURLYEQUIVALENTLOADCURVEOFTHEPARK
+
+
+
+
+
+  	 C 9
+D
+2 C 9    
+D)NTRADAYPROFILESOFFOURTYPESOFLOADS■ 
++
+
+
+
+'
+
+" C 9  1  5 
+ 1  C 9
+
+N +    >   F   G   E 
+  
+  
+/  
+ 
++ C 9 
+ C 9 
+' C 9 
+" C 9
+
+5
+
+M
+"
+
+图 4 　 输入数据时序特征
+Fig . 4 　 Time - series characteristics of input data
+·· 6
+
+--- Page 8 ---
+第  8 / 9  期 樊小朝 ， 等 ： 新疆绿色算力园区源网荷储算协同容量优化
+数据中心 PUE 修正系数也显著升高 ， 说明光伏高发
+与冷却能耗增加同时存在 。 该设置避免了以固定
+PUE 或全年平均风光出力进行容量规划所带来的
+偏差 ， 使仿真结果更接近新疆绿色算力园区的实际
+运行条件 。
+为增强典型代表日对全年运行特征的表征能
+力 ， 本文采用 “ 季度分层 + 聚类中心日 ” 的方法进行
+场景提取
+［ 30 ］
+。 首先 ， 将全年样本按照春 、 夏 、 秋 、 冬 4
+个季节进行分层 ； 然后 ， 将归一化风电出力 、 光伏出
+力和园区负荷组成特征向量 ， 采用 K -medoids 聚类
+选取距离季节中心最近的实际日作为代表日 ； 最
+后 ， 通过相关系数和均方根误差 （ Root Mean Squared 
+Error ，  RMSE ） 检 验 典 型 代 表 日 的 代 表 性 ， 见 表 3 。
+表 3 结果表明 ， 四季代表日的风电和光伏相关系数
+整体处于较高水平 ， RMSE 控制在较小范围内 ， 说明
+所选代表日能较好反映新疆风光资源及负荷的季
+节变化规律 。
+4 . 2 　 对比方案 　
+为体现源网荷储算协同优化的增益 ， 本文设置
+如下 4 类对比方案 。
+方案 1 为无协同基准方案 ， 配置少量风电和光
+伏 ， 不配置储能 ， 算力负荷固定运行 。 该方案主要
+用于反映传统数据中心依赖外购电运行时的成本
+和碳排放水平 。
+方案 2 为新能源优先配置方案 ， 在不配置储能
+的条件下增加风电和光伏容量 。 该方案用于分析
+单纯提高新能源装机规模对绿电比例 、 弃电率和外
+购电量的影响 。
+方案 3 为经验光储配置方案 ， 在方案 2 的基础
+上增加经验储能容量 ， 但不对风 、 光 、 储 、 算进行联
+合优化 。 该方案用于检验储能接入对新能源消纳
+和购电削减的作用 。
+方案 4 为源网荷储算协同优化方案 ， 联合优化
+风电容量 、 光伏容量 、 储能功率 、 储能容量和 IT 容
+量 ， 并引入柔性算力任务 、 动态 PUE 、 储能效率修正
+和绿电比例约束 。 该方案用于验证本文方法在多
+目标约束下的综合优化效果 。
+上述 4 类方案形成了从 “ 无协同 ” 到 “ 新能源扩
+容 ” ， 再到 “ 光储配置 ” 和 “ 源网荷储算联合优化 ” 的
+递进关系 ， 能够清晰揭示不同技术路径对系统经济
+性 、 低碳性和新能源消纳能力的影响 。
+4 . 3 　 容量配置 　
+外层容量搜索以风电容量 、 光伏容量 、 储能功
+率 、 储能容量和 IT 容量为决策变量 。 首先在粗网格
+阶段设置较宽的候选空间 ， 对不同容量组合进行四
+季逐时运行仿真 ； 随后剔除绿电比例不足 、 弃电率
+过高 、 存在失供或明显违反并网约束的不可行方
+案 ； 最后在低成本可行区域开展局部细化搜索 ， 并
+根据年化净成本 、 碳排放量和弃电率构建 Pareto 候
+选集 。
+从 Pareto 候选集分布可以看出 ， 容量配置并非
+简单追求新能源装机越大越好 。 如图 5 所示 ， 当风
+光容量偏小时 ， 系统对外部电网依赖较强 ， 购电量
+和碳排放量较高 ； 当风光容量过度增加而储能及柔
+性算力调节能力不足时 ， 弃风弃光率随之上升 ， 因
+此容量配置需在投资规模 、 低碳运行和新能源消纳
+之间进行权衡 。 各方案的优化配置结果见表 4 ： 方
+案 1 和方案 2 均未配置储能 ， 方案 3 配置充放电功率
+为 6  MW 、 储能容量为 24  MW · h 的储能系统 ； 方案 4
+配置额定装机容量为 70  MW 的风电机组 、 额定装机
+容量为 20  MW 的光伏发电系统 ， 以及充放电功率为
+6  MW 、 储能容量为 16  MW · h 的储能系统 ， 各方案 IT
+容量均为 12  MW 。 综合 Pareto 候选集分布及工程约
+束 ， 方案 4 在保持较高绿电供能比例的同时兼顾了
+弃电控制 、 碳减排和投资规模 ， 因而被选为本文的
+协同优化容量方案 。
+4 . 4 　 经济性 、 低碳性与消纳性结果 　
+各方案综合运行指标见表 5 ， 由表 5 可知 ， 源网
+荷储算协同优化能够显著改善绿色算力园区的综
+合运行表现 。
+从经济性看 ， 方案 4 年化净成本为 5  239 . 81 万
+元 ， 较方案 1 降低约 37 . 98 % 。 这说明虽然方案 4 增
+加了新能源和储能投资 ， 但通过降低外购电量 、 减
+少碳排放成本并提高本地绿电利用水平 ， 整体经济
+性明显优于无协同方案 。 与方案 2 和方案 3 相比 ，
+表 2 　 新疆地域特征量化模块及其算例取值
+Table 2 　 Xinjiang - specific regional characteristic quantification 
+module and their case study values
+模块
+风电季节波动系数
+光伏季节波动系数
+储能低温修正系数
+数据中心 PUE
+四季算例取值
+春 1 . 10 ； 夏 0 . 85 ； 秋 0 . 95 ； 冬 1 . 15
+春 1 . 00 ； 夏 1 . 18 ； 秋 0 . 90 ； 冬 0 . 70
+春 0 . 98 ； 夏 1 . 00 ； 秋 0 . 99 ； 冬 0 . 94
+春 1 . 23 ； 夏 1 . 32 ； 秋 1 . 24 ； 冬 1 . 18
+表 3 　 四季典型代表日选取与代表性验证
+Table 3 　 Selection and representativeness validation of 
+representative days in four seasons
+场景
+风电高发
+光伏高发
+风光过渡
+风电偏强
+权重
+0 . 2521
+0 . 2521
+0 . 2493
+0 . 2466
+相关系数 ( 风 / 光 )
+0 . 93 / 0 . 95
+0 . 90 / 0 . 96
+0 . 89 / 0 . 92
+0 . 92 / 0 . 91
+RMSE ( 风 / 光 )
+0 . 071 / 0 . 064
+0 . 083 / 0 . 052
+0 . 087 / 0 . 073
+0 . 079 / 0 . 081
+·· 7
+
+--- Page 9 ---
+第  48  卷  
+方案 4 年化净成本略高 ， 但其绿电比例和碳减排效
+果更优 ， 体现出多目标优化下 “ 低成本 - 低碳 - 高消
+纳 ” 之间的综合平衡 。
+从 绿 电 供 能 比 例 看 ， 方 案 1 绿 电 比 例 仅 为
+34 . 55 % ， 说明少量风光配置难以支撑数据中心连续
+用能需求 。 方案 2 通过扩大新能源容量将绿电比例
+提高至 89 . 87 % ， 但弃电率上升至 5 . 07 % ， 表明新能
+源扩容后若缺少调节资源 ， 仍会出现绿电时序错
+配 。 方案 3 通过配置储能使绿电比例进一步提高至
+92 . 27 % ， 弃电率下降至 2 . 90 % ， 说明储能对新能源
+消纳具有明显改善作用 。 方案 4 绿电比例提高至
+93 . 24 % ， 较方案 1 提高 58 . 69 % ， 表明柔性算力与储
+能协同能够进一步提升新能源对算力负荷的支撑
+能力 。
+从碳排放和外购电量看 ， 方案 1 的碳排放量为
+93  951 . 82  t ， 外购电量为 174  684 . 08  MW ∙ h ； 方案 4  
+的碳排放量下降至 9  917 . 96  t ， 外购电量则下降至
+18  014 . 45  MW ∙ h ， 分别降低约 89 . 44 % 和 89 . 69 % 。
+这一结果说明 ， 源网荷储算协同配置不仅减少了数
+据中心对外部电网的依赖 ， 也显著提升了新能源本
+地转化为绿色算力的能力 。 与方案 2 相比 ， 方案 4
+外购电量降低约 33 . 35 % ， 碳排放降低约 33 . 27 % ， 表
+明单纯扩大风光容量并不能充分释放低碳效益 ， 必
+须引入储能和算力柔性调节共同参与运行优化 。
+需要注意的是 ， 方案 3 的弃电率低于方案 4 ， 年
+化净成本也略低于方案 4 ， 但方案 4 的绿电比例 、 外
+购电量和碳减排表现更优 。 这说明在绿色算力园
+区规划中 ， 最优方案不应只由单一成本指标决定 ，
+而应综合考虑绿电供能水平 、 碳排放约束 、 外购电
+依赖和工程投资强度 。 方案 4 的优势在于以较小的
+储能容量实现更高的低碳收益和绿电供算能力 ， 体
+现了源网荷储算协同优化的研究价值 。
+4 . 5 　 典型日运行特性 　
+4 个季节典型代表日的动态 PUE 与储能温度效
+率修正结果如图 6 所示 。 夏季受高温影响 ， 数据中
+心冷却能耗增加 ， PUE 达到全年较高水平 ； 冬季虽
+然光伏出力受限 ， 但自然冷源降低了数据中心辅助
+能耗 ， 使 PUE 处于较低水平 。 储能效率方面 ， 春 、 秋
+季温度条件较适宜 ， 效率修正系数接近额定水平 ；
+冬季低温条件下储能效率出现一定折减 ， 夏季高温
+时段也会带来轻微效率损失 。 该结果表明 ， 将动态
+PUE 和储能温度效率修正纳入模型是必要的 ， 否则
+会高估极端温度下的储能调节能力或低估夏季数
+据中心用能需求 。
+进一步给出了四季典型代表日运行曲线 ， 如图
+7 所示 。 春季风电出力较高 ， 储能主要在风电和光
+伏富余时段充电 ， 并在夜间或傍晚负荷缺口时放
+电 ； 夏季光伏午间出力集中 ， 柔性算力任务向绿电
+富余时段转移 ， 能够提高光伏就地消纳水平 ； 秋季
+风光资源处于过渡状态 ， 购电峰值相对突出 ， 是检
+验储能容量和柔性算力调节能力的关键场景 ； 冬季
+光伏有效出力时长缩短 ， 但风电偏强与储能补缺共
+同支撑算力负荷运行 ， 降低了低温场景下对外购电
+的依赖 。
+四季运行结果说明 ， 新疆绿色算力园区容量配
+置不能仅依据全年平均资源水平确定 ， 而应充分考
+虑风光资源季节互补 、 数据中心 PUE 季节变化 、 储
+能低温效率折减和柔性算力任务可转移特征 。 本
+文模型通过四季典型代表日加权和逐时运行仿真 ，
+将这些地域因素转化为容量配置约束和评价指标 ，
+使优化结果更具有区域适应性和工程参考价值 。
+
+
+
+
+
+
+
+
+
+
+
+    
+5 +  7 " 
+
+  
+ 	   
+
+,  
+
+
+?
+
+
+
+
+
+
+
+ 3  
+
+ 3   F
+
+.
+
+
+G
+T
+图 5 　 容量搜索可行域分布
+Fig . 5 　 Distribution of feasible region for capacity search
+表 4 　 各方案容量配置结果
+Table 4 　 Capacity configuration results for each scheme
+方案
+1
+2
+3
+4
+E
+w
+/MW
+18
+65
+65
+70
+E
+p v
+/MW
+18
+25
+25
+20
+P
+b
+/MW
+0
+0
+6
+6
+E
+b
+/ ( MW ∙ h )
+0
+0
+24
+16
+E
+c
+/MW
+12
+12
+12
+12
+表 5 　 各方案综合运行指标
+Table 5 　 Comprehensive operating indicators for each scheme
+方案
+1
+2
+3
+4
+年化净成
+本 / 万元
+8  448 . 72
+5  170 . 08
+5  210 . 54
+5  239 . 81
+绿电比
+例 /%
+34 . 55
+89 . 87
+92 . 27
+93 . 24
+弃电
+率 /%
+0
+5 . 07
+2 . 90
+3 . 32
+碳排放 /t
+93  951 . 82
+14  862 . 20
+11  417 . 19
+9  917 . 96
+外购电量 /
+( MW ∙ h )
+174  684 . 08
+27  026 . 91
+20  611 . 56
+18  014 . 45
+·· 8
+
+--- Page 10 ---
+第  8 / 9  期 樊小朝 ， 等 ： 新疆绿色算力园区源网荷储算协同容量优化
+5  结论  
+本文面向新疆哈密 、 昌吉等地区的新能源基地
+配套绿色算力园区 ， 提出了源网荷储算容量优化配
+置方法 。 该方法以风电 、 光伏 、 储能和数据中心 IT
+容 量 为 决 策 变 量 ， 综 合 考 虑 四 季 风 光 差 异 、 动 态
+PUE 、 储能温度效率修正 、 刚柔性算力负荷及绿电消
+纳 约 束 ， 并 采 用 “ 粗 网 格 筛 选 — 局 部 细 化 搜 索 —
+Pareto 约束筛选 ” 的优化策略 。
+算例结果表明 ， 协同优化方案的 E
+w
+为 70  MW ，
+E
+p v
+为 20  MW ， P
+b
+和 E
+b
+分别为 6  MW 和 16  MW · h ， E
+c
+为 12  MW 。 相比无协同基准方案 ， 年化净成本降低
+37 . 98 % ， 碳 排 放 量 降 低 89 . 44 % ， 外 购 电 量 显 著 下
+降 ， 绿电供能比例提高至 93 . 24 % ， 弃风弃光率控制
+在 3 . 32 % 。 结果说明 ， 储能调节与柔性算力任务转
+移能够缓解新能源出力与算力负荷的时序错配 ， 提
+高新能源本地消纳能力 。
+同时 ， 动态 PUE 和 储能温度效率修正 能够更准
+确反映新疆高温 、 低温及自然冷源条件下的数据中
+心运行特征 。 总体来看 ， 本文方法能够在经济性 、
+低碳性 、 绿电供能比例和工程可实施性之间取得较
+优平衡 ， 可为新疆绿色算力园区规划 、 数据中心绿
+电直供和新能源本地消纳提供参考 。 后续可进一
+步结合电力现货价格 、 绿证交易和多园区协同调度
+开展研究 。
+参考文献 ：
+［ 1 ］ FAN X C ，  SUN J Q ，  ZHANG W W ，  et al .  Modeling and 
+simulation analysis of capacity optimization configuration for 
+low - carbon energy systems in oxygen - enriched coal - fired 
+ L
+
+
+
+05%
+A
+
+A3PRING
+B
+
+B3UMMER
+C
+/
+C!UTUMN
+D
+
+D7INTER
+
+
+
+
+
+05%
+
+
+
+
+05%
+
+
+
+
+05%
+
+
+
+
+ 7 $   )
+
+
+
+
+ 7 $   )
+
+
+
+
+ 7 $   )
+
+
+
+
+ 7 $   )
+    
+ L
+ L  L
+    
+    
+    
+图 6 　 四季典型代表日动态 PUE 与储能效率修正系数
+Fig . 6 　 Dynamic PUE and energy storage efficiency correction coefficient on representative days in four seasons
+
+
+
+
+
+
+ )
+-7
+
+
+
+
+
+
+ )
+-7
+
+
+
+
+
+
+ )
+-7
+
+
+
+
+
+ )
+-7
+A  C 9 
+N + 
+  
+ C + 
+5 +  C 9
+B
+
+B3UMMER
+ L
+    
+ L
+    
+ L
+    
+ L
+    
+A
+
+A3PRING
+C
+/
+C!UTUMN
+D
+
+D7INTER
+图 7 　 四季典型代表日运行曲线
+Fig . 7 　 Operating curves on representative days in four seasons
+·· 9
+
+--- Page 11 ---
+第  48  卷  
+power plants using wind power for oxygen production ［ J ］ .  
+Renewable and Sustainable Energy Reviews ，  2026 ，  232 ：  
+1 - 31 .
+［ 2 ］ 国家发展改革委 . 关于深入实施 “ 东数西算 ” 工程加快构
+建全国一体化算力网的实施意见 （ 发改数据 〔 2023 〕 1779
+号 ） ［ EB/OL ］ .  （ 2023 - 12 - 25 ） ［ 2026 - 06 - 01 ］ . https ： //zfxxgk .
+ndrc . gov . cn/wap/iteminfo . jsp ？ id= 20303 .
+［ 3 ］ 赵海岭 ， 杨永利 ， 张忠明 ， 等 .  区域共同市场绿色电力与
+绿 色 证 书 协 同 交 易 模 式 ［ J ］ .  发 电 技 术 ， 2025 ， 46 （ 6 ） ：  
+1251 - 1259 .
+ZHAO Hailing ，  YANG Yongli ，  ZHANG Zhongming ，  et al .  
+Coordinated trading mode of green electricity and green 
+certificates in regional common markets ［ J ］ .  Power 
+Generation Technology ，  2025 ，  46 （ 6 ） ：  1251 - 1259 .
+［ 4 ］ 潘婷 ， 许彦斌 ， 王雨晴 ， 等 .  考虑广义综合需求响应的综
+合 能 源 系 统 调 度 优 化 ［ J ］ .  现 代 电 力 ， 2025 ， 42 （ 4 ） ：  
+630 - 639 .
+PAN Ting ，  XU Yanbin ，  WANG Yuqing ，  et al .  Integrated 
+energy system dispatch optimization considering generalized 
+integrated demand response ［ J ］ .  Modern Electric Power ，  
+2025 ，  42 （ 4 ） ：  630 - 639 .
+［ 5 ］ 窦嘉铭 ， 王小君 ， 刘曌 ， 等 .  面向综合能源系统调度多场
+景泛化提升的扩散策略学习 ［ J ］ .  电力系统自动化 ， 2026 ，
+50 （ 3 ） ：  145 - 155 .
+DOU Jiaming ，  WANG Xiaojun ，  LIU Zhao ，  et al .  Diffusion -
+policy learning for multi - scenario generalized boosting of 
+integrated energy system scheduling ［ J ］ .  Automation of 
+Electric Power Systems ，  2026 ，  50 （ 3 ） ：  145 - 155 .
+［ 6 ］ 侯宇程 ， 李香龙 ， 林志法 ， 等 .  新型分布式新能源并网逆
+变器及功率脉动抑制 ［ J ］ .  电力电子技术 ，  2023 ，  57 （ 3 ） ：   
+87 - 90 ，  103 .
+HOU Yucheng ，  LI Xianglong ，  LIN Zhifa ，  et al .  A novel 
+distributed new energy grid - connected inverter and its power 
+pulsation suppression ［ J ］ .  Power Electronics ，  2023 ，  57
+（ 3 ） ：  87 - 90 ，  103 .
+［ 7 ］ 许东 ， 赵张育 .  分布式新能源并网后继电保护算法研究
+［ J ］ .  中国水能及电气化 ，  2025 ，  （ 4 ） ：  55 - 59 ，  54 .
+XU Dong ，  ZHAO Zhangyu .  Research on relay protection 
+algorithm for distribution networks with integrated 
+distributed renewable energy ［ J ］ .  China Water Power & 
+Electrification ，  2025 （ 4 ） ：  55 - 59 ，  54 .
+［ 8 ］ 程林 ，  齐宁 ，  田立亭 .  考虑运行控制策略的广义储能资
+源与分布式电源联合规划 ［ J ］ .  电力系统自动化 ，  2019 ，  
+43 （ 10 ） ：  27 - 40 ，  43 .
+CHENG Lin ，  QI Ning ，  TIAN Liting .  Joint planning of 
+generalized energy storage resource and distributed 
+generator considering operation control strategy ［ J ］ .  
+Automation of Electric Power Systems ，  2019 ，  43 （ 10 ） ：  27 -
+35 ，  43 .
+［ 9 ］ 卞礼军 .  一种基于线性规划的数据中心能效管理模型建
+立 方 法 ［ J ］ .  电 信 工 程 技 术 与 标 准 化 ，  2025 ，  38 （ S 1 ） ：  
+188 - 193 .
+BIAN Lijun .  A linear programming - based method for 
+constructing a data center energy efficiency management model
+［ J ］ .  Telecom Engineering Technics and Standardization ，  
+2025 ，  38 （ S 1 ） ：  188 - 193 .
+［ 10 ］ 张彦青 ， 罗凯 ， 郝理修 ， 等 .  一种基于数字孪生的数据中
+心 能 效 管 理 方 法 及 系 统 ：  202411765086 ［ P ］ .  2025 -
+01 - 03 .
+［ 11 ］ 周京华 ， 王江博 .  数据中心供电架构概述与展望 ［ J ］ .  电
+源学报 ，  2026 ，  24 （ 1 ） ：  289 - 299 .
+ZHOU Jinghua ，  WANG Jiangbo .  Overview and prospect of 
+data center power supply architectures ［ J ］ .  Journal of 
+Power Supply ，  2026 ，  24 （ 1 ） ：  289 - 299 .
+［ 12 ］ 林嘉瑜 ， 韩俊涛 ， 王永真 ， 等 .  计及 ［ 火用 ］ 效率的低碳数
+据中心算力综合能源系统规划及运行优化 ［ J ］ .  上海交
+通大学学报 ，  2025 ，  59 （ 9 ） ：  1327 - 1337 .
+LIN Jiayu ，  HAN Juntao ，  Wang yongzhen ，  et al .  Capacity 
+planning and operational optimization for low - carbon data 
+center integrated energy system considering exergy 
+efficiency ［ J ］ .  Journal of Shanghai Jiao Tong University ，  
+2025 ，  59 （ 9 ） ：  1327 - 1337 .
+［ 13 ］ 张毓涛 ， 杨惠 ， 李韬 ， 等 .  数据中心网络 RDMA 拥塞控制
+技 术 综 述 ［ J ］ .  计 算 机 研 究 与 发 展 ，  2026 ，  63 （ 2 ） ：  
+477 - 504 .
+ZHANG Yutao ，  YANG Hui ， LI Tao ，  et al .  Survey of RDMA 
+congestion control techniques for data center networks ［ J ］ .  
+Journal of Computer Research and Development ，  2026 ，  63
+（ 2 ） ：  477 - 504 .
+［ 14 ］ 田苗苗 ，  石元 ，  李睿谦 ，  等 .  数据中心网络中感知路径
+差异的负载均衡机制 ［ J ］ .  计算机工程与应用 ，  2026 ，  62
+（ 9 ） ：  365 - 372 .
+TIAN Miaomiao ，  SHI Yuan ，  LI Ruiqian ，  et al .  Load 
+balancing mechanism with path difference awareness in 
+data center networks ［ J ］ .  Computer Engineering and 
+Applications ，  2026 ，  62 （ 9 ） ：  365 - 372 .
+［ 15 ］ 聂雪颖 ， 程懋松 ， 左献迪 ， 等 .  考虑风光消纳的风光核储
+混 合 系 统 容 量 优 化 ［ J ］ .  综 合 智 慧 能 源 ， 2025 ， 47 （ 1 ） ：  
+51 - 61 .
+NIE Xueying ，  CHENG Maosong ，  ZUO Xiandi ，  et al .  
+Capacity optimization of wind-solar-nuclear-energy 
+storage hybrid system considering wind and solar energy 
+consumption ［ J ］ .  Integrated Intelligent Energy ，  2025 ，  47
+（ 1 ） ：  51 - 61 .
+［ 16 ］ 张勋祥 ， 吴杰康 ， 孙烨桦 ， 等 .  平抑海上风电波动的混合
+储 能 系 统 容 量 优 化 配 置 ［ J ］ .  综 合 智 慧 能 源 ， 2024 ， 46
+（ 6 ） ：  54 - 65 .
+ZHANG Xunxiang ，  WU Jiekang ，  SUN Yehua ，  et al .  
+Capacity allocation optimization of hybrid energy storage 
+systems considering fluctuation control on offshore wind 
+·· 10
+
+--- Page 12 ---
+第 8/9 期 樊小朝， 等： 新疆绿色算力园区源网荷储算协同容量优化
+power［J］. Integrated Intelligent Energy ， 2024 ， 46（6） ： 
+54-65.
+［17］ 王海鸣， 张润之， 周家辉， 等. 离网式风光互补制氢合成
+绿氨系统容量配置优化分析 ［J］. 综合智慧能源，2024，
+46（11） ： 73-82.
+WANG Haiming ， ZHANG Runzhi ， ZHOU Jiahui ， et al.  
+Optimal capacity configuration of off -grid wind-solar 
+hybrid hydrogen production and green ammonia synthesis 
+system［J］. Integrated Intelligent Energy ， 2024 ， 46（11） ： 
+73-82.
+［18］ 范鹏程， 张一凡， 殷文倩， 等. 考虑储能寿命损耗的楼宇
+风光储系统储能容量优化 ［J］. 综合智慧能源，2024，46
+（11） ： 65-72.
+FAN Pengcheng ， ZHANG Yifan ， YIN Wenqian ， et al. 
+Energy storage capacity optimization of wind-PV-energy 
+storage systems for buildings considering battery life loss
+［J］. Integrated Intelligent Energy ， 2024， 46（11） ： 65-72.
+［19］ 白章， 郝文杰， 李琦， 等. 基于全生命周期评价的风光制
+氢 综 合 系 统 容 量 配 置 优 化 研 究 ［J］. 综 合 智 慧 能 源 ，
+2024，46（10） ： 1-11.
+BAI Zhang ， HAO Wenjie ， LI Qi ， et al. Capacity 
+configuration optimization of wind-solar hydrogen 
+production based on life cycle assessment ［J］. Integrated 
+Intelligent Energy ， 2024， 46（10） ： 1-11.
+［20］ 陈敏， 高赐威， 郭庆来， 等. 互联网数据中心负荷时空可
+转移特性建模与协同优化： 驱动力与研究架构 ［J］. 中国
+电机工程学报，2022，42（19） ： 6945-6958.
+CHEN Min ， GAO Ciwei ， GUO Qinglai ， et al. Modeling 
+and coordinated optimization for spatiotemporal load 
+regulation potentials of Internet data centers ： Motivation 
+and architecture［J］. Proceedings of the CSEE ， 2022 ， 42
+（19） ： 6945-6958.
+［21］ 李鉴学. 基于边缘计算的区域综合能源优化调控方法
+［D］. 上海交通大学，2020.
+LI Jianxue. Regional integraged energy optimization control 
+methods based on edge computing ［D］. Shanghai ： 
+Shanghai Jiao Tong University ， 2020.
+［22］LYU Y ，LI Z Y ， DENG D ， et al. Low -carbon dispatch of 
+integrated energy systems considering solar thermal 
+coupled combined heat and power units ［J］. Energy 
+Science and Engineering ， 2025， 13（2） ： 562-581.
+［23］ZHANG N ， YU S T. Carbon emission accounting method 
+for enterprises considering green electricity and green 
+certificate consumption ［J］. International Journal of 
+Industrial Engineering Computations ， 2026 ， 17 （1） ： 
+19-30.
+［24］Meilus E V ， Brown N. Rapid nuclear energy deployment 
+for powering predicted data center demands ［J］. Nuclear 
+Science and Engineering ， 2026： 2603094.
+［25］W
+ANG H Y ，HUA W Q ， PENG J Q ，et al. Public 
+sentiment analysis of data center energy consumption using 
+social media data and large language models ［J］. Energy 
+and Buildings ， 2025， 341： 115802.
+［26］ZHANG Y L ， LIU J. Prediction of overall energy 
+consumption of data centers in different locations ［J］. 
+Sensors， 2022， 22（10） ： 3704.
+［27］LIU Y ， HANG C Z ， YUE H ， et al. Capacity configuration 
+and optimization of PV/T coupled gas turbine multi -energy 
+cogeneration system for data center ［J］. Energy ， 
+2026： 342： 139552.
+［28］ 刘朝蓬， 王海云， 王维庆， 等 . 基于多运行场景与富氧
+燃烧捕集技术的低碳能源系统容量优化配置 ［ J］. 电力
+系统保护与控制， 2023， 51（23） ： 115-129.
+LIU Zhaopeng ， WANG Haiyun ， WANG Weiqing ， et al. 
+Capacity optimization of low carbon energy systems based 
+on multiple operating scenarios and oxygen -enriched 
+combustion capture technology ［J］. Power System 
+Protection and Control ， 2023， 51（23） ： 115-129.
+［29］ 张文伟， 王维庆， 王海云， 等 . 考虑碳捕集技术的风光 -
+富氧燃煤发电系统容量优化配置 ［J］. 电力系统自动化， 
+2023， 47（13） ： 176-189.
+ZHANG Wenwei ， WANG Weiqing ， WANG Haiyun ， et al. 
+Optimal capacity configuration for wind power-
+photovoltaic and oxygen -enriched coal -fired power 
+generation system considering carbon capture technology
+［J］. Automation of Electric Power Systems ， 2023 ， 47
+（13） ： 176-189.
+［30］ 潘艳霞， 刘国瑞， 任建婧， 等 . 面向跨季度多时段特征
+双向聚类与时序迁移的多任务短期电网负荷预测 ［ J］. 
+电网技术， 2025， 49（4） ： 1479-1490.
+PAN Yanxia ， LIU Guorui ， REN Jianjing ， et al. Multi -task 
+short-term power load forecasting with multi -seasonal time-
+slot tiered bi -directional cluster and temporal transfer 
+learning［J］. Power System Technology ， 2025 ， 49 （4） ： 
+1479-1490.
+（ 本文责编： 赵赫 ）
+收稿日期：2026 - 06 - 08；修回日期：2026 - 07 - 13
+ 附录网址：www.iienergy.cn
+作
+者简介：
+樊小朝 （1979） ， 男， 教授， 博士， 从事综合能源系统、 新能
+源发电技术、 储能技术等方面的研究，fxc1979@xju.edu.cn ；
+张志豪
+*
+（2003） ， 男， 硕士研究生， 从事综合能源系统方
+面的研究，107552504969@stu.xju.edu.cn ；
+王子龙 （2003） ， 男， 硕士研究生， 从事盐碱水电解制氢技
+术方面的研究，2117027726@ qq.com；
+史瑞静 （1980） ， 女， 教授， 博士， 从事新能源发电、 风力发
+电及储能技术等方面的研究，fxc0102@126.com ；
+孙剑桥 （2003） ， 男， 硕士研究生， 从事综合能源系统方面
+的研究，107552404976@stu.xju.edu.cn ；
+· ·11
+
+--- Page 13 ---
+第  48  卷  
+王维庆 （ 1959 ） ， 男 ， 教授 ， 硕士 ， 从事大型风力发电机组
+关键零部件研制 、 整机智能控制与检测 、 电能转换 、 继电保护
+及并网送出技术等方面的研究 ， wwq 59 @xju . edu . cn ；
+何山 （ 1974 ） ， 男 ， 教授 ， 博士 ， 从事可再生能源发电与并
+网 、 新能源制氢及综合能源 、 电力系统继电保护 、 非线性动力
+学分析与控制等方面的研究 ， 2513041660 @qq . com ；
+程志江 （ 1979 ） ） ， 男 ， 教授 ， 博士 ， 从事可再生能源发电及
+控制 、 微电网与储能控制 、 电力电子装置及 DSP 嵌入式系统
+开发等方面的研究 ， czj 010111 @ 163 . com ；
+程静 （ 1980 ） ， 女 ， 教授 ， 博士 ， 从事新能源发电及其并网
+控制 、 电力系统优化调度等方面的研究 ， xjchengjing@xju . edu .
+cn ；
+王永真 （ 1988 ） ， 男 ， 副教授 ， 博士 ， 从事综合智慧能源 、 数
+据中心算电协同 、 氢能动力系统 、 热力循环等方面的研究 ，
+wyz 80 hou@bit . edu . cn 。
+* 为通信作者 。
+·· 12

@@ -1,0 +1,1102 @@
+--- Page 1 ---
+Academic Editor: Kwok Tong Chau
+Received: 30 June 2026
+Revised: 28 July 2026
+Accepted: 4 August 2026
+Published: 5 August 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Bi-Level Stackelberg Game-Based Optimization Model for
+Shared Energy Storage in Data Centers Considering
+Computational Flexibility
+Xiaotong Qie 1,*
+ , Fengyun Wang 1,2, *
+ , Qixin Zhao 1, Yu Hu 3, Dongyang Hou 4, Jingxin Xue 5 and Jiasheng He 5
+1 School of Humanities and Social Sciences, Beijing Institute of Petrochemical Technology,
+Beijing 102617, China; zhaoqixin08@163.com
+2 Development Research Centre of Beijing New Modern Industrial Area, Beijing 102617, China
+3 School of Economics and Management, Beijing Institute of Petrochemical Technology, Beijing 102617, China;
+huyu@bipt.edu.cn
+4 State Grid Energy Research Institute, Beijing 102209, China; houdongyang@sgeri.sgcc.com.cn
+5 School of Management, China University of Mining and Technology, Beijing 100083, China;
+jingxin.xue@outlook.com (J.X.); bqt2400501002@student.cumtb.edu.cn (J.H.)
+* Correspondence: qiext1008@163.com (X.Q.); wangfengyun@bipt.edu.cn (F.W.)
+Abstract
+With the explosive growth in demand for artificial intelligence and computing power,
+the energy consumption of data centers has sharply increased, making their green and
+low-carbon operation an urgent need. Shared energy storage (SES), as a flexible regulation
+resource, can effectively facilitate renewable energy consumption and reduce system costs.
+However, existing research mostly regards data center loads as rigid loads, ignoring the
+elastic scheduling potential of latency-insensitive computing tasks, and lacking a game
+decision-making model from the perspective of SES operators to provide strategies for
+data center SES transactions. Therefore, this study constructs a SES trading optimization
+model that takes into account the flexibility of computing power. The upper-level targets
+profit maximization for the SES operator by optimizing charge and discharge strategies and
+service pricing, while the lower level minimizes the total energy cost of each computing
+center by jointly optimizing computing task scheduling and energy storage utilization
+plans. Finally, a bi-level Stackelberg game-based optimization model is constructed to solve
+the SES dispatch and, achieve benefit coordination between SES and computing center.
+The simulation results indicate that using SES without implementing load shifting cannot
+optimize the total cost of the computing power center, offering only storage revenue. Only
+by integrating SES with load shifting can a significant cost reduction be realized. The
+model presented in this article resulted in an SES revenue of 2605.34 yuan and a 3.14%
+reduction in computing center costs. This study provides a theoretical basis and decision-
+making support for shared energy storage participation in the computing power market
+and contributes to accelerating the coordinated development of computing power and
+electricity systems.
+Keywords: energy storage; data center; computing flexibility; electricity market; Stackelberg
+game
+1. Introduction
+With the rapid advancement of artificial intelligence (AI) technology, the computing
+power industry has undergone explosive growth, giving rise to non-negligible energy
+Energies 2026, 19, 3681 https://doi.org/10.3390/en19153681
+
+--- Page 2 ---
+Energies 2026, 19, 3681 2 of 19
+consumption challenges. Taking data centers as an example, national electricity consump-
+tion by data centers exceeded 150 billion kWh in 2023, accounting for 1.6% of total social
+electricity consumption, with the growth rate of energy demand becoming increasingly
+prominent. Under the explosive growth of computing power demand, the annual electricity
+consumption of data centers across the country is rapidly increasing. The traditional power
+supply mode that relies on long-distance transmission from the large power grid and
+significant peak–valley fluctuations not only fails to meet the rigid constraints of intelli-
+gent computing clusters on uninterrupted and highly reliable power, but also increases
+carbon emission intensity due to the high proportion of thermal power. In this context,
+it is urgently necessary to explore novel models including proximity renewable energy
+supply, aggregated trading, and on-site consumption, so as to increase the proportion of
+green electricity in data center operations, promote efficient green power-driven computing
+loads, and achieve safe, reliable, low-carbon, and economical operation objectives, thereby
+supporting high-quality development of data centers.
+As a flexible regulation resource, shared energy storage demonstrates significant value
+in promoting renewable energy accommodation and reducing overall system costs. On
+the one hand, energy storage systems (ESS) can charge during off-peak electricity price
+periods and discharge during peak periods, effectively mitigating the peak–valley load
+difference and alleviating grid congestion. This arbitrage capability, coupled with the pro-
+vision of ancillary services such as frequency regulation, enhances the economic viability
+of storage assets. On the other hand, data centers, as high-energy-consuming power users,
+can leverage energy storage to increase their proportion of green electricity access, thereby
+accelerating their green and low-carbon transition. By integrating ESS with power purchase
+agreements for renewable energy, data centers can shift flexible loads to periods of abun-
+dant renewable generation, enabling higher utilization of green electricity. Furthermore,
+shared energy storage enables multiple data centers within a cluster to collectively benefit
+from economies of scale, reducing individual investment costs and improving overall re-
+source utilization efficiency. Preliminary studies have been conducted on the collaborative
+optimization of data centers and shared energy storage. Jiang et al. proposed a two-stage,
+bi-level collaborative framework to optimize the capacity planning of energy storage sys-
+tems for computing centers under the direct green power supply mode, considering both
+investment and operational decisions [ 1]. Shared energy storage dispatch optimization
+models for data center clusters demonstrate the benefits of coordinated scheduling among
+multiple facilities [2,3]. These works largely concentrate on dispatch strategies and capacity
+configuration under deterministic or stochastic frameworks. However, the interplay be-
+tween computing task scheduling flexibility and pricing mechanisms, particularly within a
+game-theoretic context, has not been fully addressed, leaving room for further investigation
+into the strategic interactions between shared energy storage operators and data center
+users in electricity markets.
+Data centers can not only actively participate in demand response from the power
+side through energy storage systems, but also possess regulatory potential from the com-
+puting side. This computing-side flexibility arises from the temporal shiftability of specific
+workloads, which can be rescheduled to periods of lower electricity prices or higher re-
+newable energy availability, complementing the physical flexibility provided by storage.
+Data center workloads can typically be classified into two categories: latency-sensitive
+tasks and latency-tolerant tasks. Latency-sensitive tasks, such as model training, offline
+inference, and batch processing jobs, only need to be completed before their deadlines,
+with processing time that can be flexibly scheduled within a certain window, exhibiting
+significant temporal flexibility [ 4]. This elasticity allows data centers to shift electricity
+consumption across time without violating service level agreements, creating new op-
+https://doi.org/10.3390/en19153681
+
+--- Page 3 ---
+Energies 2026, 19, 3681 3 of 19
+portunities for demand-side participation in electricity markets. Zhou et al. proposed a
+hierarchical load-modeling framework that simultaneously characterizes the energy con-
+sumption features of real-time interactive loads and latency-tolerant batch processing jobs,
+effectively achieving demand response while ensuring quality of service [5]. Zhou et al.
+further quantified the diverse real-time adjustable resources within both computing nodes
+and power nodes, and proposed a bi-level two-stage computing-electricity coordinated
+optimization dispatch model that unifies computing elasticity and energy storage resources
+within a single optimization framework, achieving efficient and coordinated utilization
+of computing-electricity resources [ 6]. While these works establish a solid foundation
+for computing-power coordination, they predominantly assume dedicated storage assets
+and do not investigate the strategic pricing interactions between a shared energy storage
+operator and multiple data center users. This gap highlights the need for a game-theoretic
+model that integrates computing flexibility into shared energy storage trading, which is the
+focus of this work.
+A mathematical framework for analyzing strategic interactions among multiple
+decision-makers, game theory offers a systematic approach to multi-agent optimization
+problems characterized by conflicting or partially aligned interests. Unlike conventional
+centralized optimization methods, game theory does not require the assumption of com-
+plete information sharing or perfectly aligned objectives among participants. Instead, by
+explicitly modeling the decision variables, strategy spaces, and payoff functions of each
+agent, it seeks equilibrium solutions in which no participant has an incentive to unilaterally
+deviate from their chosen strategy—thereby more realistically capturing the decentralized,
+self-interested decision-making behavior observed in real-world systems. Among the
+various game-theoretic frameworks, the Stackelberg leader–follower game has attracted
+particular attention for its ability to capture the inherent hierarchical relationship that exists
+among decision-makers, in which the leader formulates its strategy by anticipating the
+follower’s optimal response, while the follower subsequently reacts optimally upon observ-
+ing the leader’s decision, together forming a bi-level optimization problem. This modeling
+paradigm has been widely applied across domains such as resource allocation, dynamic
+pricing, and task scheduling to address multi-agent coordination problems characterized
+by information asymmetry and unequal decision-making power, offering a theoretical foun-
+dation for designing operational mechanisms that simultaneously safeguard the economic
+interests of individual participants and improve overall system efficiency.
+Research in the energy market typically involves numerous stakeholders, such as
+power grids, consumers, and energy storage operators. Their interactions in power genera-
+tion, transmission, trading, and consumption are often both competitive and cooperative,
+which is naturally suitable for game theory methods. In recent years, game theory has
+been widely applied to model typical interactions in electricity markets, for instance,
+pricing games between electricity retailers and consumers over time-of-use tariffs, and
+non-cooperative games among generators bidding for grid access. In shared energy stor-
+age transactions among data centers, the energy storage operator acts as the price setter,
+while individual data centers respond by scheduling their flexible loads and storage usage,
+naturally forming a Stackelberg game. The absence of such a pricing interaction model
+means that the mechanism for balancing storage revenue against data centers’ energy
+costs remains underexplored, thereby limiting the practical applicability of shared storage
+solutions in emerging computing power markets.
+Therefore, this paper takes shared energy storage as the research object and fully
+considers the elastic scheduling characteristics of latency-insensitive batch processing tasks
+within data centers. We constructed a Stackelberg game optimization model for shared
+energy storage trading that explicitly accounts for computing flexibility. The upper level
+https://doi.org/10.3390/en19153681
+
+--- Page 4 ---
+Energies 2026, 19, 3681 4 of 19
+aims to maximize the profit of the shared energy storage operator by jointly optimizing
+the charging and discharging strategies of the energy storage system and the service
+pricing offered to users. The lower level aims to minimize the comprehensive energy
+consumption cost of each computing center by collaboratively optimizing computing task
+scheduling and the plan for utilizing the leased storage capacity, subject to task deadlines
+and quality-of-service requirements. The interaction between the two levels captures the
+sequential decision process in which the operator first announces pricing, and then users
+react, with the operator anticipating their responses. The model is solved through a bi-
+level alternating iterative algorithm that converges to a Stackelberg equilibrium, achieving
+benefit coordination between the energy storage operator and computing center users.
+This work provides a theoretical basis and decision support for shared energy storage
+participation in the computing market, facilitating the efficient integration of computing
+flexibility and storage sharing toward cost-effective and low-carbon data center operations.
+2. Literature Review
+Compared with centralized energy storage, shared energy storage demonstrates signif-
+icant advantages in utilization rate, cost sharing, and dispatch flexibility. Li et al. conducted
+an empirical comparison in residential scenarios and found that the annual utilization rate
+of energy storage devices can be improved under the shared model, while the energy cost
+per user is reduced, providing direct economic evidence for the promotion of shared energy
+storage [7]. Miller and Carriveau proposed that the synergy between shared energy storage
+dispatch strategies and market mechanisms is a key factor affecting the development of
+energy storage [ 8]. Xie et al. investigated the potential advantages of the multi-agent
+distributed shared energy storage service pattern in distribution networks [9]. Xiao et al.
+proposed an online coordinated dispatch framework for shared energy storage in intercon-
+nected data center microgrid scenarios, achieving energy complementarity among multiple
+microgrids [9]. For the business model, Kang et al. further proposed a two-stage multi-load
+collaborative shared energy storage model, realizing demand response optimization for
+multiple types of loads in data center clusters [10].
+In the study of trading pricing mechanisms, game theory is the dominant approach.
+Jiang et al. adopted a cooperative game theory perspective and utilized the Shapley value
+for revenue allocation, proving the applicability of cooperative game theory in multi-
+microgrid shared energy storage scenarios [11]. Xu et al. proposed a bi-level optimization
+model for the shared hybrid hydrogen energy storage system to optimize the capacity
+configuration decisions and the pricing strategy jointly [12]. Li et al. proposed a stochastic
+optimized configuration method of SES in renewable energy power plants considering
+multiple primary–secondary game-pricing modes based on the uncertainty of renewable
+energy output [13]. However, most of the aforementioned trading models assume user
+loads as rigid demands and do not fully consider the dispatch potential of adjustable
+resources on the user side.
+As high-energy-consumption entities, data centers exert a significant influence on the
+dispatch strategies of shared energy storage through their load characteristics. Although
+conventional studies typically treat data centers as rigid electricity consumers, recent re-
+search has begun to systematically quantify their flexibility resources. In recent years,
+research on computing-energy synergy has progressively deepened. Su et al. leveraged
+IoT technology to quantify the adjustable potential of data centers, providing data sup-
+port for elastic computing scheduling [14]. Lu et al. proposed an online elastic resource
+provisioning framework with QoS guarantees, and theoretically proved that computing
+resources in container-based cloud scenarios can be elastically scheduled online while
+satisfying quality-of-service constraints [15]. Zhang et al. further systematically unlocked
+https://doi.org/10.3390/en19153681
+
+--- Page 5 ---
+Energies 2026, 19, 3681 5 of 19
+data center flexibility by proposing a joint optimization method for energy storage dispatch
+and design under progressive loading, quantifying the regulation capacity that data centers
+can provide to the grid [16].
+From the perspective of computing-energy collaborative optimization, Liu et al. jointly
+modeled the spatiotemporal migration characteristics of data center computing loads with
+shared energy storage dispatch, achieving computing-energy synergy optimization from a
+virtual power plant perspective [17]. Wu investigated the configuration and operation of
+data center shared energy storage from a stochastic programming perspective, considering
+the dual uncertainties of renewable generation and computing demand [ 18]. However,
+most existing studies on computing flexibility focus on internal optimization of individual
+data centers. Few works have incorporated computing elasticity into the shared energy
+storage trading framework, leaving the potential value of “computing + storage” synergy
+insufficiently explored.
+The Stackelberg game is capable of characterizing the hierarchical decision-making
+relationship between leaders and followers in the market, and has been widely applied
+in energy-trading modeling. Its core advantage lies in the rational allocation of decision-
+making authority: the upper-level leader first sets prices or strategies, while the lower-level
+followers optimize their own decisions under the given strategies, with the equilibrium
+ultimately solved through backward induction. In the field of shared energy storage, Wang
+et al. applied a Stackelberg game to optimize the trading strategy of shared energy storage,
+proving that this method has improved economic benefits for all participants [19]. Jiang et al.
+adopted a cooperative game theory perspective and utilized the Shapley value for revenue
+allocation, which can serve as a methodological comparison to the bi-level game [11]. Lin
+et al. established a collaborative optimization dispatch model for multiple virtual power
+plants and shared energy storage considering electricity price uncertainty, employing robust
+optimization to handle price fluctuations; however, service quality was not addressed [20].
+The aforementioned studies have validated the effectiveness of the bi-level game in energy
+storage trading across different scenarios, yet they share a common limitation: none of
+them consider the impact of user-side load flexibility on trading equilibrium. In data center
+scenarios, computing elasticity itself constitutes a tradable flexibility resource. Excluding it
+from the game framework not only underestimates the system’s regulation potential but
+also causes pricing strategies to deviate from the true equilibrium.
+In addition, recent advances in intelligent optimization and machine learning meth-
+ods, such as reinforcement learning based dynamic resource allocation [ 21], intelligent
+optimization of energy systems under varying operating conditions [22], and intelligent
+digital architectures and optimization strategies for complex industrial systems [23], which
+have demonstrated significant advantages in handling high-dimensional, nonlinear, and
+time-varying decision-making problems in energy management and resource scheduling.
+These studies provide cross-domain methodological support for the modeling approach
+adopted in this work, which embeds computational flexibility into the game equilibrium.
+At the same time, they also indicate that existing game-theoretic frameworks based on de-
+terministic mathematical programming still have room for improvement when addressing
+dynamic, high-dimensional scenarios, an aspect identified as a direction for future research
+in this work.
+From a comprehensive perspective, existing studies have made certain progress in
+the collaborative optimization of data centers and shared energy storage; however, the
+following limitations remain, as shown in Table 1. On one hand, the majority of studies
+treat data center loads as rigid loads, failing to fully exploit the elastic scheduling potential
+of latency-insensitive computing tasks. This oversight means that the temporal flexibility
+inherent in tasks such as model training, offline inference, and batch processing is not
+https://doi.org/10.3390/en19153681
+
+--- Page 6 ---
+Energies 2026, 19, 3681 6 of 19
+harnessed to shift electricity consumption to periods of lower prices or higher renewable
+availability. Consequently, computing-side flexibility resources remain excluded from
+a unified optimization framework, leading to suboptimal coordination between power
+demand and storage dispatch [24,25]. On the other hand, existing works rarely construct
+decision models from the perspective of shared energy storage operators based on the
+game-theoretic relationship between operators and computing center users [26].
+Table 1. Summary and comparison of existing literature.
+Category Approach Advantages Ref. Limitations
+Shared energy
+storage operation
+and trading
+mechanism
+Empirical/operation-
+mode analysis
+Provides economic
+evidence for shared
+ESS; identifies key
+research priorities
+[9] Does not address
+dynamic
+pricing-load
+interaction, and
+load-side adjustable
+resources not
+modeled
+Trading
+model/two-stage
+business model
+Offers
+market-oriented
+operation reference;
+enables multi-load
+demand response
+[10,16,20,27]
+Pricing mechanism
+Cooperative game
+(Shapley)/Nash
+bargaining
+Achieves fair
+revenue allocation
+and Pareto
+optimality
+[11] Load flexibility not
+integrated; lack of
+dynamic pricing
+mechanism for
+energy storage and
+computing center
+transactions
+Bi-level/non-
+cooperative game
+pricing
+Validates
+bidding/pricing
+mechanisms in
+improving
+economics
+[12,13]
+Data center
+operation
+Computational
+flexibility; shiftable
+data load modeling
+Quantifies data
+center flexibility
+potential
+[14–18]
+Lacks game-theoretic
+pricing interaction
+with ESS operator
+considering load
+flexibility and joint
+scheduling
+optimization with
+energy storage
+Achieves
+computing-energy
+coordinated dispatch
+[17]
+Stackelberg game
+applications
+Stackelberg
+game/robust
+optimization
+Validates bi-level
+game framework in
+multi-agent ESS
+trading
+[13,19,20]
+Excludes computing
+elasticity from game
+equilibrium
+Therefore, this paper proposes a dual-layer game trading model for shared energy
+storage that takes into account computational flexibility. The contribution of the proposed
+model in this study is to incorporate the elastic scheduling potential of latency-insensitive
+computing tasks into the shared energy storage trading framework. Specifically, a Stackel-
+berg game model is constructed, where the upper-level objective is to maximize the profit of
+the shared energy storage operator and the lower-level objective is to minimize the compre-
+hensive energy cost of the data center. In this model, the upper level jointly optimizes the
+energy storage charging and discharging strategy and service pricing, while the lower level
+collaboratively optimizes the computing task scheduling and energy storage utilization
+plan. Case studies demonstrate that the proposed model can reduce the energy cost of data
+https://doi.org/10.3390/en19153681
+
+--- Page 7 ---
+Energies 2026, 19, 3681 7 of 19
+centers while simultaneously improving the revenue of the shared energy storage operator,
+thereby validating the economic value of “computing + storage” synergistic optimization.
+3. Problem Formulation
+The operation framework of the data center and shared energy storage is illustrated
+in Figure 1. As shown in the figure, the grid-distributed photovoltaic (PV) systems, dis-
+tributed wind power, and energy storage station modules jointly supply electricity to the
+data center. The energy storage system can serve as a flexible resource in the electricity
+market by purchasing low-cost electricity during peak periods for storage and subsequently
+discharging it during demand peak periods of the computing center, thereby balancing
+supply and demand, reducing energy waste, and capturing revenue. In this paper, the
+energy storage system is regarded as an independent market participant, equivalent to
+other market entities, providing services to multiple data centers within the park under a
+shared mode.
+Figure 1. Data center operation framework diagram.
+Although the framework above outlines the basic operational logic of the system, the
+following key challenges remain in the coordinated operation of shared energy storage and
+multiple data centers:
+(1) Interest coordination and gaming challenge. The energy storage operator aims to
+maximize arbitrage revenue, while each data center aims to minimize its electricity
+procurement cost. These objectives are conflicting yet interdependent, making it
+necessary to establish an effective coordination mechanism.
+(2) Heterogeneous load-scheduling challenge. Data centers contain both latency-sensitive
+tasks and shiftable data loads (SDL). Without a unified pricing signal, coordinating
+load scheduling across multiple data centers to achieve system-wide peak-shaving
+and valley-filling remains a systematic challenge.
+(3) Absence of a dynamic pricing mechanism. Existing studies often treat the storage
+operator’s pricing decisions and the data centers’ scheduling responses separately,
+https://doi.org/10.3390/en19153681
+
+--- Page 8 ---
+Energies 2026, 19, 3681 8 of 19
+lacking a bi-level dynamic mechanism that captures their strategic interaction, making
+it difficult to characterize the system’s equilibrium under multi-agent gaming.
+To address the above challenges, this paper aims to:
+• Establish a Stackelberg game-based bi-level decision-making framework, in which the
+energy storage operator acts as the leader setting the internal transaction price, and
+the data centers act as followers optimizing their load-scheduling strategies, thereby
+addressing the interest coordination challenge.
+• Develop a shiftable load-scheduling optimization model for data centers that distin-
+guishes between latency-sensitive and latency-tolerant tasks, enabling coordinated
+load scheduling driven by the pricing signal, thereby addressing the heterogeneous
+load-scheduling challenge.
+• Derive and analyze the Stackelberg equilibrium of the proposed game, demonstrat-
+ing that the equilibrium pricing and scheduling strategies can jointly optimize stor-
+age revenue and data center costs, thereby addressing the absence of a dynamic
+pricing mechanism.
+4. Methodology
+Based on the aforementioned problem description and operational framework, this pa-
+per constructs a bi-level decision-making model for the collaborative optimization between
+the shared energy storage (SES) operator and data centers, aiming to achieve coordinated
+optimal dispatch of shared energy storage and computing resources. In this bi-level
+decision-making model, the SES operator serves as the upper-level leader, while the data
+centers act as lower-level followers.
+4.1. Upper-Level Decision Model
+The upper-level decision model maximizes the profit of the shared energy storage (SES)
+operator by transmitting electricity price signals and demand response instructions to the
+lower-level data centers, thereby incentivizing the data centers to adjust their computing
+loads across different time periods and guiding them to optimize their own electricity
+consumption decisions.
+4.1.1. Objective Function
+The objective function of the upper-level decision model comprises three components,
+namely the total revenue from electricity sales by the shared energy storage (SES) operator
+Idis
+t,s , the electricity procurement cost from the grid Cch
+t,s, and the charging/discharging
+loss cost Clo
+t,s. Equation (1) is used to formulate the overall objective function. Since
+fixed investment costs and fixed loss costs remain constant regardless of decision variable
+changes and do not affect the optimal solution, these fixed costs are excluded from the
+model design. Equation (3) is used to calculate the electricity purchasing cost Clo
+t,s, which
+depends on the procurement volume of the shared energy storage operator and the current
+market electricity price [ 28]. The charging/discharging loss cost of the energy storage
+system refers to the cost of energy losses incurred during the charging and discharging
+processes, where the energy conversion efficiency cannot reach 100% [29]. Equation (4) is
+used to compute the charge and discharge loss cost.
+maxR = Idis
+t − Cch
+t − Clo
+t (1)
+Idis
+t = Pdis
+t · λdis
+t (2)
+Cch
+t = Pch
+t · λch
+t (3)
+https://doi.org/10.3390/en19153681
+
+--- Page 9 ---
+Energies 2026, 19, 3681 9 of 19
+Clo
+t = λch
+t Pch
+t (1 − ηch) △ T + λdis
+t Pdis
+t ( 1
+ηdis − 1) △ T (4)
+where Pch
+t,s denotes the charging power of the energy storage system at timet under scenario
+s; ηch represents the charging efficiency; ηdis represents the discharging efficiency; and △T
+denotes the time interval.
+4.1.2. Constraints
+(1) Charge and discharge power constraint
+The charging and discharging power of the energy storage system must not exceed
+the rated power limits. Equations (5)–(8) are used to formulate the corresponding power
+constraints of the energy storage system.
+Pch,e
+t = Pch
+t · ηch (5)
+Pdis
+t = Pdis,e
+t · ηdis (6)
+
+
+
+Pdis
+t =
+I
+∑
+i=1
+Pdis
+i,t
+Pch
+t =
+I
+∑
+i=1
+Pch
+i,t
+(7)
+(
+0 ≤ Pdis
+t ≤ Pmax · µdis
+t
+0 ≤ Pch
+t ≤ Pmax · µch
+t
+(8)
+uch
+t + udis
+t ≤ 1, ∀t (9)
+where ηch and ηdis represent the charging and discharging efficiencies of the battery, re-
+spectively; Pdis
+i,t and Pch
+i,t represent the electricity sold to and purchased from data center
+i, respectively; Pdis
+t and Pch
+t denote the total electricity sold and purchased by the SES
+operator during time period t, respectively; Pdis,e
+t and Pch,e
+t represent the actual discharging
+and charging power of the ESS during time period t, respectively; uch
+t and udis
+t are binary
+variables, where uch
+t = 1 indicates that the energy storage system is charging and udis
+t = 1
+indicates that it is discharging; T is the total number of time periods, set to 24 in this paper;
+and I denotes the number of data centers within the service scope of the shared energy
+storage. Since the charging and discharging operations of the energy storage system cannot
+be performed simultaneously, Equation (9) is used to enforce the mutual exclusivity con-
+straint, where uch
+t and udis
+t are binary variables representing the charging and discharging
+states of the energy storage system at time t, respectively.
+(2) Energy storage state of charge (SOC) constraints
+The state of charge (SOC) of the energy storage battery is calculated using Equations
+(10) and (11). The SOC is required to remain within the prescribed minimum and maximum
+limits. Equation (12) is used to formulate the SOC constraint.
+SOCt = St
+Smax
+(10)
+St = St−1 · (1 − ϕ) − Pdis,e
+t · ∆t + Pch,e
+t · ∆t (11)
+SOCmin ≤ SOCt ≤ SOCmax (12)
+where St denotes the SOC of ESS during time period t; ϕ is the self-discharge coefficient
+of the energy storage; SOCmin and SOCmax represent the maximum and minimum SOC
+limits, respectively.
+https://doi.org/10.3390/en19153681
+
+--- Page 10 ---
+Energies 2026, 19, 3681 10 of 19
+In addition, to ensure the sustainability of the dispatching schedule, the total charging
+and discharging energy must be balanced over the entire scheduling cycle. Equation (13) is
+used to enforce the energy balance constraint.
+SOC1 · (1 − ε) ≤ SOC24 ≤ SOC1 · (1 + ε, s) (13)
+where SOC1 is the initial SOC of the ESS; SOC24 is the SOC at the end of the intra-day
+scheduling period; ε is the tolerance of the final charging state, meaning that the final SOC
+at the end of the day should remain within the tolerance range of the initial SOC.
+(3) Internal pricing constraints
+The shared energy storage operator adopts an internal electricity pricing mechanism
+to facilitate electricity trading with data centers. The internal price is set with reference to
+the grid electricity price [30], and must satisfy the following constraint.
+λ f
+t ≤ λdis
+t ≤ λt (14)
+where λ f
+t denotes the feed-in tariff at time period t; λdis
+t represents the internal selling price
+set for data centers at time period t, respectively; and λt is the grid electricity price charged
+to data centers.
+4.2. Lower-Level Decision Model
+The lower level constitutes the data center decision optimization model. The objective
+of the lower-level model is to minimize the total operating cost of the data centers. Each
+data center achieves cost optimization by adjusting its computing task allocation strategy.
+4.2.1. Objective Function
+The objective function comprises the electricity procurement cost from the grid and the
+electricity procurement cost from the shared energy storage (SES). The detailed formulation
+is in Equations (15)–(17).
+minCIDC = Cgrid + Cess (15)
+Cgrid =
+T
+∑
+t=1
+I
+∑
+i=1
+PG
+i,t · γt (16)
+Cess =
+T
+∑
+t=1
+I
+∑
+i=1
+Pdis
+i,t · γdis
+t (17)
+where PG
+i,t denotes the electricity procurement power of data center i from the grid at time t;
+Pdis
+i,t denotes the electricity procurement power of data center i from the SES at time t.
+4.2.2. Constraints
+(1) Load-processing capacity constraint
+The workload processed by each data center at each time period is limited by the
+number of servers. The total workload must not exceed the prescribed limit. Equation
+(18) is used to formulate the upper-bound constraint. In addition, the dispatched load
+at each time period is required to be non-negative and must not exceed its upper bound.
+Equations (19) and (20) are used to enforce the non-negativity and upper-bound constraints,
+respectively. After the data load processing is completed, it is fed back to the user in the
+form of a data stream. Due to the limitation of network bandwidth during the transmission
+https://doi.org/10.3390/en19153681
+
+--- Page 11 ---
+Energies 2026, 19, 3681 11 of 19
+process, task delays are inevitable. To ensure service quality, constraints are set as shown in
+Equation (21)
+0 ≤ Di,t ≤ DSER
+i,max (18)
+T
+∑
+t′′ =t+1
+DTran
+i,t→t′′ ≤ DTran0
+i,t (19)
+0 ≤ DTran
+i,t→t′′ (20)
+Di,t
+NSER
+i · B ≤ ∆t (21)
+where DSER
+i,max denotes the maximum workload-processing capacity of data center i at time
+period t. DTran
+i,t→t′′ denotes the workload shifted from time period t to time period t′′. DTran0
+i,t
+denotes the maximum workload that data center i can shift in each time period. NSER
+i
+denotes the number of servers in each data center. B denotes the bandwidth (kB/s) of a
+single server connected to the user’s network.
+(2) Power balance constraints
+In practical applications, the model must also satisfy power balance constraints. These
+constraints couple the data center’s electricity consumption power, the energy storage system
+power, and the grid supply power, ensuring that electricity demand and supply remain
+balanced in each time period. The specific constraints are formulated in Equations (22)–(25).
+PIDC
+i,t + Pdis
+i,t = PPV
+i,t + PWT
+i,t + PG
+i,t − PAB
+i,t (22)
+PG
+i,t ≥ 0 (23)
+Pdis
+i,t ≥ 0 (24)
+PAB
+i,t ≥ 0 (25)
+where PPV
+i,t and PWT
+i,t denote the distributed photovoltaic and wind power generation at
+time t, respectively; PG
+i,t represents the power exchanged between data center i and the grid,
+which is constrained to be non-negative to ensure unidirectional power purchase from the
+grid. PAB
+i,t represents the amount of abandoned photovoltaic and wind power.
+4.3. Computational Flexibility Modeling
+The energy consumption of data centers primarily originates from IT equipment, air
+conditioning (cooling) equipment, and other auxiliary regulatory devices [31]. Given the
+minor energy contribution of the auxiliary devices, the data center’s overall power usage
+can be modeled as a sum of individual components, as formalized by Equations (26)–(28).
+PIDC
+i,t =
+PSER
+i,t + PACS
+i,t
+η IDC
+i
+(26)
+PSER
+i,t = k · f 3
+µ · Di,t (27)
+PACS
+i,t = ε
+η ACS · PSER
+t (28)
+where Equation (27) represents the IT equipment energy consumption model. The IT
+equipment power is proportional to the cube of the central processing unit (CPU) operating
+frequency and to the workload to be processed by the data center in time periodt. Equation
+(28) represents the air conditioning cooling equipment energy consumption model, which
+https://doi.org/10.3390/en19153681
+
+--- Page 12 ---
+Energies 2026, 19, 3681 12 of 19
+is calculated based on the linear relationship between the IT equipment electric power and
+the cooling equipment cooling power. PSER
+i,t denotes the IT equipment energy consumption;
+PACS
+i,t denotes the air conditioning cooling equipment energy consumption; η IDC
+i represents
+the data center energy ratio, defined as the proportion of the sum of IT and cooling energy
+consumption to the total energy consumption; k is the dynamic energy consumption
+coefficient; f is the CPU operating frequency (GHz); µ is the average service rate of the
+servers (%); Di,t denotes the final total workload in time period t (GB); ε is the conversion
+coefficient, specifically the ratio of the cooling equipment cooling power to the IT equipment
+electric power; η ACS is the energy efficiency coefficient of the air conditioning equipment,
+defined as the ratio of cooling power to electric power.
+The computational workload of a data center, defined as the processing load required
+in each time period, can be classified into shiftable data load (SDL) and rigid load according
+to the response time requirements of the demand response services provided to customers.
+Di,t = D0
+i,t +
+t−1
+∑
+t′=1
+DTran
+i,t′→t −
+T
+∑
+t′′ =t+1
+DTran
+i,t→t′′ (29)
+where D0
+i,t denotes the initial workload of data center i at time period t.
+Shiftable data load (SDL), also referred to as batch-processing load, has no strict
+deadline constraint and only requires completion within a specified time window. Typical
+examples include large model pre-training, offline batch inference, and data preprocessing.
+The SDL is calculated in Equations (30) and (31).
+DTran0
+i,t = βTran · D0
+i,t (30)
+DTran
+i,t = DTran0
+i,t +
+t−1
+∑
+t′=1
+DTran
+i,t′→t −
+T
+∑
+t′′ =t+1
+DTran
+i,t→t′′ (31)
+where βTran denotes the curtailable load ratio.
+Rigid load tasks have zero tolerance for latency and must be executed in real time
+at the designated moment. Typical examples include interactive inference requests and
+real-time video stream processing. The rigid load is calculated in Equation (32).
+DRigi
+i,t = (1 − βTran) · D0
+i,t (32)
+4.4. Solving Method
+Since the lower-level objective function contains nonlinear terms, specifically the
+product of internal electricity prices and charging/discharging power, this paper adopts a
+numerical optimization method based on the Karush–Kuhn–Tucker (KKT) conditions [32]
+to convert the bi-level optimization problem into a mixed-integer linear programming
+(MILP) problem for solution. The decision variables include the continuous variables: the
+data center’s power purchased from the grid PG
+i,t, the power purchased from the shared
+energy storage Pdis
+i,t , the data center’s final total workload Di,t, and the transferable load at
+time period t, denoted DTran
+i,t .
+Let the dual variables of the linear programming constraints Equations (18)–(25) be
+denoted as µ−
+i,t, µ+
+i,t, βi,t, πi,t, θi,t, σi,t, νi,t, and δi,t, respectively. The Lagrangian function of
+https://doi.org/10.3390/en19153681
+
+--- Page 13 ---
+Energies 2026, 19, 3681 13 of 19
+the lower-level problem can then be constructed, yielding the following KKT conditions
+for the above linear programming formulation.
+γt + θi,t − σi,t = 0, ∀t, ∀i
+γdis
+t − θi,t − νi,t = 0, ∀t, ∀i
+αi,t · (θi,t − θi,t→t′′ ) + (µ−
+i,t + µ+
+i,t) − (µ−
+i,t→t′′ + µ+
+i,t→t′′ ) +βi,t − πi,t = 0
+0 ≤ µ−
+i,t⊥Di,t ≥ 0, ∀t, ∀i
+0 ≤ µ+
+i,t⊥(DSER
+i,max − Di,t) ≥ 0, ∀t, ∀i
+0 ≤ βi,t⊥(DTran0
+i,t −
+T
+∑
+t′′ =t+1
+DTran
+i,t→t′′ ) ≥ 0, ∀t, ∀i
+0 ≤ πi,t⊥DTran
+i,t→t′′ ≥ 0, ∀t, ∀i
+PIDC
+i,t − Pdis
+i,t − PPV
+i,t − PWT
+i,t − PG
+i,t + PAB
+i,t = 0, ∀t, ∀i
+0 ≤ σi,t⊥PG
+i,t ≥ 0, ∀t, ∀i
+0 ≤ νi,t⊥Pdis
+i,t ≥ 0, ∀t, ∀i
+0 ≤ δi,t⊥(∆t − Di,t
+NSER
+i · B ) ≥ 0, ∀t, ∀i
+(33)
+By introducing binary variables z1, z2, · · ·, z7 and applying the Big-M method, the
+nonlinear constraints are transformed into the following linear inequalities.
+0 ≤ µ−
+i,t ≤ M · z1
+0 ≤ Di,t ≤ M · (1 − z1)
+0 ≤ µ+
+i,t ≤ M · z2
+0 ≤ DSER
+i,max − Di,t ≤ M · (1 − z2)
+0 ≤ βi,t ≤ M · z3
+0 ≤ DTran0
+i,t −
+T
+∑
+t′′ =t+1
+DTran
+i,t→t′′ ≤ M · (1 − z3)
+0 ≤ πi,t ≤ M · z4
+0 ≤ DTran
+i,t→t′′ ≤ M · (1 − z4)
+0 ≤ σi,t ≤ M · z5
+0 ≤ PG
+i,t ≤ M · (1 − z5)
+0 ≤ νi,t ≤ M · z6
+0 ≤ Pdis
+i,t ≤ M · (1 − z6)
+0 ≤ δi,t ≤ M · z7
+0 ≤ ∆t − Di,t
+NSER
+i · B ≤ M · (1 − z7)
+(34)
+5. Case Study
+5.1. Basic Data and Parameters
+To validate the proposed model and algorithm, simulation experiments are conducted
+based on the scale of a real-world data center, with partial parameters adopted from [33,34].
+Three data centers (IDC1, IDC2, IDC3), constructed and managed by the same operator, are
+considered. The three data centers are geographically adjacent and share identical hardware
+components and performance parameters across their servers. The scheduling time step
+is set to 1 h, with a unit-scheduling horizon of 1 day. Data center energy consumption
+parameters are referenced from [17]. The shared energy storage system constructed in this
+paper employs lithium-ion (Li-ion) batteries as the storage medium. The shared energy
+storage system has a total power capacity of 1000 kW and an energy capacity of 6000 kWh.
+The state of charge (SOC) is constrained within [0.1, 0.9], with an initial SOC of 0.5. The
+self-discharge coefficient is set to 0.04% per time period 28. Both charging and discharging
+https://doi.org/10.3390/en19153681
+
+--- Page 14 ---
+Energies 2026, 19, 3681 14 of 19
+efficiencies are 0.95. The terminal SOC tolerance is set to 5% [28]. The model is solved using
+Python 3.8 with the Gurobi optimizer.
+5.2. Result Analysis
+Based on the data center parameters and SES configurations specified above, the
+optimization yields the SES charging and discharging trading strategy that accounts for
+computing flexibility. The results are illustrated in Figure 2. As shown in Figure 2, the
+SES exhibits two typical charge and discharge cycles. The first cycle occurs approximately
+during periods 3 to 11, during which the SES starts with a low-power charging at time 3,
+then rapidly charges at full power at time 4 until reaching the upper limit, and discharges
+to the data center during periods 7 and 11. The second cycle occurs approximately during
+periods 14 to 21, during which the ESS undergoes full-power charging again from periods
+14 to 18, and discharges power during periods 19 and 21. It can be observed that the
+charging of the SES is concentrated during valley and flat electricity price periods, while
+discharging occurs during peak price periods. This enables the SES operator to capture
+arbitrage profits by purchasing electricity at low prices and selling it at high prices.
+Figure 2. Charging and discharging power of SES.
+Figure 3 illustrates the daily variation curve of SOC for ESS. The SES primarily executes
+a single valley-charging and peak-discharging operation. The SOC remains within the safe
+operating range of [0.1, 0.9] throughout the entire day. Specifically, the SOC maintains
+its initial level of approximately 0.5 during periods 0–3. During periods 4–7, the SOC
+rises rapidly to the upper limit of 0.9 under high-power charging. Subsequently, the SOC
+declines to approximately 0.1 due to continuous discharging. A second charging cycle is
+initiated in period 13, during which the SOC recovers to approximately 0.9. Thereafter,
+the SOC gradually decreases to approximately 0.48 and stabilizes during periods 20–23.
+Owing to the coordination of flexible computing tasks, the SES does not need to shoulder
+the entire peak-shaving burden alone. The depth of discharge cycles is moderately reduced,
+which effectively mitigates electrochemical degradation of the battery and contributes to
+extending its economic lifetime.
+https://doi.org/10.3390/en19153681
+
+--- Page 15 ---
+Energies 2026, 19, 3681 15 of 19
+Figure 3. Daily variation curve of SOC for ESS.
+Figure 4 illustrates the scheduling distribution of shiftable data load across all time
+slots throughout the day for the computing data centers. The SDL of DC1 remains at a
+consistently low level over the entire day, with only minor fluctuations observed during
+time slot 6 and slots 10–18. The SDL of DC3 exhibits minor fluctuations at time slot 1–6,
+followed by a second significant peak at time slot 12. The SDL of DC2 is concentrated in
+the 12–23 and 0–6 time periods, indicating that a substantial volume of latency-insensitive
+tasks is concentrated and deferred to the late-night and early morning off-peak periods
+for execution. The coordinated SDL scheduling across the three data centers collectively
+achieves temporal load shifting of the computing workload, thereby alleviating the grid
+power procurement pressure during peak periods.
+Figure 4. Shiftable data load variation curve of computing power center.
+The above results demonstrate the performance of the SES and computing power
+centers. To further validate the effectiveness of the model, the following Discussion section
+proves it through multi-scenario comparison and sensitivity analysis.
+5.3. Discussion
+(1) Comparison of multiple scenes
+To verify the effectiveness of the model, this paper designed two benchmark scenarios
+for comparison with the model presented in this paper. Scenario 1 is without the shared
+energy storage and also do not consider the flexibility of computing power during the
+operation of the data centers. Scenario 2 with shared energy storage services, but without
+https://doi.org/10.3390/en19153681
+
+--- Page 16 ---
+Energies 2026, 19, 3681 16 of 19
+considers the flexibility of data center computing power. The model in this study is set to
+Scenario 3. Under unchanged parameters, the simulation results of the three scenarios are
+shown in Table 2.
+Table 2. Comparison results of multiple scenarios.
+Scenarios Total Cost of DC (104 Yuan) Energy Storage Revenue (Yuan)
+Scenario 1 72.13 -
+Scenario 2 72.13 2605.34
+Scenario 3 69.93 2605.34
+The proposed model, Scenario 3, leverages the synergy of energy storage and load
+shifting to achieve the lowest total cost of 69.93 ten thousand yuan along with an energy
+storage revenue of 2605.34 yuan. Scenario 1, without storage or load shifting, and Scenario
+2, with storage but no load shifting, exhibit nearly identical total costs of approximately
+72.13 ten thousand yuan, an increase of about 3.14 percent. Scenario 1 yields no energy
+storage revenue, whereas Scenario 2 obtains the same revenue as the proposed model due
+to its storage installation but fails to reduce the total cost. This demonstrates that merely
+adding energy storage without implementing load shifting cannot optimize the total cost
+of the computing power center, offering only storage revenue. Only by integrating energy
+storage with load shifting can a significant cost reduction be realized, highlighting the
+effectiveness of the proposed model.
+(2) Sensitivity analysis
+To further validate the robustness of the proposed model (Scenario 3) and to reveal the
+impact mechanisms of key parameters on DC operating cost and ESS operator revenue, this
+section conducts a sensitivity analysis on five key parameters—electricity price coefficient,
+ESS capacity coefficient, battery charging and discharging efficiency, load computing
+flexibility coefficient, and renewable energy output coefficient—under three scenarios. The
+results are presented in Figure 5.
+Figure 5. Sensitivity analysis results.
+In summary, the sensitivity analysis results demonstrate that the proposed model
+(Scenario 3) consistently outperforms Scenario 1 and Scenario 2 in terms of cost control
+capability and ESS profitability under various uncertainty scenarios, including electricity
+price fluctuations, ESS capacity configuration, battery efficiency degradation, load flexi-
+bility variation, and renewable energy penetration changes. These findings confirm the
+effectiveness and robustness of the proposed model.
+https://doi.org/10.3390/en19153681
+
+--- Page 17 ---
+Energies 2026, 19, 3681 17 of 19
+6. Conclusions
+This paper addresses the shared energy storage (SES) trading optimization problem
+for data center clusters, aiming to exploit the temporal flexibility of latency-insensitive
+computing tasks. A bi-level Stackelberg game-based optimization model that accounts for
+computing workload flexibility is proposed. The principal findings are summarized below.
+First, a bi-level optimization model incorporating computing load flexibility is proposed.
+The upper-level model maximizes the SES operator’s profit by optimizing the charging
+and discharging strategy and internal electricity pricing. The lower-level model minimizes
+the comprehensive energy cost of each data center by coordinating the scheduling of
+latency-insensitive computing tasks with the SES power procurement plan.
+Second, the temporal scheduling of shiftable data load demonstrates a pronounced
+peak-shaving effect. By proactively migrating latency-insensitive tasks, such as model
+training and offline inference, during valley price periods, data centers effectively reduce
+rigid electricity demand during peak periods, thereby decreasing the volume of high-price
+electricity purchased directly from the grid and improving the overall energy cost efficiency
+of the system.
+Third, the bi-level pricing mechanism achieves interest coordination between the SES
+operator and the data center users. Through internal electricity pricing, the SES offers
+discounted rates below the grid price during peak periods to incentivize data centers to pur-
+chase from the SES, while encouraging flexible charging during valley periods. This ensures
+the SES operator’s arbitrage margin while providing data centers with economic incentives
+to participate in demand response, forming a benign market interaction mechanism.
+In summary, the proposed computing-electricity coordinated bi-level optimization
+model effectively integrates the regulation capability of shared energy storage with the tem-
+poral flexibility of computing workloads, demonstrating significant advantages in reducing
+data center comprehensive energy costs, enhancing SES operational revenue, and promot-
+ing green energy consumption. Future work may further extend the current deterministic
+bi-level framework toward a stochastic or robust bi-level formulation, potentially informed
+by machine-learning-based approaches discussed above for handling high-dimensional
+uncertainty, including renewable generation forecasting errors. In addition, incorporating
+more detailed server-level operational constraints, such as server utilization limits, commu-
+nication overhead and delays, task migration costs, and SLA violation penalties, would
+further refine the computing-side flexibility model. Battery degradation effects and more
+realistic, time-varying workload representations could also be incorporated to improve the
+fidelity of the proposed framework.
+Author Contributions: Conceptualization, X.Q. and F.W.; methodology, X.Q.; software, X.Q.;
+validation, X.Q., Y.H. and D.H.; formal analysis, X.Q.; investigation, X.Q.; resources, X.Q. and
+J.H.; data curation, D.H. and J.X.; writing—original draft preparation, X.Q.; writing—review and
+editing, Q.Z.; visualization, J.H.; supervision, F.W.; funding acquisition, X.Q. and Y.H. All authors
+have read and agreed to the published version of the manuscript.
+Funding: This research was funded by Beijing Natural Science Foundation [No. 9264024], National
+Natural Science Foundation of China [No. 72404032], Beijing Natural Science Foundation [No.
+9244024], and National Statistical Science Research Project [No. 2025LY068].
+Data Availability Statement: The original contributions presented in this study are included in the
+article. Further inquiries can be directed to the corresponding authors.
+Conflicts of Interest: Author Dongyang Hou was employed by the company State Grid Energy
+Research Institute. The remaining authors declare that the research was conducted in the absence of
+any commercial or financial relationships that could be construed as a potential conflict of interest.
+https://doi.org/10.3390/en19153681
+
+--- Page 18 ---
+Energies 2026, 19, 3681 18 of 19
+References
+1. Jiang, Z.; Tang, Y.; Ding, S.; Yang, Y.; Zhao, J.; Tao, S.; Xu, Y. Co-allocation and operational optimization for green power-direct-
+supply data center clusters with shared energy storage. Int. J. Electr. Power Energy Syst. 2025, 173, 111403. [CrossRef]
+2. Han, J.; Yan, Y.; Wang, Y.; Han, K.; Han, Y.; Lin, J. Dual-time scale collaborative optimization of data center energy system:
+Considering multi-task response mechanism and hybrid hydrogen-battery energy storage. J. Energy Storage 2025, 119, 116244.
+3. Bian, Y.; Xie, L.; Ye, J.; Ma, L. A new shared energy storage business model for data center clusters considering energy storage
+degradation. Renew. Energy 2024, 225, 120283. [CrossRef]
+4. Radovanovi´ c, A.; Koningstein, R.; Schneider, I.; Chen, B.; Duarte, A.; Roy, B.; Xiao, D.; Haridasan, M.; Hung, P .; Care, N.; et al.
+Carbon-Aware Computing for Datacenters. IEEE T rans. Power Syst. 2023, 38, 1270–1280. [CrossRef]
+5. Zhou, Y.; Wei, F.; Li, S.; Wang, Z.; Liu, J.; Yu, D. Data center load modeling through optimal energy consumption characteristics: A
+path to simultaneously enhance energy efficiency and demand response quality. Appl. Energy 2025, 393, 126095. [CrossRef]
+6. Zhou, Q.; Yang, P .; Wan, S.; Cui, J.; Li, F.; Wei, Z. Bidirectional collaborative optimization scheduling of adjustable resources in
+computing node and power node. Electr. Power Constr. 2025, 46, 13–25. (In Chinese)
+7. Li, L.X.; Cao, X.L.; Zhang, S. Shared energy storage system for prosumers in a community: Investment decision, economic
+operation. J. Energy Storage 2022, 50, 104710. [CrossRef]
+8. Miller, L.; Carriveau, R. A review of energy storage financing-Learning from and partnering with the renewable energy industry.
+J. Energy Storage 2018, 19, 311–319. [CrossRef]
+9. Xie, Y.; Li, L.; Hou, T.; Luo, K.; Xu, Z.; Dai, M.; Zhang, L. Shared energy storage configuration in distribution networks: A
+multi-agent tri-level programming approach. Appl. Energy 2024, 372, 123771. [CrossRef]
+10. Kang, K.; Jia, H.; Hui, H.; Liu, D. Two-stage optimization configuration of shared energy storage for multi-distributed photovoltaic
+clusters in rural distribution networks considering self-consumption and self-sufficiency. Appl. Energy 2025, 394, 126174.
+[CrossRef]
+11. Jiang, C.; Ou, Q.; Wu, Z.; Zhang, J.; Yang, S.; Zhu, J.; Ai, Q. Joint Configuration and Utility Analysis of Multi-microgrid Shared
+Energy Storage Based on Alliance Game. Electr. Power 2022, 55, 11–21. (In Chinese)
+12. Xu, F.; Li, X.; Jin, C. Optimal capacity configuration and dynamic pricing strategy of a shared hybrid hydrogen energy storage
+system for integrated energy system alliance: A bi-level. Int. J. Hydrogen Energy 2024, 69, 331–346. [CrossRef]
+13. Li, J.; Zhao, Z.; Wang, X.; Zhu, X.; Liu, H.; Zhao, Z.; Zhou, H.; Li, Z.; Li, C. Optimized configuration of shared energy storage
+in renewable energy power plants considering multiple master-slave game pricing modes. J. Energy Storage 2025, 115, 116012.
+[CrossRef]
+14. Su, L.; Feng, W.; Ma, H.; Wei, M.; Gu, R.; Chen, Z.; Qin, J. Shared energy storage planning based on the adjustable potential of
+data center based on visual IOT platform. Sci. Rep. 2025, 15, 30020. [CrossRef] [PubMed]
+15. Lu, S.; Yan, R.; Wu, J.; Yang, J.; Deng, X.; Wu, S.; Cai, Z.; Fang, J. Online elastic resource provisioning with QoS guarantee in
+container-based cloud computing. IEEE T rans. Parallel Distrib. Syst. 2024, 36, 361–376.
+16. Zhang, Y.; Tang, H.; Li, H.; Wang, S. Unlocking the flexibilities of data centers for smart grid services: Optimal dispatch and
+design of energy storage systems under progressive loading. Energy 2025, 316, 134511. [CrossRef]
+17. Liu, F.; Chen, X.; Zhou, J.; Zhang, J.; Wei, S.; Yang, X. Optimal Operation Method for Virtual Power Plant Considering Shared
+Energy Storage and Spatiotemporal Migration Characteristics of Computational Load in Data Centers. Power Syst. T echnol. 2026,
+50, 1848–1864. (In Chinese) [CrossRef]
+18. Wu, Y.; Fang, J.; Ai, X.; Cui, S.; Xue, X.; Wen, J. Shared Energy Storage Planning for Data Center Alliance Considering Demand
+Response. Autom. Electr. Power Syst. 2023, 47, 42–50. (In Chinese) [CrossRef]
+19. Wang, H.; Liao, Y.; Zhang, J.; Cai, Z.; Zhao, Y.; Wang, W. Optimization of shared energy storage configuration for village-level
+photovoltaic systems considering vehicle charging management. Energy 2024, 311, 133373. [CrossRef]
+20. Lin, S.; Guo, Y.; Zhou, B.; Li, D.; Shen, Y.; Gu, C. Collaborative Optimal Scheduling Method for Multi-virtual Power Plants and
+Shared Energy Storage Considering Electricity Prices Uncertainty. Smart Power 2025, 53, 20–27. (In Chinese)
+21. Shoaib, I.; Nanduri, K.; Dagar, J. Identification, Evaluation, and Domestication of Alternative Crops for Saline Environments. In
+Research Developments in Saline Agriculture ; Springer: Singapore, 2019; pp. 505–536. [CrossRef]
+22. Prasada Reddy, M.R.; Rao, C.S.; Agarwal, A.; Manjunatha, B.M.; Nainwal, A.; Senthil Kumar, S.; Malladhi, M.; Prakash, K.B. Botox
+Optimization Based MPPT of Four Strings PV System Under Partial Shading with a Switched-Capacitor Based High Step-Up
+Non-Isolated DC-DC Converter. In Proceedings of the 2025 IEEE 2nd International Conference on Information Technology,
+Electronics and Intelligent Communication Systems (ICITEICS), Bangalore, India, 29–30 August 2025; pp. 1–7. [CrossRef]
+23. Bhatia, V .; Sidharth, S.; Khare, S.K.; Ghorpade, S.C.; Kumar, P .; Kumar, A.; Agarwal, A. Intelligent Manufacturing in Aerospace:
+Integrating Industry 4.0 Technologies for Operational Excellence and Digital Transformation. In Industry 4.0 Driven Manufacturing
+T echnologies; Springer Series in Advanced Manufacturing; Springer: Cham, Switzerland, 2024; pp. 389–434. [CrossRef]
+24. Ding, Q.; Wang, Z.; Pan, Z.; Wu, Y.; Yu, T.; Wang, K. Planning of computing power and electric power resources in data center
+parks for electricity, frequency regulation and capacity markets. Autom. Electr. Power Syst. 2024, 48, 59–66. (In Chinese)
+https://doi.org/10.3390/en19153681
+
+--- Page 19 ---
+Energies 2026, 19, 3681 19 of 19
+25. Lin, J.; Han, J.; Wang, Y.; Han, K.; Han, Y.; Li, J. Capacity planning and operational optimization for low-carbon data center
+integrated energy system considering exergy efficiency. J. Shanghai Jiao T ong Univ. 2025, 59, 1327–1337. (In Chinese)
+26. Sun, Y.; Chen, K.; Zheng, S.; Wang, W.; Yu, P .; Li, K.; Dong, W. Energy optimization strategy of a 5G edge network based on
+load-energy online full-distributed sharing. Power Syst. Prot. Control 2024, 52, 154–165. (In Chinese)
+27. Xiao, J.; Yang, Y.; Cui, S.; Wang, Y. Cooperative online schedule of interconnected data center microgrids with shared energy
+storage. Energy 2023, 285, 129522. [CrossRef]
+28. Qie, X.; Zhang, R.; Xing, Y.; Lu, M.; Hu, Y.; Sun, X.; Sun, Y. Bidding strategy and economic evaluation of energy storage systems
+under the time-of-use pricing mechanism. J. Energy Storage 2024, 15, 110539. [CrossRef]
+29. Fang, K.; Zhou, M.; Wu, Z.; Zhao, C.; Zhao, H.; Li, G. Optimal planning and cost-benefit analysis of long-duration energy storage
+for low-carbon electric power system. Chin. J. Electr. Eng. 2023, 43, 8282–8294. (In Chinese)
+30. Zhou, T.; Zhou, R.; Huang, J.; Qin, Z.; Yang, H. Energy trading method of energy storage aggregators under self-operating and
+sharing mode. Electr. Power Autom. Equip. 2023, 43, 171–176. (In Chinese)
+31. Zhang, S.; Wei, M.; Li, Y.; Ding, S.; Chen, Y. A scheduling optimization model for data center considering green electricity-
+friendly consumption coupling computing power and electric power. Syst. Eng.-Theory Pract. 2026, 1–26. Available online:
+https://link.cnki.net/urlid/11.2267.n.20251216.1647.002 (accessed on 15 July 2026). (In Chinese)
+32. Li, Z.; Chen, L.; Liu, D.; Chen, F.; Zheng, T.; Mei, S. Subsidy Pricing Method for Stackelberg-game-based Energy Storage System.
+High Volt. T echnol.2020, 2, 519–526. (In Chinese)
+33. Wang, D.; Zhang, S.; Cheng, H.; Han, F.; Song, Y.; Yuan, K. Coordinated Planning of Multi-regional Energy Stations Considering
+Spatio-Temporal Adjustment of Energy Consumption in Data Centers. Power Syst. Autom. 2023, 47, 77–85. (In Chinese)
+34. Zeng, B.; Liu, Y .; Zhang, W.; Luo, Y .; Wu, C. A Collaborative Optimization Approach for Green Data Center Multi-domain Resource
+Planning Considering Both Endogenous and Exogenous Uncertainties.Chin. J. Electr. Eng. 2024, 44, 4732–4748. (In Chinese)
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
+https://doi.org/10.3390/en19153681

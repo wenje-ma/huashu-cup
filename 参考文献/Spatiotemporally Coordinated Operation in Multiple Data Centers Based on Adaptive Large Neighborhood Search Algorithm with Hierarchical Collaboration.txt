@@ -1,0 +1,1544 @@
+--- Page 1 ---
+Academic Editor: Renato Bruni
+Received: 15 May 2026
+Revised: 15 June 2026
+Accepted: 19 June 2026
+Published: 21 June 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Spatiotemporally Coordinated Operation in Multiple Data
+Centers Based on Adaptive Large Neighborhood Search
+Algorithm with Hierarchical Collaboration
+Yanghui Liu 1, Bowen Zhou 1,*
+ , Liaoyi Ning 2 and Juan Yan 3
+1 College of Information Science and Engineering, Northeastern University, Shenyang 110819, China;
+20232638@stu.neu.edu.cn
+2 State Grid Liaoning Electric Power Supply Co., Ltd., Shenyang 110006, China; nly_ly@ln.sgcc.com.cn
+3 School of Electrical Engineering and Automation, Anhui University, Hefei 230601, China;
+juanyan@ahu.edu.cn
+* Correspondence: zhoubowen@ise.neu.edu.cn
+Abstract
+Data centers have become essential infrastructure for digital services, while their rapidly
+growing electricity demand makes coordinated workload and power management an im-
+portant optimization problem. This paper studies the multi-data-center operation problem
+under time-of-use electricity pricing and formulates it as a multi-data-center mixed-integer
+nonlinear programming model (MDC-MINLP). The model jointly represents binary task
+scheduling decisions, including temporal workload shifting and spatial task migration,
+and continuous power-side variables, including device-level utilization, IT and auxiliary
+power consumption, energy storage dynamics, grid power procurement, and quality-of-
+service constraints. The objective is to minimize the total operating cost by integrating
+electricity purchasing cost, IT operation loss, storage degradation cost, and migration cost.
+To solve the resulting large-scale discrete–continuous coupled problem, an Adaptive Large
+Neighborhood Search algorithm with Hierarchical Collaboration (HC-ALNS) is proposed.
+HC-ALNS reconstructs feasible task action sets, employs a surrogate objective for fast
+candidate screening, performs accurate power-layer evaluation for selected solutions, and
+adaptively adjusts search intensity according to convergence behavior. Numerical results
+show that HC-ALNS reduces the total operating cost by 3.67% and achieves better conver-
+gence and solution quality than NSGA-II and PSO. These findings demonstrate that the
+proposed MDC-MINLP and HC-ALNS provide an effective mathematical optimization
+framework for coordinated computation–power scheduling.
+Keywords: mixed-integer nonlinear programming; adaptive large neighborhood search;
+hierarchical optimization; discrete–continuous optimization; multi-data-center scheduling;
+computation–power coordination
+MSC: 90C11; 90C30; 90C59; 90B35
+1. Introduction
+With the rapid development of cloud computing, artificial intelligence, and big data
+technologies, data centers—which are critical to digital economic infrastructure—have ex-
+perienced continuous growth in both scale and computing demand, leading to increasingly
+prominent energy consumption issues. Studies indicate that the global electricity consump-
+tion of data centers has reached approximately 415 TWh, accounting for about 1.5% of
+Mathematics 2026, 14, 2225 https://doi.org/10.3390/math14122225
+
+--- Page 2 ---
+Mathematics 2026, 14, 2225 2 of 29
+global electricity demand, with an average annual growth rate of around 12% in recent
+years [1]. Due to the increasing prevalence of computation-intensive applications such as
+artificial intelligence, this figure is projected to increase to approximately 945 TWh by 2030,
+accounting for nearly 3% of global electricity demand [ 2,3]. Meanwhile, as data centers
+continue to expand in scale, their high-power-density operation further increases instanta-
+neous power demand, not only intensifying pressure on power systems but also raising the
+complexity of operational decision-making [4]. Therefore, improving data center energy
+efficiency is not only an engineering issue but also an important mathematical optimization
+problem involving workload scheduling, resource allocation, and power-side coordination.
+Extensive studies have been conducted on computing–power coordinated schedul-
+ing for data centers. Unlike conventional high-energy-consuming loads, data centers
+can achieve rapid power load shifting and regulation through the temporal and spa-
+tial migration of computing workloads, thereby providing flexible decision variables for
+mathematical scheduling models. The authors of [5] classify delay-tolerant workloads as
+short-delay, long-duration continuous, and interruptible types, and establish correspond-
+ing temporal shifting models, which are embedded into day-ahead optimal scheduling
+of data center microgrids to reduce energy consumption and curtailment costs. Mean-
+while, in [ 6], the authors propose a spatiotemporal load-shifting framework based on
+virtual links, transforming data center load flexibility into dispatchable resources that can
+participate in electricity market clearing while explicitly defining pricing and compensa-
+tion mechanisms. Local flexibility market mechanisms provide further support for the
+market-oriented utilization of load flexibility. Reference [7] provides a systematic review
+of the modeling and clearing methods of local flexibility markets and establishes a multi-
+agent coordinated trading framework. The authors of [ 8] develop a multi-data-center
+energy consumption model that considers spatiotemporal flexibility; jointly characterizes
+delay-tolerant task scheduling, IT equipment operation, and cooling processes; and defines
+an energy flexibility region to describe the feasible power consumption space. Further-
+more, in [9], the authors transform the internal operational constraints of data centers into
+privacy-preserving flexibility region constraints, enabling the reliability of power systems
+to be assessed without overlooking load flexibility. These studies show that the flexible
+operation of data centers can be mathematically represented through schedulable regions,
+coupling constraints, and optimization models. However, most existing studies still focus
+on macroscopic load flexibility or regional flexibility representations, while the fine-grained
+coupling between task-level scheduling decisions and power-side operational variables
+remains insufficiently explored.
+Scheduling problems under time-varying electricity prices have increasingly been
+studied from the perspective of mathematical optimization. Feng et al. [ 10] formulate
+an energy-efficient batch scheduling problem under time-of-use electricity prices as a
+mixed-integer linear programming model and solve it using heuristic algorithms. Zhao
+and Zhu [11] develop a chance-constrained stochastic mixed-integer linear programming
+model and a reinforcement-learning-based adaptive large neighborhood search algorithm
+for continuous-time energy-aware scheduling. These studies show that mathematical
+programming and improved heuristics are effective tools for solving large-scale scheduling
+problems with coupled decisions.
+Although refined mathematical models can accurately capture the coupling char-
+acteristics of computing–power coordination, they usually introduce a large number of
+integer variables, nonlinear relationships, and strongly coupled constraints, resulting in
+high computational complexity and low solution efficiency. Therefore, many researchers
+have proposed metaheuristic and hybrid optimization methods to improve scheduling effi-
+ciency. Attiya et al. [12] propose an intelligent chimp optimizer combined with the marine
+https://doi.org/10.3390/math14122225
+
+--- Page 3 ---
+Mathematics 2026, 14, 2225 3 of 29
+predators algorithm and a disruption operator for IoT task scheduling in fog computing,
+showing the potential of hybrid metaheuristics for large-scale task allocation problems.
+The authors of [13] propose a hybrid algorithm that combines the genetic algorithm (GA)
+with particle swarm optimization (PSO), where GA enhances population diversity through
+crossover and mutation, mitigating the premature convergence of PSO and improving
+both global search capability and convergence speed. In [ 14], the researchers develop a
+discrete non-dominated sorting genetic algorithm (DNSGA-II) for fog–cloud collabora-
+tive multi-objective scheduling by redesigning crossover and mutation operators to adapt
+to task assignment decisions. The authors of [ 15] propose an improved PSO combined
+with simulated annealing (IPSO-SA), incorporating Tent chaotic mapping for initializa-
+tion and nonlinear adaptive inertia weights, along with the Metropolis criterion to avoid
+premature convergence. The study in [16] designs a load–energy–time-aware ant colony
+optimization (LET-ACO) algorithm for dynamic energy management in cloud data centers,
+integrating dynamic voltage scaling and load-balancing mechanisms to reduce energy
+consumption without affecting system performance. Other optimization algorithms, such
+as artificial bee colony [17], genetic optimization [18], cuckoo search [19], and chaotic cat
+swarm optimization [20], have also been widely studied. These methods provide important
+algorithmic foundations for solving large-scale scheduling problems, but most of them
+are general-purpose heuristics and do not fully exploit the hierarchical coupling structure
+between task-level scheduling and power-side operation. Therefore, a problem-oriented
+algorithmic framework is still needed for large-scale data center scheduling problems with
+discrete–continuous coupling.
+Although significant progress has been achieved in computing–power coordinated
+optimization, several limitations remain:
+1. Insufficient task-level mathematical modeling: Existing studies are mostly based on
+macroscopic flexible load representations and lack a unified task-level formulation
+of temporal flexibility, spatial migration capability, and queue evolution. This makes
+it difficult to capture the combinatorial decision structure and fine-grained dynamic
+characteristics of heterogeneous workloads during scheduling.
+2. Incomplete discrete–continuous coupling between computing and power systems:
+Most methods address computing scheduling and power operation separately, failing
+to jointly model the coupling among computing utilization, IT equipment power
+consumption, cooling demand, power distribution losses, energy storage operation,
+and task migration. As a result, the resulting optimization model may not fully
+describe the actual interaction between binary scheduling decisions and continuous
+power-side variables.
+3. Lack of tailored solution methods for strongly coupled optimization: Due to the
+strong coupling between discrete task scheduling and continuous power decisions,
+existing methods mainly rely on general-purpose heuristics. These methods are
+not specifically designed for the hybrid mathematical structure of multi-data-center
+coordinated operation and often suffer from large search spaces, high evaluation costs,
+and unsatisfactory convergence performance.
+To address the above issues, this paper formulates a multi-data-center mixed-integer
+nonlinear programming model (MDC-MINLP) for task-level computation–power coordi-
+nated scheduling and proposes an Adaptive Large Neighborhood Search algorithm with
+Hierarchical Collaboration (HC-ALNS). The proposed model provides a unified mathe-
+matical formulation for task spatiotemporal migration, device-level computing utilization,
+flexible queue evolution, power consumption, energy storage operation, and quality-of-
+service constraints. The proposed algorithm further exploits the hierarchical structure of
+https://doi.org/10.3390/math14122225
+
+--- Page 4 ---
+Mathematics 2026, 14, 2225 4 of 29
+the problem by combining task action-space reconstruction, surrogate objective screening,
+accurate power-layer evaluation, and adaptive search intensity adjustment.
+The main contributions of this paper are as follows:
+• A task-level mathematical scheduling model is proposed to describe the dynamic
+scheduling characteristics of multi-type workloads. The model explicitly represents
+temporal shiftability, spatial migration capability, flexible queue evolution, device-
+level computing capacity constraints, and quality-of-service requirements, thereby
+transforming heterogeneous workload management into a structured mixed-integer
+optimization problem.
+• A computation–power coupled optimization model is formulated for multi-data-center
+coordinated operation. Aiming to minimize the total system operating cost, the model
+jointly considers task scheduling constraints, computing capacity constraints, power
+balance constraints, IT and auxiliary power consumption, energy storage operation,
+and migration cost. By integrating electricity purchasing cost, IT operation loss, storage
+degradation cost, and migration cost into a unified objective function, the proposed
+MDC-MINLP captures the discrete–continuous coupling between workload allocation
+and power-side operation.
+• An Adaptive Large Neighborhood Search algorithm with Hierarchical Collaboration
+(HC-ALNS) is proposed for the resulting large-scale hybrid optimization problem. The
+algorithm reduces combinatorial complexity through task action-space reconstruction,
+accelerates candidate solution screening using a surrogate objective, performs accurate
+power-layer evaluation for selected solutions, and adaptively adjusts search intensity
+according to convergence behavior. This design improves the efficiency and solution
+quality of the optimization process while maintaining consistency with the real total
+cost objective.
+This study is organized into three main parts. First, a multi-data-center mixed-integer
+nonlinear programming model for task-level computation–power coordinated scheduling
+is formulated, and an Adaptive Large Neighborhood Search algorithm with Hierarchical
+Collaboration is developed. Second, the performance of the proposed method is evaluated
+through numerical experiments. Finally, the main findings are summarized and conclusions
+are drawn.
+2. Materials and Methods
+This section presents the scheduling framework, formulates a multi-data-center mixed-
+integer nonlinear programming model (MDC-MINLP) for task-level computation–power
+coordinated scheduling, and constructs the total system operating cost model. An Adaptive
+Large Neighborhood Search algorithm with Hierarchical Collaboration is then developed
+to solve the resulting problem.
+2.1. Scheduling Framework
+The overall framework of the studied system is illustrated in Figure 1. Traditional
+studies on data centers usually focus on real-time workload processing, whereas this paper
+models multiple data centers as integrated entities with schedulable workload resources
+and controllable power-side resources. During normal operation, data centers receive
+user workloads and execute them using computing devices supplied by the power grid,
+while cooling and power distribution systems provide auxiliary support. Therefore, the
+operational state of a data center is determined not only by the amount of workload it
+receives but also by task scheduling decisions, resource utilization levels, and corresponding
+power consumption.
+https://doi.org/10.3390/math14122225
+
+--- Page 5 ---
+Mathematics 2026, 14, 2225 5 of 29
+Figure 1. Framework of the coordinated operation.
+Specifically, the multi-data-center system is represented as a three-layer framework
+consisting of the task-scheduling layer, the data center operation layer, and the power
+support layer. At the task-scheduling layer, workload flexibility is modeled through
+feasible temporal and spatial scheduling decisions. Some tasks can be shifted to different
+time slots, some can be migrated among data centers, and some possess both types of
+flexibility. These decisions determine the task execution time and location, and thus define
+the workload distribution over the scheduling horizon. At the data center operation layer,
+task scheduling results are mapped into device-level computing loads and utilization levels,
+which further determine IT power consumption and auxiliary power demand. At the power
+support layer, energy storage charging and discharging decisions are coordinated with
+time-of-use (TOU) electricity prices and grid procurement, providing additional degrees of
+freedom for cost optimization.
+Therefore, the three layers are not independent modules but are linked by mathemati-
+cal mappings and coupling constraints. Task scheduling decisions determine computing
+load and utilization; utilization determines IT, cooling, and distribution power consump-
+tion; and power demand further affects grid purchase and storage operation. Conversely,
+electricity price parameters and storage constraints influence the optimal spatiotemporal
+allocation of workloads through the total cost objective. This bidirectional relationship
+forms a closed-loop computation–power coordinated scheduling mechanism.
+These interactions indicate the necessity of establishing a unified MDC-MINLP for
+multi-data-center operation. Such a model should jointly describe task scheduling con-
+straints, computing capacity constraints, power balance constraints, storage operation
+constraints, and quality-of-service requirements, thereby supporting coordinated optimiza-
+tion of workload allocation and power-side operation.
+2.2. Problem Formulation
+2.2.1. Task Description and Scheduling Variables
+In the multi-data-center collaborative scheduling scenario, both the execution time
+and execution location of a task must be determined when it enters the system. Due to the
+https://doi.org/10.3390/math14122225
+
+--- Page 6 ---
+Mathematics 2026, 14, 2225 6 of 29
+differences in temporal and spatial scheduling flexibility among tasks, execution decisions
+are constrained not only by resource capacity but also by their transferability.
+Let the scheduling horizon be discretized into a set of time slots denoted by T . The
+set of data centers participating in collaborative scheduling is denoted by N , and the set of
+tasks arriving within the scheduling horizon is labeled M. Furthermore, let I represent
+the set of all computing devices in the system and let Ik ⊆ Iindicate the set of devices
+from data center k. For any task m ∈ M, let am denote its arrival time slot, let om represent
+its original data center, let pm indicate its processing duration, and let cm represent its
+computing demand. In addition, δT
+m ∈ {0, 1} and δS
+m ∈ {0, 1} will indicate whether
+task m can be temporally shifted and spatially migrated, respectively. The basic scheduling
+principles are illustrated in Figure 2.
+Figure 2. Flexible response principle for tasks.
+To characterize the execution device and the starting time of tasks, a binary decision
+variable xm,i,t is introduced. If task m is initiated for execution on device i at time slot t,
+then xm,i,t = 1; otherwise, xm,i,t = 0.
+Since each task can only be initiated once within the scheduling horizon, the following
+constraint holds:
+∑
+i∈I
+∑
+t∈T
+xm,i,t = 1, ∀m ∈ M, (1)
+during the task-scheduling process, it is necessary to satisfy the fundamental temporal
+constraint that tasks cannot be executed before their arrival. Scheduling flexibility con-
+straints must also be considered. Specifically, when a task cannot be temporally shifted, its
+execution time is fixed at its arrival time, whereas when a task cannot be spatially migrated,
+its execution location is restricted to the set of devices Iom within its original data center om.
+These constraints can be uniformly expressed as follows:
+
+
+
+xm,i,t = 0, ∀m ∈ M, i ∈ I, t < am,
+xm,i,t = 0, ∀m ∈ M, i ∈ I, t ∈ T, δT
+m = 0, t ̸= am,
+xm,i,t = 0, ∀m ∈ M, i ∈ I \Iom, t ∈ T, δS
+m = 0.
+(2)
+2.2.2. Data Center Computing Load Model
+After its initiation, a task continuously occupies computing resources during its
+execution period. Therefore, the computing load of a device at any time slot is jointly
+determined by all ongoing tasks. Let Li,t denote the computing load of device i at time
+slot t, which is written as follows:
+https://doi.org/10.3390/math14122225
+
+--- Page 7 ---
+Mathematics 2026, 14, 2225 7 of 29
+Li,t = ∑
+m∈M
+∑
+τ≤t
+cmxm,i,τ1(t ∈ [τ, τ + pm)), ∀i ∈ I, t ∈ T, (3)
+where 1(·) denotes the indicator function. When task m is initiated at time slot τ and
+remains in execution at time slot t, it contributes cm to the computing load of device i at
+time slot t.
+Let Ci,t denote the available computing capacity of device i at time slot t, then:
+Li,t ≤ Ci,t, ∀i ∈ I, t ∈ T. (4)
+Furthermore, the total computing load of data center k at time slot t is obtained by
+aggregating at the device level:
+Lk,t = ∑
+i∈Ik
+Li,t, ∀k ∈ N, t ∈ T. (5)
+2.2.3. Flexible Task Queue Evolution Model
+In a multi-type workload scenario, only tasks that allow temporal shifting remain
+intact across time slots. Therefore, the queue in the system should only be defined for tasks
+with temporal flexibility. Based on the task-level scheduling variables, let Qi,t denote the
+flexible waiting queue of device i at the end of time slot t, which consists of temporally
+shiftable tasks that have been assigned to device i, and have already arrived, but have not
+yet been initiated. It can be expressed as follows:
+Qi,t = ∑
+m∈M,δTm=1
+cm
+t
+∑
+t=am
+T
+∑
+t+1
+xm,i,t+1, ∀i ∈ I, t ∈ T. (6)
+In the above expression, the inner summation indicates that taskm has already arrived
+before time slot t, while its initiation time is scheduled after t. Therefore, the task remains
+in the waiting state at the end of time slot t.
+To describe the queue variation between adjacent time slots, let AQ
+i,t represent the
+workload entering the flexible queue of device i at time slot t and let DQ
+i,t denote the
+workload leaving the flexible queue at time slot t due to task initiation. Then,
+Qi,t+1 = Qi,t + AQ
+i,t − DQ
+i,t, ∀i ∈ I, t ∈ T, (7)
+where
+AQ
+i,t = ∑
+m∈M,δTm=1,am=t
+cm
+T
+∑
+t+1
+xm,i,t+1, ∀i ∈ I, t ∈ T, (8)
+DQ
+i,t = ∑
+m∈M,δTm=1,am<t
+cmxm,i,t, ∀i ∈ I, t ∈ T, (9)
+AQ
+i,t represents the workload of temporally shiftable tasks that arrive at time slot t but are
+not executed immediately and are therefore deferred to later time slots. DQ
+i,t represents the
+workload of tasks that have previously entered the flexible queue and are initiated at time
+slot t.
+2.2.4. QoS Guarantee Model
+Allowing temporal shifting does not imply that tasks can be delayed indefinitely.
+Constraints must still be imposed on the waiting behavior of flexible tasks. Meanwhile, to
+limit the accumulation of flexible tasks at the system level, constraints on the size of the
+https://doi.org/10.3390/math14122225
+
+--- Page 8 ---
+Mathematics 2026, 14, 2225 8 of 29
+flexible queue for each device are also required. To this end, the startup delay of task m is
+first defined as:
+Wm = ∑
+i∈I
+∑
+t∈T
+(t − am)xm,i,t, ∀m ∈ M, (10)
+where Wm denotes the waiting time from arrival to execution initiation. For tasks that do
+not permit temporal shifting, Wm = 0; for tasks that do allow temporal shifting, the waiting
+time cannot exceed the upper bound permitted by quality-of-service requirements. These
+QoS requirements can be uniformly expressed as follows:
+
+
+
+Wm ≤ Wm, ∀m ∈ M, δT
+m = 1,
+0 ≤ Qi,t ≤ Qi, ∀i ∈ I, t ∈ T,
+Qi,T = Qi,0, ∀i ∈ I,
+(11)
+where Wm denotes the maximum tolerable waiting delay of task m and Qi denotes the
+maximum tolerable flexible queue capacity of device i. The above constraints guarantee
+QoS based on two aspects. On the one hand, they prevent excessive delay of individual
+tasks by limiting the task waiting time. They also prevent the continuous accumulation of
+deferrable workloads in the system by restricting the size of the flexible queue, while the
+cyclic consistency condition ensures operational stability across scheduling periods.
+2.2.5. IT Equipment Power Model
+The task scheduling results determine the computing resource utilization of each
+device at each time slot, which further affects the IT equipment power consumption.
+To characterize the relationship between computing load and IT power, the computing
+utilization variable ρi,t is introduced, representing the utilization level of device i at time
+slot t, defined as:
+ρi,t = Li,t
+Ci,t
+, ∀i ∈ I, ∀t ∈ T, (12)
+0 ≤ ρi,t ≤ 1, ∀i ∈ I, ∀t ∈ T, (13)
+where Li,t denotes the computing load of devicei at time slot t and Ci,t denotes the available
+computing capacity of device i at that time slot.
+Let PIT
+i,t denote the IT power of device i at time slot t, let Pidle
+i denote its idle power,
+and let P f ull
+i denote its full-load power. The IT equipment power model is given by
+PIT
+i,t = Pidle
+i +
+
+P f ull
+i − Pidle
+i
+
+ρτi
+i,t, ∀i ∈ I, ∀t ∈ T, (14)
+where τi is the nonlinear power coefficient of device i, which is used to characterize the
+response of IT power to changes in computing utilization [21].
+Furthermore, the total IT power of data center k at time slot t is
+PIT
+k,t = ∑
+i∈Ik
+PIT
+i,t , ∀k ∈ N, t ∈ T. (15)
+2.2.6. Auxiliary System Power and PUE Model
+In addition to IT equipment, data centers also require cooling systems, power supply
+and distribution systems, and other auxiliary facilities, whose energy consumption is
+coupled with the IT load. Let Pcool
+k,t denote the cooling system power of data center k at
+time slot t and let Ploss
+k,t represent the power loss of the supply and distribution system. The
+auxiliary system power is modeled as follows:
+Pcool
+k,t = Pcool ,0
+k + αcool
+k PIT
+k,t , ∀k ∈ N, ∀t ∈ T, (16)
+https://doi.org/10.3390/math14122225
+
+--- Page 9 ---
+Mathematics 2026, 14, 2225 9 of 29
+Ploss
+k,t = Ploss ,0
+k + αloss
+k
+
+PIT
+k,t + Pcool
+k,t
+
+, ∀k ∈ N, ∀t ∈ T. (17)
+The total power load of data center k at time slot t is:
+Pload
+k,t = PIT
+k,t + Pcool
+k,t + Ploss
+k,t , ∀k ∈ N, ∀t ∈ T. (18)
+To characterize the overall energy efficiency of the data center, the power usage
+effectiveness is introduced:
+PUEk,t =
+Pload
+k,t
+PIT
+k,t
+, ∀k ∈ N, ∀t ∈ T, (19)
+PUE k,t ≥ 1, ∀k ∈ N, ∀t ∈ T, (20)
+where PUEk,t represents the ratio between total power consumption and IT power consumption.
+2.2.7. Energy Storage System Model
+To enhance the power regulation capability of data centers in the temporal dimension,
+an energy storage system is introduced on the power side. The energy storage system
+can charge during low-load periods and discharge during high-load periods, thereby
+smoothing the grid power and improving operational flexibility. Let SOCk,t denote the
+state of charge of data center k at time slot t; let Pch
+k,t and Pdis
+k,t denote the charging and
+discharging power, respectively; and let ∆t denote the duration of a time slot. The energy
+storage dynamics are given by:
+SOCk,t+1 = SOCk,t +
+ηch
+k Pch
+k,t∆t
+Ebat
+k
+−
+Pdis
+k,t ∆t
+ηdis
+k Ebat
+k
+, ∀k ∈ N, ∀t ∈ T, (21)
+SOCmin
+k ≤ SOCk,t ≤ SOCmax
+k , ∀k ∈ N, ∀t ∈ T, (22)
+SOCk,T = SOCk,0, ∀k ∈ N. (23)
+To prevent simultaneous charging and discharging within the same time slot, a binary
+variable yk,t is introduced:
+0 ≤ Pch
+k,t ≤ yk,tPch,max
+k , ∀k ∈ N, ∀t ∈ T, (24)
+0 ≤ Pdis
+k,t ≤ (1 − yk,t)Pdis,max
+k , ∀k ∈ N, ∀t ∈ T, (25)
+where Ebat
+k denotes the rated capacity of the energy storage system and ηch
+k and ηdis
+k denote
+the charging and discharging efficiencies, respectively. The above cyclic condition ensures
+that the energy storage system operates consistently at the beginning and end of the
+scheduling horizon.
+2.2.8. Grid Power Supply Model
+The data centers are modeled as large adjustable load-side units connected to the
+external grid at the point of common coupling (PCC) on the distribution side. Within
+the adopted single-bus equivalent power-supply framework, the IT equipment, cooling
+system, and power supply and distribution losses jointly constitute the total data center
+load. For each time slot, this load is supplied by grid purchasing power and energy storage
+discharging power, while energy storage charging is treated as additional power demand
+connected to the same bus. Accordingly, the corresponding single-bus power balance
+relationship is established to describe the coordinated operation of data center load, energy
+storage, and external grid power procurement.
+https://doi.org/10.3390/math14122225
+
+--- Page 10 ---
+Mathematics 2026, 14, 2225 10 of 29
+Let Pgrid
+k,t denote the grid purchasing power of data center k at time slot t, then
+Pgrid
+k,t + Pdis
+k,t = Pload
+k,t + Pch
+k,t, ∀k ∈ N, ∀t ∈ T, (26)
+0 ≤ Pgrid
+k,t ≤ Pgrid,max
+k , ∀k ∈ N, ∀t ∈ T. (27)
+To facilitate subsequent electricity pricing settlement and energy accounting, time
+slot-level energy variables are introduced:
+Egrid
+k,t = Pgrid
+k,t ∆t, ∀k ∈ N, ∀t ∈ T, (28)
+Eload
+k,t = Pload
+k,t ∆t, ∀k ∈ N, ∀t ∈ T, (29)
+where Egrid
+k,t represents the total amount of electricity purchased from the grid by data
+center k at time slot t and Eload
+k,t represents the total power consumption of data center k at
+time slot t. Both are obtained by converting power to energy based on ∆t.
+2.2.9. Single-Data-Center Operating Cost Model
+Let Fk denote the total operating cost of data center k during the scheduling hori-
+zon, then
+Fk = Fgrid
+k + FIT
+k + Fbat
+k + Fmig
+k , ∀k ∈ N, (30)
+where Fgrid
+k represents the grid electricity purchasing cost, FIT
+k represents the IT equip-
+ment operation loss cost, Fbat
+k represents the energy storage system operation loss cost,
+and Fmig
+k represents the task migration loss cost incurred by executing tasks from other
+data centers.
+The grid electricity purchasing cost is determined by the purchased energy and the
+corresponding electricity price at each time slot, which we express as follows:
+Fgrid
+k = ∑
+t∈T
+λk,tEgrid
+k,t , ∀k ∈ N, (31)
+where λk,t denotes the electricity price of data center k at time slot t.
+During long-term operation, IT equipment incurs hardware degradation, which is
+closely related to computing utilization. When the utilization deviates from the optimal
+operating range, the degradation increases. Let λIT denote the unit computing operation
+loss cost coefficient, let γ denote the amplification coefficient of utilization deviation, and
+let ρopt denote the optimal utilization level. The IT equipment operation loss cost of data
+center k is expressed as follows:
+FIT
+k = λIT ∑
+i∈Ik
+∑
+t∈T
+Ci,t
+ 
+ρi,t + γ
+ρi,t − ρopt
+
+∆t, ∀k ∈ N, (32)
+the above expression is directly constructed based on the device utilization ρi,t and avail-
+able computing capacity Ci,t, reflecting the IT equipment operation loss under different
+load levels.
+During charging and discharging, the energy storage system incurs battery degrada-
+tion and lifetime loss. Considering the cumulative impact of these processes, let λbat denote
+the lifecycle loss cost per unit energy throughput. The energy storage system operation
+loss cost is expressed as follows:
+Fbat
+k = λbat
+ 
+∑
+t∈T
+Pch
+k,t∆t + 1
+ηdis
+k
+∑
+t∈T
+Pdis
+k,t ∆t
+!
+, ∀k ∈ N. (33)
+https://doi.org/10.3390/math14122225
+
+--- Page 11 ---
+Mathematics 2026, 14, 2225 11 of 29
+When tasks are executed in data centers different from their original locations, addi-
+tional costs arise as a result of data transfer, coordination, and migration. Let λmig denote
+the migration loss cost coefficient per unit computing demand. The migration loss cost
+borne by data center k is expressed as follows:
+Fmig
+k = λmig ∑
+m∈M
+∑
+i∈Ik
+∑
+t∈T
+cm1(k ̸= om)xm,i,t, ∀k ∈ N. (34)
+2.2.10. Overall Objective Function of Multi-Data-Center System
+In the multi-data-center collaborative scheduling scenario, the overall objective is to
+minimize the total operating cost of all data centers during the scheduling horizon. The
+objective function is given by:
+minF = ∑
+k∈N
+Fk. (35)
+Expanding the single-data-center cost yields
+minF = ∑
+k∈N
+
+Fgrid
+k + FIT
+k + Fbat
+k + Fmig
+k
+
+, (36)
+this objective function takes data centers as cost aggregation units and integrates task-
+scheduling decisions and power operation states into a unified optimization framework,
+enabling coordinated economic optimization of computing and power resources under
+service quality and system operational safety constraints. These are presented as the
+formulations in Section 2.2.
+2.3. Solution Algorithm
+The multi-data-center collaborative scheduling problem involves both discrete deci-
+sions, such as task execution location and start time, and continuous decisions, such as grid
+purchasing power, energy storage power, and state of charge. Therefore, it is a discrete–
+continuous coupled hybrid optimization problem. To improve the solution efficiency in
+large-scale scenarios, an Adaptive Large Neighborhood Search algorithm with Hierarchical
+Collaboration (HC-ALNS) is developed. The algorithm iteratively solves the real total cost
+minimization problem through “task-layer discrete reconstruction—power-layer accurate
+evaluation—adaptive search intensity adjustment”.
+2.3.1. Task Action Space Reconstruction
+For any task m ∈ M, its scheduling result is reconstructed as an action pair:
+bm = (im, tm), (37)
+where im ∈ Idenotes the execution device of task m and tm ∈ Tdenotes the start time slot
+of task m. Accordingly, the scheduling solution of the system can be expressed as follows:
+b = {bm | m ∈ M}. (38)
+Considering the temporal transferability δT
+m, spatial transferability δS
+m, original data
+center om, arrival time slot am, and the maximum tolerable waiting delay Wm, the candidate
+action set of task m is defined as shown below:
+Am =
+n
+(i, t) | δS
+m = 0 ⇒ i ∈ Iom, δT
+m = 0 ⇒ t = am, 0 ≤ t − am ≤ Wm
+o
+. (39)
+To enhance the scheduling effect, a cross-day segmented scheduling mechanism is
+adopted. Through this mechanism, the time slot variable t can be extended, in the sense
+https://doi.org/10.3390/math14122225
+
+--- Page 12 ---
+Mathematics 2026, 14, 2225 12 of 29
+of cyclic time slots, to the allowable forward-shifting window. Accordingly, the original
+problem is transformed into a combinatorial optimization problem over the candidate
+action set Am.
+2.3.2. Surrogate Objective Construction
+To reduce the computational overhead caused by frequent real evaluations, a surrogate
+objective that is consistent with the variation direction of the real total cost is constructed:
+eF(b) = ∑
+k∈N
+eFk(b) + eFmove (b), (40)
+where eF(b) denotes the surrogate operating cost of data center k and eFmove (b) denotes the
+additional cost caused by task spatiotemporal shifts.
+For any data center k, define
+eFk = ω1 eFgrid
+k + ω2 eFpeak
+k + ω3 eFsmooth
+k + ω4 eFutil
+k + ω5 eFbat
+k + ω6 eFcap
+k , (41)
+where ωi represents the weighting coefficients of each surrogate term. Each term is defined
+as follows:
+eFgrid
+k = ∑
+t∈T
+λk,tPload
+k,t ∆t, (42)
+eFpeak
+k = ∑
+i∈Ik
+∑
+t∈T
+h
+α1(ρi,t − ρwarn )2
++ + α2(ρi,t − ρmax )4
++
+i
+, (43)
+eFsmooth
+k = α3 ∑
+i∈Ik
+T−1
+∑
+t=1
+|ρi,t+1 − ρi,t|, (44)
+eFutil
+k = α4 ∑
+i∈Ik
+∑
+t∈T
+ρi,t − ρopt
+, (45)
+eFbat
+k = α5 ∑
+t∈T
+(λk,t − λ)+Pload
+k,t ∆t, (46)
+eFcap
+k = α6 ∑
+i∈Ik
+∑
+t∈T
+(ρi,t − ρmax )+ , (47)
+where ρwarn denotes the utilization warning threshold, ρopt denotes the desired optimal
+utilization level, and λ denotes the average electricity price over the scheduling horizon;
+the notation (x)+ = max(x, 0) denotes the positive-part function.
+The additional cost caused by task spatiotemporal shifts is expressed as follows:
+eFmove
+k = ∑
+m∈M
+h
+λmig cm1(im /∈ Iom ) + λshi f t|tm − am|
+i
+, (48)
+where λshi f t denotes the penalty coefficient per unit time-slot shift; the surrogate objective
+is only used for search screening, while the final quality of the candidate solutions is
+determined by the real total cost.
+2.3.3. High-Impact Task Selection
+To improve search efficiency, a comprehensive impact score is defined for tasks in the
+current solution:
+Φm = (cm pm)ψ f lex
+m ψcong
+m ψprice
+m , (49)
+where cm pm denotes the task size andψ f lex
+m , ψcong
+m , and ψprice
+m denote the flexibility coefficient,
+congestion sensitivity coefficient, and price sensitivity coefficient, respectively. Their
+specific forms are:
+https://doi.org/10.3390/math14122225
+
+--- Page 13 ---
+Mathematics 2026, 14, 2225 13 of 29
+ψ f lex
+m = 1 + β1δT
+m + β2δS
+m, (50)
+ψcong
+m = 1 + β3ρm + β4
+
+ρpeak
+m − ρwarn )+, (51)
+ψprice
+m = 1 + β5∆λm, (52)
+where βi represents the weighting parameters; ρm denotes the average utilization over the
+current execution interval of task m; ρpeak
+m denotes the peak utilization over this interval;
+and ∆λm denotes the difference between the average electricity price over the current
+execution interval and that over the candidate low-price interval. Tasks are sorted in
+descending order of Φm, and the top-ranked tasks are selected to form the core task pool,
+which is then combined with a small number of randomly selected movable tasks to create
+the search pool of the current iteration.
+2.3.4. Initial Feasible Solution Construction
+Define the task size indicator as follows:
+sm = cm pm. (53)
+Tasks are placed sequentially in descending order of sm. For any task m, feasible
+actions are initially searched for within a reduced candidate set; if unsuccessful, the search
+is expanded to the full action set Am. For a candidate action (i, t), the surrogate incremental
+cost is defined as follows:
+∆eFm,i,t = eF(b ⊕ (m, i, t)) − eF(b), (54)
+where b ⊕ (m, i, t) denotes the new scheduling solution obtained by assigning task m to
+action (i, t). Then, select
+(i⋆
+m, t⋆
+m) = arg min
+(i,t)∈A f eas
+m
+∆eFm,i,t, (55)
+where A f eas
+m ⊆ Am denotes the feasible action set satisfying the hard utilization constraint.
+If the task still cannot be directly inserted, a position with the minimal violation degree
+is selected for temporary placement. Then, through a directed repair process, movable tasks
+covering overloaded time slots are rearranged, resulting in a feasible solution satisfying
+ρi,t ≤ ρmax , ∀i ∈ I, t ∈ T. (56)
+2.3.5. Large Neighborhood Destroy–Repair Reconstruction
+Let the current solution at iteration r be b(r) and select a batch of tasks B(r) from the
+search pool. First, all tasks m ∈ B(r) are removed from the current solution to obtain a
+partial solution b(r),−; then tasks are reinserted in descending order of task size.
+For any task m to be inserted, solve
+(i⋆
+m, t⋆
+m) = arg min
+(i,t)∈A f eas
+m
+∆eF(r)
+m,i,t, (57)
+where
+∆eF(r)
+m,i,t = eF
+
+b(r),− ⊕ (m, i, t)
+
+− eF
+
+b(r),−
+
+. (58)
+To enhance search diversity, instead of always selecting the single best action, one
+candidate is randomly selected from the top q near-optimal candidates:
+https://doi.org/10.3390/math14122225
+
+--- Page 14 ---
+Mathematics 2026, 14, 2225 14 of 29
+(i⋆
+m, t⋆
+m) ∼ Uni f
+
+T op-q
+n
+∆eF(r)
+m,i,t
+o
+, (59)
+where T op-q{·} denotes the set of the topq candidates sorted in ascending order of surrogate
+incremental cost and Uni f (·) denotes uniform random selection from this set. When q = 1,
+it degenerates into pure greedy repair.
+2.3.6. Power-Layer Accurate Evaluation
+For any candidate solution b generated at the task layer, the time slot-level computing
+load Li,t, utilization ρi,t, and total power load Pload
+k,t are determined. On this basis, for each
+data center k, the energy storage operation subproblem is solved:
+min ∑
+t∈T
+"
+λk,tEgrid
+k,t + λbat
+ 
+Pch
+k,t∆t + 1
+ηdis
+k
+Pdis
+k,t ∆t
+!#
++ χterm
+k , (60)
+where χterm
+k denotes the penalty term for deviation of the terminal state of charge.
+Furthermore, the real total cost of a candidate solution is expressed as follows:
+F(b) = ∑
+k∈N
+
+Fgrid
+k + FIT
+k + Fbat
+k + Fmig
+k
+
+. (61)
+The algorithm first uses eF to screen candidate solutions and then performs accurate
+evaluation using the real objective F for only a small number of high-quality candidates.
+This allows the acceptance of the candidate solution to be determined.
+2.3.7. Single-Task Refinement and Stagnation Enhancement
+In addition to batch large neighborhood reconstruction, a single-task refinement
+operator is introduced. For a selected task m, a “remove–reinsert–evaluate” process is
+performed. If the adjusted candidate solution ˆb satisfies
+F(ˆb) < F(b), (62)
+the modification is accepted.
+When the algorithm exhibits insufficient improvement over consecutive iterations, a
+stagnation enhancement mechanism is triggered. Increasing the destroy ratio, enlarging
+the number of perturbed tasks, and increasing the depth of random candidate selection
+enhances the structural reconstruction capability. Let the current solution be b(r) while
+the perturbed candidate solution is ˆb(r). Slight controlled uphill acceptance is allowed at
+specific iterations:
+F(ˆb(r)) ≤ F
+
+b(r)
+
++ εup
+r , (63)
+where εup
+r denotes the uphill tolerance threshold at iteration r.
+2.3.8. Adaptive Search Intensity Adjustment
+Let η(r) denote the average relative improvement over the preceding several iterations
+before r, u(r) denote the number of consecutive stagnation iterations, and let ξ(r) denote
+the iteration progress ratio. The search intensity indicator is defined as follows:
+Γ(r) = 1 + µ1ξ(r) + µ2u(r) + µ31
+
+η(r) < ηmin
+
+, (64)
+where µi are adaptive adjustment parameters and ηmin is the minimum effective improve-
+ment threshold.
+https://doi.org/10.3390/math14122225
+
+--- Page 15 ---
+Mathematics 2026, 14, 2225 15 of 29
+According to Γ(r), the task pool size M(r)
+pool , batch size B(r), real evaluation budget E(r),
+number of single-task refinements N(r)
+f ine, and perturbation rounds R(r)
+shake are dynamically
+adjusted as follows:
+M(r)
+pool = G1
+
+Γ(r)
+
+, B(r) = G2
+
+Γ(r)
+
+, E(r) = G3
+
+Γ(r)
+
+, N(r)
+f ine = G4
+
+Γ(r)
+
+, R(r)
+shake = G5
+
+Γ(r)
+
+, (65)
+where Gi(·) denotes bounded mapping functions from the search intensity indicator to
+the corresponding control parameters. In this way, a dynamic balance between global
+exploration capability and local convergence efficiency is achieved.
+2.3.9. Convergence Criterion
+Let the current solution cost and the historical best cost at iteration r be Fcur,(r) and
+Fbest,(r), respectively, then:
+Fbest,(r+1) ≤ Fbest,(r). (66)
+The algorithm terminates when any of the following conditions is satisfied:
+r ≥ Rmax , (67)
+Fbest,(r−h) − Fbest,(r)
+Fbest,(0) ≤ ε, (68)
+where Rmax is the maximum number of iterations, h is the sliding window length, and ε is
+the minimum improvement threshold.
+Finally, the historical best scheduling solution is output as follows:
+b⋆ = arg min
+r
+Fbest,(r). (69)
+The overall flow of the algorithm is shown in Figure 3:
+Figure 3. Workflow of the proposed HC-ALNS algorithm.
+https://doi.org/10.3390/math14122225
+
+--- Page 16 ---
+Mathematics 2026, 14, 2225 16 of 29
+3. Results
+This section presents the case study results and corresponding analyses. The exper-
+imental setup and scenario settings are first introduced, followed by a comprehensive
+evaluation of model effectiveness under different scheduling strategies. Subsequently, the
+performance of the proposed algorithm is assessed through comparative analysis. Finally,
+sensitivity and robustness analyses are conducted to further examine the impact of key
+parameters on system performance.
+3.1. Experimental Setup
+To validate the effectiveness of the proposed model, we have constructed a coordinated
+computing–power scheduling system consisting of three geographically distributed data
+centers in Tianjin, Beijing, and Hebei, respectively. Heterogeneity is considered across
+data centers in terms of both computing resources and power supply capabilities. The
+corresponding parameters are summarized in Table 1. Detailed parameters are listed in
+Tables A1 and A2 of Appendix A. The workload arrival profiles of the three data centers
+are derived from the Alibaba Cluster Trace [22], which serves as a real-world workload
+input. Specifically, task data from a single day are extracted, and the original instance-level
+records are preprocessed through data cleaning and aggregation to obtain 30,637 task-level
+inputs. Furthermore, the initial task allocation across data centers is determined based on
+the regional electricity consumption characteristics reported in [23], reflecting realistic load
+distribution patterns.
+Table 1. Heterogeneous parameters of a multi-data-center system.
+Parameter Symbol DC1 DC2 DC3 Unit
+Computing capacity Ck 20,000 15,000 9000 CPU
+Flexible queue capacity Qk 4300 3000 2000 CPU
+Idle IT power Pidle
+k 13,000 10,200 6700 kW
+Peak IT power P f ull
+k 18,200 14,950 10,200 kW
+Base cooling power Pcool ,0
+k 1200 950 650 kW
+Base distribution loss Ploss ,0
+k 380 300 210 kW
+Cooling coefficient αcool
+k 0.24 0.22 0.2 —
+Battery capacity Emax
+k 20,000 16,000 12,000 kWh
+Max charging power Pch,max
+k 3000 2500 1800 kW
+Max discharging power Pdis,max
+k 3000 2500 1800 kW
+Grid power limit Pgrid,max
+k 29,000 21,500 15,000 kW
+Migration cost coefficient γk 0.2 0.18 0.16 —
+For the three geographically distributed regions, the corresponding time-of-use (TOU)
+electricity prices are collected individually [ 24,25]. The TOU price profiles for the three
+regions in 2025 are illustrated in Figure 4. To capture the intra-day workload variation, the
+scheduling horizon is discretized into ninety-six 15 min time slots. Meanwhile, a cross-day
+scheduling mechanism is introduced by defining a time partition point, allowing some
+tasks to be logically shifted forward to earlier low-price periods.
+As shown in Figure 5, the total workload over a 24 h period exhibits significant
+intra-day fluctuation, ranging from 28,425.24 CPU to 33,922.81 CPU, with a peak-to-valley
+difference of 19.34%. The workload remains at a relatively low level during the early
+morning hours, then increases steadily, reaching its peak in the afternoon, followed by a
+gradual decline. From the perspective of workload composition, time-shiftable tasks and
+spatiotemporally shiftable tasks are most prevalent, accounting for 40.87% and 30.47% of
+the workload on average, with a combined proportion of 71.33%. In contrast, non-shiftable
+https://doi.org/10.3390/math14122225
+
+--- Page 17 ---
+Mathematics 2026, 14, 2225 17 of 29
+tasks account for 27.12% of the workload, while tasks that are only spatially shiftable
+constitute a relatively small fraction of 1.54%. Overall, most workloads exhibit scheduling
+flexibility, with a pronounced load concentration observed during peak periods.
+Figure 4. The electricity prices of three data centers.
+Figure 5. Twenty-four-hour aggregated load distribution.
+3.2. Scenario Settings
+Based on the proposed computing–power coordinated scheduling model, multiple oper-
+ational scenarios are designed to evaluate the effectiveness of different scheduling strategies:
+1. Scenario 1 (Baseline): No scheduling optimization is applied. All tasks are executed at
+their original arrival times and within their originating data centers.
+2. Scenario 2 (Time-only scheduling): Only temporal flexibility is considered. Tasks are
+allowed to shift across time slots, but cross-data-center migration is not permitted.
+3. Scenario 3 (Space-only scheduling): Only spatial flexibility is considered. Tasks can
+migrate across data centers while their execution time remains unchanged.
+4. Scenario 4 (Spatiotemporal scheduling): Both temporal and spatial flexibility are
+considered. Tasks can be shifted across time slots and migrated across data centers.
+5. Scenario 5 (Spatiotemporal scheduling with energy storage): Based on Scenario 4,
+energy storage is further integrated into system operation.
+https://doi.org/10.3390/math14122225
+
+--- Page 18 ---
+Mathematics 2026, 14, 2225 18 of 29
+3.3. Model Effectiveness Analysis
+The total system cost after optimization and the corresponding convergence processes for
+Scenarios 1–5 are illustrated in Figure 6. All scenarios converge to stable objective values after
+49 iterations, while the final costs differ significantly under different scheduling strategies.
+Figure 6. Cost iteration curves under five scenarios.
+Specifically , the space-only scheduling scenario achieves a final cost of 1,076,638.32 CNY ,
+corresponding to 0.51% reduction. The time-only scheduling scenario reduces the cost
+to 1,058,636.49 CNY, with a 2.18% reduction. With the integration of both temporal and
+spatial scheduling, the cost decreases further to 1,056,563.15 CNY, achieving a reduction
+of 2.37%. When energy storage is incorporated, the system cost is further reduced to
+1,042,436.52 CNY, corresponding to a total reduction of 3.67%. A cross-scenario comparison
+reveals that space-only scheduling provides limited cost improvement because it merely
+redistributes workloads among data centers without altering their allocation across high-
+and low-price periods, showing limited ability to reduce high-cost electricity consumption.
+In contrast, time-only scheduling directly adjusts task execution timing, shifting workloads
+from high- to low-price periods, which significantly reduces electricity procurement costs
+and serves as the primary source of cost savings. When spatial scheduling is incorporated
+to a greater extent, additional cost reduction is achieved. This indicates that cross-data-
+center workload redistribution can further optimize electricity price matching within the
+same time period, allowing workloads to be allocated to data centers with more favorable
+electricity prices or greater capacity, thereby creating additional savings potential. With
+the integration of energy storage, the system cost decreases further to 1,042,436.52 CNY.
+In this case, the system not only avoids high-price periods through task scheduling but
+also leverages energy storage to charge during low-price periods and discharge during
+high-price periods. As a result, the reduction in electricity procurement cost is no longer
+solely dependent on workload migration, but is achieved through coordinated optimization
+of both computing and power resources.
+The task time-slot distributions under different scheduling scenarios shown inFigure 7
+show that different scheduling strategies exert markedly different impacts on the workload
+structure. Before optimization, the workload curves of the three data centers are relatively
+smooth, with DC1 mostly ranging from about 120 to 160 tasks, DC2 from about 110 to
+https://doi.org/10.3390/math14122225
+
+--- Page 19 ---
+Mathematics 2026, 14, 2225 19 of 29
+150 tasks, and DC3 from about 95 to 130 tasks. This indicates that the original workload
+profiles are mainly determined by task arrivals and are not closely correlated with TOU elec-
+tricity prices. After optimization, all scenarios exhibit more evident temporal fluctuations
+and inter-data-center differences, although the regulation patterns differ.
+Figure 7. Task timeslot distribution under different scenarios. (a) time-only scheduling; (b) spatial-
+only scheduling; (c) spatiotemporal scheduling; (d) spatiotemporal scheduling with energy storage.
+Under time-only scheduling, the adjustment is mainly reflected in intra-temporal
+reallocation within each data center. As shown in Figure 7a, DC1 shows obvious workload
+aggregation around time slots 28–34, with the peak exceeding 200 tasks, while the task
+count decreases to about 100–130 in the following high-price periods. DC2 also presents
+several local peaks around time slots 28, 48, and 90, with the highest peak approaching
+300 tasks. For DC3, the task count in later high-price periods is mostly reduced to about
+80–100. This indicates that temporal shifting can effectively respond to price signals by
+transferring part of the workload away from high-price periods, but it may also increase
+load concentration within specific low-price or feasible execution windows.
+In contrast, space-only scheduling is characterized by inter-data-center redistribution.
+As shown in Figure 7b, DC1 undertakes more tasks after optimization, with several time
+slots reaching about 170–200 tasks. Meanwhile, DC3 decreases to about 80–100 tasks during
+time slots 55–90, which is generally lower than its pre-optimization level. DC2 also carries
+https://doi.org/10.3390/math14122225
+
+--- Page 20 ---
+Mathematics 2026, 14, 2225 20 of 29
+more tasks in some middle and later periods, reaching about 140–170 tasks during time
+slots 60–80. Therefore, space-only scheduling mainly exploits regional electricity price
+differences and capacity differences among data centers. However, its compression effect
+on workloads during high-price periods remains limited, because this strategy does not
+alter the temporal distribution of tasks.
+As spatiotemporal scheduling is adopted, the workload distribution exhibits a more
+pronounced structural reconfiguration. As shown in Figure 7c, the task count of DC2 is
+significantly reduced during time slots 40–50 and 66–86, with some slots decreasing to
+about 50–80 tasks. DC3 also remains mostly at about 60–100 tasks during time slots 55–88,
+while a clear task peak appears around time slot 15, exceeding 200 tasks. Meanwhile, DC1
+undertakes more tasks during time slots 66–84, with some peaks approaching 250 tasks.
+This indicates that spatiotemporal scheduling jointly coordinates temporal shifting and
+spatial migration, rather than simply moving tasks within a single data center, thereby
+achieving a deeper level of workload restructuring.
+After incorporating energy storage, the overall task-side distribution remains largely
+consistent with the spatiotemporal scheduling scenario without storage. As shown in
+Figure 7d, DC2 still maintains relatively low task levels during time slots 40–50 and
+66–86, DC3 is mostly lower than the pre-optimization level in the later periods, and DC1
+continues to undertake more shifted tasks. This suggests that energy storage does not
+directly change the task-count distribution significantly. Its main role lies on the power
+side, where low-price charging and high-price discharging reduce grid purchasing pressure
+and complement task scheduling.
+Overall, Figure 7 show that time-only scheduling mainly changes task execution time
+and may lead to local workload peaks; space-only scheduling mainly changes task execu-
+tion location and enables inter-data-center workload redistribution; spatiotemporal schedul-
+ing produces a more evident workload reconstruction by combining both dimensions; and
+energy storage further improves system operation mainly through power-side regulation.
+The power time-slot distributions in Figure 8 show the changes in power profiles
+under different scheduling scenarios. Compared with the task-count distributions in
+Figure 7, the power curves more directly reflect the impact of scheduling strategies on
+power-side operation. Before optimization, the power profiles of the three data centers
+are relatively smooth, with DC1 mostly maintained at about 2.20 ∼ 2.35 × 104 kW, DC2 at
+about 1.76 ∼ 1.83 × 104 kW, and DC3 at about 1.15 ∼ 1.24 × 104 kW. This indicates that
+the original power demand is mainly determined by natural task arrivals and execution
+processes. After optimization, the correspondence between power profiles and TOU
+electricity prices becomes more evident, showing a segmented pattern with higher power
+in low-price periods and lower power in high-price periods.
+Under time-only scheduling, the power variation mainly results from task shifting
+within each original data center. As shown in Figure 8a, DC1 approaches 2.40 × 104 kW
+during low-price periods, while it is reduced to about 2.05 ∼ 2.10 × 104 kW during
+high-price periods such as time slots 36–48 and 64–88. DC2 is also reduced from about
+1.8 × 104 kW to about 1.55 ∼ 1.65 × 104 kW in high-price intervals, while DC3 remains
+around 1.08 ∼ 1.12 × 104 kW in later high-price periods. This shows that time-only
+scheduling can effectively reduce power demand during high-price periods, but may cause
+step-like changes near price transition points.
+Under space-only scheduling, power regulation is mainly reflected in workload re-
+distribution among data centers. In Figure 8b, the optimized power of DC1 increases
+overall and mostly stays at about 2.33 ∼ 2.40 × 104 kW. By contrast, DC2 mostly remains
+around 1.65 ∼ 1.80 × 104 kW, and DC3 is also lower than the pre-optimization level in
+some periods, at about 1.13 ∼ 1.20 × 104 kW. This indicates that space-only scheduling
+https://doi.org/10.3390/math14122225
+
+--- Page 21 ---
+Mathematics 2026, 14, 2225 21 of 29
+transfers part of the workload to data centers with better economic or capacity conditions.
+However, since task execution time is not changed, its compression effect during high-price
+periods is less obvious than that of time-only scheduling.
+Figure 8. Power Timeslot Distribution Under Different Scenarios. (a) time-only scheduling; (b) spatial-
+only scheduling; (c) spatiotemporal scheduling; (d) spatiotemporal scheduling with energy storage.
+Under spatiotemporal scheduling, the power curves show more evident peak-shaving
+and valley-filling characteristics. As shown in Figure 8c, DC1 maintains a high power level
+during low-price periods, close to2.40 × 104 kW, while it stays around2.10 ∼ 2.20 × 104 kW
+during high-price periods. DC2 is reduced to about 1.50 ∼ 1.58 × 104 kW during time slots
+36–48 and 64–88, and DC3 remains around 1.06 ∼ 1.14 × 104 kW in later high-price periods.
+Compared with single-dimensional scheduling, spatiotemporal scheduling jointly utilizes
+time-varying electricity prices and inter-data-center differences, leading to a more sufficient
+structural adjustment of power distribution.
+After incorporating energy storage, the power distribution in Figure 8d is generally
+close to that in Figure 8c, indicating that energy storage does not significantly change the
+power structure formed by spatiotemporal scheduling. The data centers still maintain the
+basic feature of higher power during low-price periods and lower power during high-price
+periods. Compared with the scenario without energy storage, energy storage mainly makes
+https://doi.org/10.3390/math14122225
+
+--- Page 22 ---
+Mathematics 2026, 14, 2225 22 of 29
+local power curves smoother and alleviates abrupt changes in some periods, serving more
+as an auxiliary regulation measure.
+Overall, Figure 8 show that different scheduling strategies have distinct impacts on the
+power side. Time-only scheduling can directly reduce power during high-price periods but
+may cause step-like fluctuations; space-only scheduling mainly changes the power-sharing
+proportions among data centers; spatiotemporal scheduling produces more effective peak
+shaving and valley filling; and energy storage further complements task scheduling through
+power-side regulation.
+3.4. Algorithm Effectiveness Analysis
+To validate the effectiveness of the proposed method, NSGA-II, PSO, and the proposed
+HC-ALNS algorithm are applied to solve Scenario 5. The corresponding cost convergence
+curves are presented in Figure 9. In addition to the convergence curves, the wall-clock time
+required by each algorithm to reach the stopping iteration is also recorded to evaluate the
+computational overhead.
+Figure 9. Cost iteration comparison of different algorithms.
+As shown in the aforementioned figure, all three algorithms achieve a rapid cost
+reduction during the initial stage; however, their subsequent convergence behaviors differ
+significantly. The relevant iteration data are presented in Table 2. Specifically, PSO enters a
+plateau phase relatively early after an initial decrease, with limited further improvement,
+indicating a tendency toward premature convergence. Although PSO requires the shortest
+wall-clock time of 275.9 s, its final cost is 1,055,640 CNY, corresponding to a cost reduction
+of only 2.45%. In contrast, NSGA-II continues to exhibit gradual improvement in the
+mid-to-late stages, although its overall convergence speed remains relatively slow. This
+is also reflected in its wall-clock time of 1220.1 s, which is the longest among the three
+algorithms, while its final cost reduction is 2.74%. Compared with these methods, the
+HC-ALNS algorithm not only achieves a substantial cost reduction in the early stage but
+also maintains continuous improvement in solution quality during subsequent iterations.
+Although it reaches the optimal solution at a relatively later stage, this behavior suggests
+that the algorithm is less prone to being trapped in local optima and possesses stronger
+global exploration capability. HC-ALNS obtains the lowest final cost of 1,042,445 CNY with
+a cost reduction of 3.67%, and its wall-clock time is 762.3 s, which is lower than that of
+NSGA-II while achieving better solution quality.
+Overall, HC-ALNS demonstrates superior performance in solution quality and over-
+all computational cost-effectiveness compared to the benchmark algorithms, validating
+https://doi.org/10.3390/math14122225
+
+--- Page 23 ---
+Mathematics 2026, 14, 2225 23 of 29
+its effectiveness and advantage in solving the multi-data-center coordinated scheduling
+problem. Although PSO has the shortest absolute running time, its optimization effect is
+limited. Therefore, HC-ALNS provides a better balance between computational overhead
+and cost reduction.
+Table 2. Performance comparison of different algorithms.
+Algorithm Baseline
+Cost Final Cost Stop
+Iteration
+Wall-Clock
+Time
+Reduction
+(%)
+HC-ALNS 1,082,175 1,042,445 27 762.3 3.67
+NSGA-II 1,082,175 1,052,514 12 1220.1 2.74
+PSO 1,082,175 1,055,640 21 275.9 2.45
+As shown in Figure 10, the proposed algorithm demonstrates significant optimization
+capability in both task scheduling and power-side coordinated control. At the load level, the
+originally smooth load profiles of each data center are reshaped into distinctly segmented
+patterns post-optimization: loads are significantly reduced during high electricity price
+periods, increasing correspondingly during low- and mid-price periods. This indicates
+that the algorithm can globally reorganize flexible tasks in an orderly manner, achieving
+temporal load shifting. Meanwhile, the variation in purchased grid power is more pro-
+nounced than that of the load. It decreases more sharply during high-price periods and
+increases during low-price periods, reflecting the coordinated operation of energy storage
+charging/discharging and grid purchasing strategies. This enables the system to reduce
+grid dependence during high-price periods while proactively shifting energy usage to low-
+price periods. Correspondingly, the slot-wise cost distribution in Figure 11 validates the
+effectiveness of the scheduling strategy: costs are significantly reduced during high-price
+periods, while only slight increases are observed during low-price periods, resulting in an
+overall improvement in the cost structure. This demonstrates that the algorithm effectively
+mitigates the impact of high-price periods on total cost through task rescheduling and
+storage coordination.
+Figure 10. Purchased grid power comparison.
+https://doi.org/10.3390/math14122225
+
+--- Page 24 ---
+Mathematics 2026, 14, 2225 24 of 29
+Figure 11. Total slot cost comparison for three data centers.
+Overall, the algorithm establishes a coordinated optimization mechanism across task
+scheduling, energy storage control, and grid purchasing decisions, achieving load re-
+structuring and temporal cost shifting, thereby validating its effectiveness in multi-data-
+center scheduling.
+3.5. Sensitivity and Robustness Analysis
+To further characterize the impact mechanisms of key parameters with regard to
+system performance, this subsection conducts a sensitivity analysis focusing on the pro-
+portion of transferable workloads and the degree of electricity price fluctuation. For data
+centers, transferable workloads serve as the primary carrier for peak shaving, valley filling,
+and cross-data-center coordinated scheduling, while electricity price variation provides
+a direct economic incentive for workload migration. Therefore, under the premise of a
+fixed total computational workload, the effects of these two factors on cost reduction are
+systematically analyzed by adjusting the transferable workload factor and the electricity
+price fluctuation factor.
+Both parameters are varied within the range of [ −0.2, 0.2]. As shown in Figure 12,
+the cost reduction generally exhibits a monotonic trend with respect to both factors, with
+the electricity price fluctuation factor exerting a more pronounced influence. As the de-
+gree of price fluctuation increases, the peak–valley price gap widens. This allows the
+scheduling strategy to more effectively exploit price signals and shift workloads toward
+low-price periods, thereby significantly enhancing the system’s cost-saving potential. Over-
+all, the cost reduction shows an approximately linear increase with respect to the electricity
+price fluctuation factor, indicating that the pricing mechanism plays a dominant role in
+driving optimization benefits. In contrast, the impact of the transferable workload factor
+demonstrates a clear diminishing marginal effect. At relatively low levels of transferable
+workload, increasing its proportion enhances scheduling flexibility and yields noticeable
+cost reductions. However, as the proportion continues to grow, the improvement gradually
+saturates due to system capacity constraints and the inherent temporal–spatial distribution
+of workloads, reducing the sensitivity to further changes in this parameter. Moreover, when
+the proportion of transferable workload decreases, the system cost initially experiences a
+slight reduction and then enters a plateau phase. This suggests that the proposed model can
+adaptively adjust scheduling strategies under different workload compositions to maintain
+https://doi.org/10.3390/math14122225
+
+--- Page 25 ---
+Mathematics 2026, 14, 2225 25 of 29
+near-optimal operation. Additionally, as the peak–valley price gap narrows, the influence
+of workload structure on system cost diminishes.
+Figure 12. Sensitivity surface of cost reduction to key system parameters.
+These results demonstrate that the proposed scheduling model maintains stable opti-
+mization performance under key parameter perturbations, exhibiting strong robustness
+and adaptability.
+4. Discussion
+This paper addresses the mathematical optimization problem arising from the coupled
+scheduling of computational workloads and power-side operation in multi-data-center
+systems. A multi-data-center mixed-integer nonlinear programming model (MDC-MINLP)
+is formulated for task-level computation–power coordinated scheduling, in which binary
+task scheduling decisions, device-level computing utilization, nonlinear power consump-
+tion characteristics, energy storage dynamics, grid procurement, and quality-of-service
+constraints are jointly represented. To solve the resulting large-scale discrete–continuous
+coupled problem, an Adaptive Large Neighborhood Search algorithm with Hierarchical
+Collaboration (HC-ALNS) is developed. The main findings are summarized as follows:
+• By explicitly modeling task temporal flexibility, spatial migration capability, and
+flexible queue constraints, the proposed MDC-MINLP provides a fine-grained feasible
+region for workload restructuring. The optimization results show that task execution
+decisions are no longer distributed only according to original arrival patterns, but are
+reorganized according to electricity price signals and system constraints. Consequently,
+workloads are reduced during high-price periods and reassigned to low-price periods,
+indicating that the model can effectively transform task flexibility into cost-oriented
+scheduling decisions.
+• The comparison among different scheduling scenarios verifies the contribution of each
+decision dimension to the objective value. Temporal scheduling provides the primary
+reduction in total operating cost by shifting flexible workloads away from high-price
+periods, achieving a cost reduction of 2.18%. On this basis, spatial scheduling further
+expands the feasible solution space by enabling cross-data-center workload redistribu-
+tion, increasing the reduction to 2.37%. When energy storage operation is incorporated,
+https://doi.org/10.3390/math14122225
+
+--- Page 26 ---
+Mathematics 2026, 14, 2225 26 of 29
+the model further couples workload allocation with charge–discharge decisions, using
+the “charge at low price and discharge at high price” mechanism to improve the
+power-side cost structure. As a result, the total cost reduction reaches 3.67%, demon-
+strating that the joint optimization of task scheduling and power operation yields a
+stronger objective improvement than single-dimensional scheduling.
+• The proposed HC-ALNS algorithm shows better suitability for the structure of the
+MDC-MINLP than general-purpose metaheuristics. Through task action-space recon-
+struction, surrogate objective screening, accurate power-layer evaluation, and adaptive
+search intensity adjustment, HC-ALNS maintains continuous improvement in later
+iterations and reduces the probability of premature convergence. Compared with
+NSGA-II and PSO, HC-ALNS achieves additional cost reductions of 0.93% and 1.22%,
+respectively, indicating stronger convergence performance and higher final solution
+quality for the studied discrete–continuous coupled optimization problem.
+Furthermore, the sensitivity analysis provides insight into the influence of key param-
+eters on the optimal objective value. The electricity price fluctuation factor has a significant
+positive effect on cost reduction, indicating that the time-varying price coefficient is a
+dominant parameter driving the optimization benefit. In contrast, the proportion of trans-
+ferable workloads exhibits diminishing marginal returns. When the amount of schedulable
+workload reaches a certain level, further increasing task flexibility only slightly enlarges the
+effective feasible region and contributes less to additional cost reduction. Under different
+parameter perturbations, the proposed MDC-MINLP and HC-ALNS maintain stable opti-
+mization performance, demonstrating robustness with respect to changes in price signals
+and workload flexibility.
+These results indicate that the proposed mathematical modeling and solution frame-
+work can effectively describe and solve the coordinated operation problem of multiple data
+centers under time-of-use electricity pricing. By integrating task scheduling constraints,
+nonlinear power consumption relationships, energy storage dynamics, and operating cost
+components into a unified MDC-MINLP , the model captures the essential coupling between
+computation-side and power-side decisions. Meanwhile, HC-ALNS provides an efficient
+problem-oriented heuristic for obtaining high-quality feasible solutions in a large-scale
+mixed-integer nonlinear search space.
+Future research may further extend the proposed model by incorporating renewable
+energy generation, uncertainty in workload arrivals and electricity prices, and real-time
+rolling optimization mechanisms. In addition, the scalability of the proposed method for
+larger networked data center systems, as well as its integration with electricity market
+participation and stochastic optimization frameworks, remains an important direction for
+further study.
+Author Contributions: Conceptualization, Y.L.; methodology, Y.L. and B.Z.; writing—review and
+editing, Y.L. and B.Z.; funding acquisition, B.Z.; data curation, L.N.; writing—original draft, Y.L. and
+L.N.; investigation, L.N. and J.Y.; project administration, B.Z. All authors have read and agreed to the
+published version of the manuscript.
+Funding: This research was funded by the Open Project of the Engineering Research Center for Elec-
+tric Energy Quality of the Ministry of Education at Anhui University (Grant number PQKF202505).
+Institutional Review Board Statement: Not applicable.
+Informed Consent Statement: Not applicable.
+Data Availability Statement: The original contributions presented in this study are included in the
+article. Further inquiries can be directed to the corresponding author.
+https://doi.org/10.3390/math14122225
+
+--- Page 27 ---
+Mathematics 2026, 14, 2225 27 of 29
+Acknowledgments: The authors would like to acknowledge the support from the Engineering
+Research Center for Electric Energy Quality of the Ministry of Education at Anhui University (Grant
+Number PQKF202505).
+Conflicts of Interest: Author Liaoyi Ning was employed by the State Grid Liaoning Electric Power
+Supply Co., Ltd. The remaining authors declare that the research was conducted in the absence of
+any commercial or financial relationships that could be construed as a potential conflict of interest.
+Appendix A
+Table A1. Heterogeneous Parameters of Data Centers.
+Parameter Symbol DC1 DC2 DC3 Unit
+Computing capacity Ck 20,000 15,000 9000 CPU
+Flexible queue capacity Qk 4300 3000 2000 CPU
+Aggregated idle IT power Pidle
+k 13,000 10,200 6700 kW
+Aggregated full-load IT power P f ull
+k 18,200 14,950 10,200 kW
+Nonlinear IT power coefficient τi 1.2 1.2 1.2 -
+Base cooling power Pcool ,0
+k 1200 950 650 kW
+Cooling coefficient αcool
+k 0.24 0.22 0.2 -
+Base distribution loss Ploss ,0
+k 380 300 210 kW
+Distribution loss coefficient αloss
+k 0.03 0.03 0.03 -
+Grid power limit Pgrid,max
+k 29,000 21,500 15,000 kW
+Battery capacity Ebat
+k 20,000 16,000 12,000 kWh
+Charging efficiency ηch
+k 0.95 0.95 0.95 -
+Discharging efficiency ηdis
+k 0.95 0.95 0.95 -
+Minimum state of charge SOCmin
+k 0.1 0.1 0.1 -
+Maximum state of charge SOCmax
+k 0.9 0.9 0.9 -
+Initial state of charge SOCk,0 0.5 0.5 0.5 -
+Max charging power Pch,max
+k 3000 2500 1800 kW
+Max discharging power Pdis,max
+k 3000 2500 1800 kW
+Optimal utilization level ρopt 0.7 0.7 0.7 -
+Utilization deviation coefficient γ 0.2 0.18 0.16 -
+IT operation loss coefficient λIT 0.06 0.06 0.06 CNY/(CPU ·h)
+Battery degradation coefficient λbat 0.06 0.06 0.06 CNY/kWh
+Migration cost coefficient λmig 0.002 0.002 0.002 CNY/CPU
+Number of equivalent cabinets Ik 1000 750 520 count
+Idle IT power per cabinet Pidle
+i 13 13.6 12.88 kW
+Full-load IT power per cabinet P f ull
+i 18.2 19.93 19.62 kW
+Table A2. Global Parameters and Algorithm Parameters.
+Parameter Symbol Value Unit
+Number of data centers N 3 count
+Scheduling horizon T 96 slot
+Time-slot duration ∆t 0.25 h
+Total number of task inputs M 30,637 task
+Maximum waiting delay of time-shiftable type-1 tasks Wm 5 slot
+Maximum waiting delay of time-shiftable type-2 tasks Wm 10 slot
+Maximum waiting delay of time-shiftable type-3 tasks Wm 15 slot
+Surrogate peak penalty coefficient α1 2600 -
+Surrogate hard-peak penalty coefficient α2 380,000 -
+Surrogate smoothing coefficient α3 24 -
+Surrogate utilization-deviation coefficient α4 45 -
+https://doi.org/10.3390/math14122225
+
+--- Page 28 ---
+Mathematics 2026, 14, 2225 28 of 29
+Table A2. Cont.
+Parameter Symbol Value Unit
+Surrogate battery-friendly coefficient α5 0.14 -
+Surrogate capacity-violation coefficient α6 50,000,000 -
+Utilization warning threshold ρwarn 0.82 -
+Hard utilization upper bound ρmax 0.9 -
+Time-slot shift penalty coefficient λshi f t 0.008 -
+Flexibility weight for temporal shiftability β1 0.45 -
+Flexibility weight for spatial shiftability β2 0.3 -
+Congestion weight for average utilization β3 1.6 -
+Congestion weight for peak utilization β4 2.2 -
+Price sensitivity weight β5 2.8 -
+Uphill tolerance ratio εup
+r 0.00015 -
+Adaptive progress coefficient µ1 0.75 -
+Adaptive stagnation coefficient µ2 0.18 -
+Adaptive low-improvement coefficient µ3 0.42 -
+Minimum effective improvement threshold ηmin 0.00012 -
+Maximum number of iterations Rmax 48 iteration
+Minimum improvement threshold ε 0.000001 -
+References
+1. International Energy Agency. Energy and AI; IEA: Paris, France, 2025. Available online: https://www.iea.org/reports/energy-
+and-ai (accessed on 7 March 2026).
+2. Chen, S. Data centres will use twice as much energy by 2030—Driven by AI. Nature. 2025. Available online: https://www.
+nature.com/articles/d41586-025-01113-z (accessed on 7 March 2026).
+3. Katal, A.; Dahiya, S.; Choudhury, T. Energy efficiency in cloud computing data centers: A survey on software technologies. Clust.
+Comput. 2023, 26, 1845–1875. [CrossRef] [PubMed]
+4. Ghafari, R.; Kabutarkhani, F.H.; Mansouri, N. Task scheduling algorithms for energy optimization in cloud environment:
+A comprehensive review. Clust. Comput. 2022, 25, 1035–1093. [CrossRef]
+5. Liu, L.; Shen, X.; Chen, Z.; Sun, Q.; Wennersten, R. Optimal energy management of data center micro-grid considering computing
+workloads shift. IEEE Access 2024, 12, 102061–102075. [CrossRef]
+6. Zhang, W.; Zavala, V .M. Remunerating space-time, load-shifting flexibility from data centers in electricity markets.Appl. Energy
+2022, 326, 119930. [CrossRef]
+7. Jin, X.; Wu, Q.; Jia, H. Local flexibility markets: Literature review on concepts, models and clearing methods. Appl. Energy 2020,
+261, 114387. [CrossRef]
+8. Chen, S.; Xu, S.; Li, Y.; Liang, G.; Ma, M.; Jiang, J.; Lin, W. Energy Consumption Modeling and Elastic Space Computation of Data
+Centers Considering Spatiotemporal Transfer Flexibility. Energies 2025, 18, 6449. [CrossRef]
+9. Zhang, S.; Gao, J.; Qian, H.; Yu, J.; Luo, S.; Guo, Q. Power system operational reliability assessment based on the data center
+energy consumption elastic space. Front. Energy Res. 2024, 12, 1370861. [CrossRef]
+10. Feng, L.; Chen, G.; Zhou, S.; Zhou, X.; Jin, M. An Energy-Efficient Unrelated Parallel Machine Scheduling Problem with Batch
+Processing and Time-of-Use Electricity Prices. Mathematics 2024, 12, 376. [CrossRef]
+11. Zhao, Z.; Zhu, J. Continuous-Time Scheduling of Berths and Onshore Power Supply in Cold-Chain Logistics: A Chance-
+Constrained Stochastic Programming Model and RL-ALNS Algorithm. Mathematics 2026, 14, 1292. [CrossRef]
+12. Attiya, I.; Abualigah, L.; Elsadek, D.; Chelloug, S.A.; Abd Elaziz, M. An Intelligent Chimp Optimizer for Scheduling of IoT
+Application Tasks in Fog Computing. Mathematics 2022, 10, 1100. [CrossRef]
+13. Shao, K.; Fu, H.; Wang, B. An Efficient Combination of Genetic Algorithm and Particle Swarm Optimization for Scheduling
+Data-Intensive Tasks in Heterogeneous Cloud Computing. Electronics 2023, 12, 3450. [CrossRef]
+14. Ali, I.M.; Sallam, K.M.; Moustafa, N.; Chakraborty, R.; Ryan, M.J.; Choo, K.-K.R. An Automated Task Scheduling Model Using
+Non-Dominated Sorting Genetic Algorithm II for Fog-Cloud Systems. IEEE T rans. Cloud Comput. 2022, 10, 2294–2308. [CrossRef]
+15. Bi, Y.; Ni, W.L.; Liu, Y.; Lai, L.; Zhou, X. Task Scheduling with Improved Particle Swarm Optimization in Cloud Data Center. In
+ICONIP 2023; Springer: Singapore, 2024; pp. 277–287. [CrossRef]
+16. Pang, S.; Zhang, W.; Ma, T.; Gao, Q. Ant Colony Optimization Algorithm to Dynamic Energy Management in Cloud Data Center.
+Math. Probl. Eng. 2017, 2017, 4810514. [CrossRef]
+https://doi.org/10.3390/math14122225
+
+--- Page 29 ---
+Mathematics 2026, 14, 2225 29 of 29
+17. Yuan, H.; Bi, J.; Zhou, M.C.; Zhang, J.; Zhang, W. Fine-grained Task Scheduling in Cloud Data Centers Using Simulated-annealing-
+based Bees Algorithm. In 2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC) ; IEEE: Piscataway, NJ, USA,
+2020; pp. 1212–1217. [CrossRef]
+18. Wang, J.; Deng, H.; Liu, Y.; Guo, Z.; Wang, Y. Coordinated optimal scheduling of integrated energy system for data center based
+on computing load shifting. Energy 2023, 267, 126585. [CrossRef]
+19. Mondal, B.; Choudhury, A. Multi-objective cuckoo optimizer for task scheduling to balance workload in cloud computing.
+Computing 2024, 106, 3447–3478. [CrossRef]
+20. Zhang, H.; Jia, R. Application of chaotic cat swarm optimization in cloud computing multi objective task scheduling. IEEE Access
+2023, 11, 95443–95454. [CrossRef]
+21. Qureshi, A.; Weber, R.; Balakrishnan, H.; Guttag, J.; Maggs, B. Cutting the electric bill for internet-scale systems. In Proceedings of
+the ACM SIGCOMM 2009 Conference on Data Communication ; ACM: New York, NY, USA, 2009; pp. 123–134. [CrossRef]
+22. Alibaba Production Cluster Data v2017. Available online: https://github.com/alibaba/clusterdata/blob/master/cluster-trace-
+v2017/trace_201708.md (accessed on 7 March 2026).
+23. Alibaba Cloud Tianchi Datasets v2023. Available online: https://tianchi.aliyun.com/dataset/176964 (accessed on 7 March 2026).
+24. Time-of-Use Electricity Pricing Map. Available online: https://mp.weixin.qq.com/s/9CrVQuvGjg2Kmmi3jhBfLA (accessed on
+7 March 2026).
+25. Peak and Off-Peak Electricity Prices. Available online: https://mp.weixin.qq.com/s?__biz=MzkyOTE2OTU1NQ==&mid
+=2247539653&idx=1&sn=e35d6476bcd425c5273883b4950d2109&scene=21&poc_token=HGVB7GmjgKhcs5RJJGgAyaDEl02J6kW
+kIu3_Ojlv (accessed on 7 March 2026).
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
+https://doi.org/10.3390/math14122225
