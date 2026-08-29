@@ -1,0 +1,83 @@
+# ===== 数据预处理与质量校验 =====
+library(readr);library(dplyr)
+wd="C:/Users/18904/Github/huashu-cup"
+d=file.path(wd,"题目","附件数据");od=file.path(wd,"解答","数据预处理")
+if(!dir.exists(od))dir.create(od,recursive=TRUE)
+csv=function(f)read_csv(file.path(d,f),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
+
+wt=csv("workload_trace_Sheet1.csv");rt=csv("region_time_data_region_time_data.csv")
+gi=csv("GPU_information_GPU中心基础情况.csv");nl=csv("network_latency_network_latency.csv")
+pm=csv("power_mapping_任务功率映射.csv");st=csv("storage_information_storage_information.csv")
+
+# ===== 1 质量校验 =====
+pue=gi$能源使用效率[match(rt$区域编号,gi$区域编号)]
+chk=list(
+  任务数=nrow(wt)==50000,
+  编号唯一=dplyr::n_distinct(wt$任务编号)==nrow(wt),
+  无缺失=!anyNA(wt),
+  到达小时=all(wt$到达小时>=0&wt$到达小时<=2399),
+  需求大于0=all(wt$图形处理器需求量>0),
+  时长范围=all(wt$连续执行时长>=10&wt$连续执行时长<=399),
+  最早开工=all(wt$最早开工小时==wt$到达小时),
+  时延类型匹配=all((wt$任务类型=="实时推理任务"&wt$最大网络时延==20)|(wt$任务类型=="批量推理任务"&wt$最大网络时延==80)|(wt$任务类型=="人工智能训练任务"&wt$最大网络时延==150)),
+  敏感性匹配=all((wt$任务类型=="实时推理任务"&wt$延时敏感性=="高")|(wt$任务类型=="批量推理任务"&wt$延时敏感性=="中")|(wt$任务类型=="人工智能训练任务"&wt$延时敏感性=="低")),
+  执行模式=all(wt$执行模式=="不可抢占"),
+  最晚完成口径=all((wt$任务类型=="实时推理任务"&wt$最晚完成小时==wt$到达小时+ceiling(wt$连续执行时长/60))|(wt$任务类型!="实时推理任务"&wt$最晚完成小时==2406)),
+  区域时间组合=nrow(dplyr::distinct(rt,调度时段编号,区域编号))==6*2407,
+  时段范围=all(rt$调度时段编号>=0&rt$调度时段编号<=2406),
+  电价时段=all(rt$电价时段%in%c("谷","平","峰")),
+  设施负荷勾稽=max(abs(rt$设施侧总负荷-rt$信息技术侧负荷*pue))<.01,
+  碳排放勾稽=max(abs(rt$碳排放量-rt$电网购电功率*rt$碳强度))<.01,
+  净购电勾稽=max(abs(rt$净购电功率-(rt$电网购电功率-rt$外送售电功率)))<.01,
+  储能充电勾稽=max(abs(rt$储能充电功率-(rt$新能源充电功率+rt$电网充电功率)))<.01,
+  区域数=nrow(gi)==6,
+  可调度勾稽=max(abs(gi$可调度图形处理器容量-gi$图形处理器总容量*(1-gi$图形处理器预留比例)))<.01,
+  设施侧勾稽=max(abs(gi$设施侧最大功率-gi$信息技术侧最大功率*gi$能源使用效率))<.01,
+  时延条数=nrow(nl)==36,
+  对角线时延=all(nl$网络时延[nl$源区域==nl$目标区域]==5),
+  功率映射条数=nrow(pm)==3,
+  储能区域数=nrow(st)==6,
+  充放电效率=all(st$充电效率>0&st$充电效率<1&st$放电效率>0&st$放电效率<1),
+  初始SOC=all(st$初始荷电状态<=st$储能容量)
+)
+rpt=data.frame(检查项=names(chk),结果=ifelse(unlist(chk),"通过","不通过"))
+bad=rpt[rpt$结果!="通过",]
+if(nrow(bad))print(bad)else cat("全部校验通过 ✓ (",nrow(rpt),"项)\n",sep="")
+
+# ===== 2 数据转换 =====
+wt2=wt %>% mutate(连续执行时长_小时=连续执行时长/60)   # 分钟→小时
+wt0=wt %>% filter(到达小时<=2399)
+h =wt0 %>% group_by(到达小时)        %>% summarise(图形处理器总需求=sum(图形处理器需求量),任务数=n(),.groups="drop")
+hr=wt0 %>% group_by(到达小时,来源区域) %>% summarise(图形处理器总需求=sum(图形处理器需求量),.groups="drop")
+ht=wt0 %>% group_by(到达小时,任务类型) %>% summarise(图形处理器总需求=sum(图形处理器需求量),.groups="drop")
+hs=h %>% mutate(数据集=case_when(到达小时<=2351~"训练集",到达小时<=2375~"调参集",TRUE~"测试集"))
+
+# ===== 3 输出 =====
+write_csv(rpt,file.path(od,"校验报告.csv"))
+write_csv(wt2,file.path(od,"任务轨迹_清洗后.csv"))
+write_csv(h ,file.path(od,"逐时图形处理器总需求.csv"))
+write_csv(hr,file.path(od,"逐时图形处理器需求_分区域.csv"))
+write_csv(ht,file.path(od,"逐时图形处理器需求_分类型.csv"))
+write_csv(hs,file.path(od,"逐时图形处理器需求_切分.csv"))
+
+# ===== 4 数据充分性分析 =====
+有任务小时=nrow(h)                      # 0-2399 中有任务的小时数
+充分性=data.frame(
+  类别=c(rep("覆盖情况",6),rep("样本量",5),rep("预测样本",3)),
+  指标=c("任务时间覆盖率","有任务小时数","无任务小时数","区域覆盖数","任务类型覆盖数","区域时间数据完整度",
+         "任务总数","每小时平均任务数","每小时平均图形处理器需求","每小时最大图形处理器需求","每小时最小图形处理器需求",
+         "训练集小时数","调参集小时数","测试集小时数"),
+  数值=c(paste0(round(有任务小时/2400*100,1),"%"),有任务小时,2400-有任务小时,
+         dplyr::n_distinct(wt$来源区域),dplyr::n_distinct(wt$任务类型),
+         paste0(round(nrow(rt)/(6*2407)*100,1),"%"),
+         nrow(wt),round(nrow(wt)/2400,1),round(mean(h$图形处理器总需求),1),
+         max(h$图形处理器总需求),min(h$图形处理器总需求),
+         2352,24,24),
+  说明=c("第0-2399共2400小时中有任务的小时占比","","无任务到达的小时数","6个区域均有任务数据","三类任务均有数据","6区域×2407时段全部填满",
+         "","50000/2400","","","",
+         "第0-2351小时","第2352-2375小时","第2376-2399小时"),
+  stringsAsFactors=FALSE
+)
+write_csv(充分性,file.path(od,"数据充分性.csv"))
+cat("数据充分性: 时间覆盖率",paste0(round(有任务小时/2400*100,1),"%"),
+    " 无任务小时",2400-有任务小时,"\n")
