@@ -1,0 +1,612 @@
+--- Page 1 ---
+U
+S
+ 
+S
+e
+m
+i
+c
+o
+n
+d
+u
+c
+t
+o
+r
+ 
+S
+t
+o
+c
+k
+ 
+F
+o
+r
+e
+c
+a
+s
+t
+ 
+B
+a
+s
+e
+d
+ 
+o
+n
+ 
+A
+R
+I
+M
+A
+ 
+a
+n
+d
+ 
+E
+T
+S
+M
+o
+d
+e
+l
+s
+Mingyuan 
+W
+ang
+College of Letters and Science, University of California, Davis, USA
+Abstract.
+ 
+The 
+US 
+semiconductor 
+industry 
+is 
+pos
+itioned 
+as 
+a 
+key 
+pillar 
+in 
+contemporary
+global 
+manufacturing 
+and 
+technology
+. 
+Predicting 
+the 
+semiconductor 
+price 
+index 
+is 
+critical 
+in
+deriving 
+investment 
+decisions 
+and 
+evaluating 
+policies. 
+This 
+study 
+applies 
+two 
+time-series
+prediction 
+models: 
+ARIMA
+ 
+and 
+Exponential 
+Smoothing 
+(ETS) 
+in 
+forecasting 
+the 
+US
+Semiconductor 
+Industry 
+price 
+index 
+using 
+monthly 
+data 
+from 
+2015 
+to 
+2025. 
+The 
+author 
+runs
+the 
+time 
+series 
+data 
+against 
+the 
+two 
+mod
+els 
+to 
+evaluate 
+which 
+one 
+of
+fers 
+a 
+bette
+r 
+prediction.
+The 
+findings 
+of 
+the 
+analysis 
+demonstrate 
+that 
+the 
+two 
+models 
+ef
+fectively 
+capture 
+the
+hypothesized 
+growth 
+in 
+the 
+semiconductor 
+industry’
+s 
+price 
+index; 
+however
+, 
+the 
+ETS 
+model
+demonstrates 
+superior 
+forecasting 
+accur
+acy 
+with 
+a 
+lower 
+root-mean-square 
+error 
+(RMSE 
+=
+10.68) 
+relative 
+to 
+the 
+ARIMA
+ 
+model 
+(RMSE 
+= 
+20.73). 
+The 
+findings 
+of 
+the 
+study 
+showed 
+that
+exponential 
+smoothing 
+of
+fers 
+a 
+more 
+stable 
+short-term 
+forecasting 
+framework, 
+while
+ARIMA
+ 
+remains 
+valuable 
+for 
+analyzing 
+cyclical 
+and 
+seasonal 
+fluctuations. 
+Overall, 
+this
+paper 
+provides 
+a 
+quantitative 
+perspective 
+on 
+the 
+trajectory 
+of 
+the 
+U.S. 
+semiconductor
+industry within an evolving technological and macroeconomic landscape.
+Keywords:
+ 
+Forecasting, Semiconductor Industry
+, 
+ARIMA, ETS
+1.
+ 
+Intr
+oduction
+Proper 
+prediction 
+of 
+the 
+semiconductor 
+industry 
+is 
+significant 
+to 
+policymakers, 
+investors, 
+and
+manufacturing 
+companies. 
+Reliable 
+fore
+casts 
+assist 
+in 
+making 
+sound 
+decisions 
+on 
+investment 
+levels,
+capacity 
+expansion, 
+and 
+supply 
+chain 
+c
+oordination, 
+as 
+well 
+as 
+informing 
+inno
+vative 
+planning 
+and
+policy 
+making. 
+Since 
+the 
+semiconductor 
+industry 
+is 
+at 
+the 
+nexus 
+of 
+advanced 
+manufacturing,
+technology
+, 
+and 
+national 
+security
+, 
+its 
+outlook 
+significantly 
+influences 
+macroeconomic 
+stability
+,
+technological 
+competitiveness, 
+and 
+strategic 
+autonomy
+. 
+Proper 
+forecasting 
+als
+o 
+contributes 
+to 
+the
+ef
+ficiency 
+of 
+capital 
+allocation 
+and 
+risk 
+management 
+in 
+environments 
+where 
+demand 
+patterns 
+are
+volatile and technological shifts are rapid [1].
+The 
+available 
+literature 
+on 
+semiconductor 
+market 
+forecasting 
+can 
+be 
+categorized 
+into 
+three
+streams. 
+The 
+former 
+examines 
+how 
+the 
+macroeconomic 
+and 
+policy-based 
+variables, 
+like 
+interest 
+rate,
+inflation, 
+and 
+fiscal 
+interventions, 
+af
+fect 
+the 
+demand 
+of 
+semiconductors. 
+Research 
+has 
+shown 
+that
+volatile 
+trends 
+in 
+the 
+consumer 
+electronics 
+sector 
+significantly 
+contribute 
+to 
+the 
+general 
+sales 
+trend
+[2,3]. 
+The 
+second 
+stream 
+applies 
+architecture 
+of 
+machine 
+learning 
+and 
+artificial 
+intelligence, 
+such 
+as
+long 
+short-term 
+memory 
+(LSTM) 
+networks, 
+convolutional 
+neural 
+networks 
+(CNNs), 
+hybrid
+
+--- Page 2 ---
+frameworks in order to enhance the precision of semiconductor demand and price prediction [4,5].
+Stream three uses classical time series algorithms like Autoregressive Integrated Moving Average
+(ARIMA), Exponential Smoothing (ETS) and state space to forecast sales, production indexes and
+market values of semiconductors [6]. Some of the aspects that make these traditional models have
+been widely used, especially when making short, and medium-term predictions are the simplicity in
+interpretation, statistical consistency, and the fact that they do not need large volumes of data to be
+effective [7].
+In this paper, the future prediction of the monthly U.S. Semiconductor Industry Index (2015-
+2025) is done using ARIMA and ETS models. The training dataset will cover the period of 2015-
+2022, and the testing one would cover 2023-2025. The two models are effective in establishing the
+growth trend and the changes that occur in the industry in a cyclical manner. Based on the Root
+Mean Square Error (RMSE) metric, the ETS model achieves higher predictive accuracy than the
+ARIMA model. By comparing these two classical approaches, the study provides empirical insights
+into their predictive capabilities. It offers a data-driven perspective on semiconductor industry trends
+amid rapid technological advancement and an evolving macroeconomic landscape.
+2. Data
+The current study employs the monthly price index for the U.S. Semiconductor Industry Index from
+August 2015 to August 2025. The dataset used has 121 observations. The data were obtained from
+the FRED [8]. The dataset used captures major industry phases in the modern era, including the
+2019 slowdown, the 2020 pandemic shock, the 2021–2022 post-COVID recovery, and the 2023-
+2024 acceleration attributed to artificial intelligence and increased demand [1].
+Figure 1 shows a time series plot of the semiconductor industry index over the period under
+study. From Figure 1, a steady growth with cyclical volatilities, common in the industry’s boom–
+bust dynamics, is observed. Price index is observed to have gradually risen between 2015 and 2019,
+dipped sharply in early 2020 amid global supply chain disruptions, and rebounded strongly from
+2021 onward, a growth attributed to heightened demand for AI, data centers, and electric vehicles.
+Figure 1. Time series
+Table 1 shows descriptive statistics. From Table 1, the mean index value of 116.10 indicates
+stable long-term growth, while the standard deviation of 19.95 reflects moderate cyclical variation.
+The positive skewness (0.30) suggests slightly higher-growth months, whereas the negative kurtosis
+(–0.25) indicates a flatter-than-normal distribution. These characteristics-trend, seasonality, and
+moderate volatility-make the dataset suitable for ARIMA and ETS forecasting models.
+
+--- Page 3 ---
+Table 1. Descriptive statistics of the U.S. semiconductor industry index
+mean std max min kurtosis skewness start end
+116.1033 19.9498 167.3866 80.2638 -0.24638 0.295572 8/1/2015 8/1/2025
+3. Method
+Time-series forecasting aims at determining the underlying patterns and trends in past data, in order
+to make correct predictions in the future. The two classical models used in this research are the
+Autoregressive Integrated Moving Average (ARIMA) model and the Error, Trend, and Seasonal
+(ETS) model in order to make a forecast of the monthly performance of the U.S. semiconductor
+industry. These models provide a comparative analysis of a parametric model (ARIMA) that
+absolutely specifies the correlation structure and a non-parametric model (ETS) that dynamically
+models the level, trend and seasonality.
+3.1. ARIMA model
+ARIMA considers the application of autoregressive (AR), integration (I), and moving average (MA)
+to describe the stationary time series [9]. The ARIMA can generally be written as follows:
+(1)
+Where yₜ represents the observed series, εₜ represents a white-noise error term, φ(B) and θ(B)
+represent polynomials of the backshift operator B, and d is the differencing order. For seasonal
+series, the extended form is ARIMA(p,d,q) × (P,D,Q)ₛ, where s is the seasonal period:
+(2)
+3.2. ETS model
+The ETS (Error–Trend–Seasonal) model is based on exponential smoothing principles [10]. Unlike
+ARIMA, ETS does not rely on differencing or fixed lag structures; it decomposes the series into
+level (lₜ), trend (bₜ), and seasonal (sₜ) components updated recursively:
+(3)
+(4)
+(5)
+θ(B)εₜ =φ(B)(1  − B)ᵈ yₜ
+φₚ(B)Φₚ(Bˢ)(1  − B)ᵈ(1  − Bˢ)ᴰ yₜ  = θ_q(B)Θ_Q(Bˢ)εₜ
+yₜ  = lₜ₋₁  + bₜ₋₁  + sₜ₋ₘ  + εₜ
+lₜ  = lₜ₋₁  + bₜ₋₁  + αεₜ
+bₜ  = bₜ₋₁  + βεₜ
+
+--- Page 4 ---
+(6)
+Where m is the seasonal period (12 months). The selected model follows an additive trend
+without seasonal components, effectively capturing the steady upward direction of the
+semiconductor index without imposing unnecessary complexity. The ETS achieved a training RMSE
+of 1.38, reflecting excellent in-sample accuracy.
+3.3. Model comparison framework
+Both models were trained using data from August 2015 to December 2022 and evaluated on the test
+set (January 2023–August 2025). Forecast accuracy was assessed using Root Mean Square Error
+(RMSE) and Mean Absolute Error (MAE):
+(7)
+(8)
+Lower RMSE and MAE values indicate better predictive accuracy.
+4. Results and analysis
+4.1. Model fitting results
+This segment shows the valuation findings of the ARIMA and ETS models for the U.S.
+Semiconductor Industry Index. The selected specification for the semiconductor industry index,
+based on AIC and BIC, was ARIMA(2,2,3)(0,1,1)₁₂, accounting for both non-seasonal and seasonal
+differencing (See Table 2).
+Table 2. ARIMA(2,2,3)(0,1,1)(12) parameter estimates
+Parameter Estimate
+AR(1) -0.7225
+AR(2) -0.4190
+MA(1) 0.3515
+MA(2) -0.4479
+MA(3) -0.9037
+Seasonal MA(12) -1.0000
+σ² 1.6577
+Negative coefficients indicate a mean-reverting process with strong seasonal adjustment. The
+near -1.0 value of the seasonal MA term confirms the presence of annual periodicity typical of
+semiconductor production cycles. The fitted model achieved AIC = 228.44, BIC = 242.98, and LLF
+= -107.22, indicating a satisfactory fit. The two models both reflect the growth trend of the
+sₜ  = sₜ₋ₘ  + γεₜ
+RMSE  = √(1/n Σ(yₜ  − ŷₜ)²)
+MAE  = (1/n) Σ|yₜ  − ŷₜ|
+
+--- Page 5 ---
+semiconductor industry over the long-term period from 2015 to 2025. The key model fitting
+statistics: Akaike Information Criterion (AIC), Bayesian Information Criterion (BIC), and the log-
+likelihood (LLF) are summarized in Table 3. A low value of AIC and BIC implies that the model fits
+the data better, whereas a high LLF value demonstrates a high probability of the observed data
+occurring at the model parameters.
+Table 3. Model fitting summary
+Model Specification AIC BIC Log-Likelihood
+ARIMA ARIMA(2,2,3)(0,1,1)(12) 228.44 242.98 -107.22
+ETS Additive trend, no season 64.92 — —
+The ARIMA model recorded an AIC of 228.44 and a BIC of 242.98, whereas the ETS model
+attained a lower AIC of 64.92, as shown in Table 3. This suggests that the ARIMA framework had a
+better overall fit compared to the ETS framework. The in-sample behavior of the ETS model is also
+found to be more stable, as indicated by the relatively small training RMSE (1.38), which is used in
+comparison with the ARIMA model. These findings imply that the ETS model better emulates the
+trend-oriented behavior of the semiconductor industry index.
+4.2. Forecast accuracy comparison
+Forecast accuracy was evaluated using Root Mean Square Error (RMSE) and Mean Absolute Error
+(MAE) based on the 32-month out-of-sample test period (January 2023-August 2025). Table 4
+presents the comparative results for the ARIMA and ETS models.
+Table 4. Forecast accuracy comparison
+Model RMSE MAE
+ARIMA 20.73 17.38
+ETS 10.68 8.15
+As shown in Table 4, the ETS model achieved a significantly lower RMSE (10.68) and MAE
+(8.15) than the ARIMA model (RMSE 20.73; MAE 17.38). This indicates that the ETS model
+provides more accurate short-term forecasts of semiconductor industry performance. Figure 2
+illustrates the actual and predicted values for both models, showing the ETS forecast tracking the
+observed data more closely.
+Figure 2. Comparison of actual vs forecasted values for ARIMA and ETS models
+
+--- Page 6 ---
+4.3. Discussion
+The findings revealed that the ETS model yields better predictive performance in the U.S.
+semiconductor industry than the ARIMA model. The semiconductor index is characterized by a high
+long-term upward trend with brief periods of stagnation, and in these cases, exponential smoothing
+models would work better. The dynamism of the ETS model at the level and trend movements,
+without differentiation, enables the model to respond swiftly to market movements caused by
+technological and policy shocks.
+In contrast, the ARIMA model is more explicit in capturing cyclical patterns in the industry, and
+it helps identify periodic variations and explain temporal dependencies. The high seasonality of the
+MA(12) parameter of ARIMA indicates the presence of annual production and inventory cycles,
+which are clearly observed in semiconductor manufacturing.
+Generally, ETS is more effective in relation to forecasting, but it could be beneficial to apply a
+hybrid structure of two models to enhance resilience by taking advantage of the benefits of each.
+This empirical data shows that traditional statistical models are still appropriate tools in industrial
+forecasting provided they are tailored to domain-specific dynamics.
+5. Conclusion
+This paper contrasts the performance of ETS and ARIMA models to forecast the monthly
+performance of the U.S. semiconductor industry index in the period between 2015 and 2025. As was
+determined in the analysis, the two models have been relatively successful in terms of how they
+relate to the general growth dynamics and intricate ups and downs of the industry. The ETS model
+was even more accurate between the two and delivered more consistent results, which is specifically
+convenient in cases where the data under scrutiny is mostly trend-followed but has a minor bit of
+variation, as well. The findings stress the importance of selecting the right time-series model, in
+regards to data behavior, as well as the goals of forecasting. Despite the fact that ARIMA is the
+superior choice to use when it comes to the analysis of the cycles and the seasonality, ETS model is
+more liberal and adjusts to different trends. A combination of the two models, where the hybrid
+model is formed, is likely to contribute to the predictive strength and offer feasible benefits to
+investors, not to mention policymakers. So far, in the current paper, it has been established that the
+traditional time-series methodology has been even more relevant in the industry forecasting, and it
+has also been accepted that the hybrid and machine-learning methods could render it even more
+precise. The future of work must be taken into consideration to combine this traditional design with
+the more sophisticated technological algorithms to refine them as it enters technological industries.
+References
+[1] Simons, C., & Kulik, B. (2024). 2023 semiconductor industry outlook. Deloitte Global. Retrieved October 4, 2024,
+from https: //www.deloitte.com/global/en/Industries/tmt/perspectives/semiconductor-industry-outlook.html
+[2] WSTS semiconductor market forecast spring 2024. (2024). World Semiconductor Trade Statistics. Retrieved
+October 4, 2024, from https: //www.wsts.org/76/103/WSTS-Semiconductor-Market-Forecast-Spring-2024
+[3] Li-We, L., & Koundé Moanu. (2024). Forecasting stock prices of Taiwan Semiconductor Manufacturing Company
+(TSMC) using recurrent neural networks: Evaluating predictive performance in a volatile market. International
+Journal Artificial Intelligent and Informatics, 2(2), 61–65.
+[4] Hopp, D. (2021). Economic nowcasting with long short-term memory artificial neural networks (LSTM). SSRN
+Electronic Journal.
+[5] Chatfield, C., & Xing, H. (2019). The analysis of time series: An introduction. CRC Press, Taylor & Francis Group.
+
+--- Page 7 ---
+[6] Derakhshan, A., & Beigy, H. (2019). Sentiment analysis on stock social media for stock price movement prediction.
+Engineering Applications of Artificial Intelligence, 85, 569–578.
+[7] Hyndman, R., & Athanasopoulos, G. (2018). Forecasting: Principles and practice. OTexts.
+[8] SimElectronic component (NAICS = 3344). (2024). Federal Reserve Bank of St. Louis. Retrieved October 4, 2024,
+from https: //fred.stlouisfed.org/series/IPG3344S
+[9] Khashei, M., & Hajirahimi, Z. (2018). A comparative study of series ARIMA/MLP hybrid models for stock price
+forecasting. Communications in Statistics - Simulation and Computation, 48(9), 2625–2640.
+[10] Zeng, Z., & Chen, Y. (2025). Identifying and forecasting recurrently emerging stock trend structures via rising
+visibility graphs. Forecasting, 7(2), 26.
