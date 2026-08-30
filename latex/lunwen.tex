@@ -6,6 +6,8 @@
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{xcolor}
+\usepackage{listings}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
@@ -13,6 +15,29 @@
 \renewcommand{\headrulewidth}{0pt}
 \usepackage[backend=biber,style=gb7714-2015]{biblatex}
 \addbibresource{ref.bib}
+\lstdefinelanguage{R}{
+	keywords={library,read_csv,read.csv,write_csv,readr,dplyr,ggplot2,ggplot,forecast,ets,auto.arima,ts,arima,Rlibeemd,ceemdan,lightgbm,lgb.train,lgb.Dataset,predict,function,return,if,else,for,while,repeat,break,next,TRUE,FALSE,NULL,NA,NaN,Inf,sum,mean,median,sd,min,max,abs,sqrt,exp,log,round,ceiling,floor,c,seq,rep,length,nrow,ncol,unique,subset,data.frame,as.numeric,as.factor,as.integer,factor,matrix,group_by,summarise,summarize,mutate,filter,select,arrange,case_when,print,cat,set.seed,sapply,lapply,apply,match,n_distinct,file.path,dir.create,locale,show_col_types,geom_boxplot,geom_col,geom_line,aes,theme_bw,theme,scale_fill_manual,labs,ggsave,min,max},
+	sensitive=true,
+	comment=[l]{\#},
+	morestring=[b]",
+	morestring=[b]'
+}
+\lstset{
+	language=R,
+	basicstyle=\ttfamily\footnotesize,
+	commentstyle=\color{gray},
+	keywordstyle=\color{blue!70!black},
+	stringstyle=\color{red!70!black},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	breaklines=true,
+	frame=single,
+	framesep=5pt,
+	showstringspaces=false,
+	tabsize=2,
+	columns=flexible,
+	literate={✓}{{$\checkmark$}}1,
+}
 \DeclareMathOperator*{\argmin}{argmin}
 \title{论文标题}
 \date{}
@@ -20,21 +45,22 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-本文针对\textbf{<题目主题>}问题展开研究。首先对附件数据进行预处理与统计分析，提出了\ldots 模型。
+随着人工智能算力规模的持续扩张，“算电协同”成为了算力负荷与电力系统实时耦合优化的现实需求。本文基于附件数据，针对多集群异构算力调度中的算电协同优化问题，遵循“需求分析—短期预测—基础调度—碳感知—储能协同—多区域协同”的递进思路，构建了四套衔接的确定性优化模型体系。
 
-针对问题一，本文\ldots（简述方法），得到\ldots（简述关键结果）。
+针对问题一，首先对 50000 个任务按区域、任务类型进行GPU需求统计分析，刻画了“东部任务多、单机需求小；西部承接训练、单机需求大”的分布特征；然后构建短期预测模型，对比ETS、ARIMA、CEEMDAN分解-重构与组合预测等策略，发现逐时需求序列近似“均值+波动”结构，ETS/ARIMA退化为水平模型，测试集MAPE为23.39\%；最后建立以任务开工延迟与迁移惩罚最小化为目标的基础算力调度模型，第2376–2399小时到达的538个任务全部按时完成，区域E、F的GPU利用率达0.718、0.794，东部区域存在较大可迁移算力空间。
 
-针对问题二，本文\ldots（简述方法），得到\ldots（简述关键结果）。
+针对问题二，构建以“购电成本 + 碳权重×碳排放 + 时延惩罚”为目标的碳感知任务调度混合整数规划模型，针对5万任务规模采用模拟退火算法求解。调度方案共迁移2529个可延迟任务至低电价、低碳区域，购电成本降低1312.9万元（0.60\%）、碳排放降低5639吨（0.27\%），验证了“空间迁移 + 时间迁移”策略在满足时延与容量约束下的降本减排有效性。
 
-针对问题三，本文\ldots（简述方法），得到\ldots（简述关键结果）。
+针对问题三，建立含荷电状态递推、充放互斥与购售电边界的储能协同优化混合整数线性规划模型，采用Gurobi精确求解。结果表明：配置储能后各区域负荷波动显著下降，区域F峰值净购电由280.9MW降至268.2MW，储能的核心价值体现为削峰填谷与平抑波动，而峰谷套利空间受电价—负荷峰谷不同步限制较为有限。
 
-针对问题四，本文\ldots（简述方法），得到\ldots（简述关键结果）。
+针对问题四，建立多区域“算—储—电”协同优化的统一混合整数规划模型，将任务迁移、储能充放电与购售电联合决策，并对比基准、碳约束、电价机制与新能源波动四类场景。结果表明：碳约束场景引导低碳迁移，碳排放降低15655吨（0.77\%）；新能源出力降低30\%场景下购电成本上升13.3\%、碳排放上升11.6\%。灵敏度分析进一步表明，碳价存在约300元/吨的“经济—低碳”双赢阈值，储能容量配置已达边际收益饱和区间，而新能源出力波动对系统影响最为显著。
 
-综上所述，本文所建立的模型\ldots（总结模型适用性与优点）。
+本文的创新性在于：其一，构建了“需求分析—短期预测—基础调度—碳感知—储能协同—多区域协同”的递进式模型体系，前三问结果与问题四统一衔接；其二，针对运行成本、碳排放、网络时延、服务质量、新能源利用率、峰值净购电与负荷波动等多类量纲不同的指标，建立了统一的多目标加权优化框架，并针对不同问题规模分别采用模拟退火与精确求解等匹配求解策略；其三，将任务迁移、储能充放电与购售电纳入统一的“算—储—电”协同优化模型，并通过碳约束、电价机制与新能源波动等多场景对比及灵敏度分析，验证了模型结论的稳健性。
 
 \vspace{0.3em}
-\noindent\textbf{关键词：}关键字1；关键字2；关键字3；关键字4
+\noindent\textbf{关键词：}算电协同；混合整数规划；模拟退火；储能优化；碳感知调度；灵敏度分析
 \end{abstract}
+\newpage
 \section{问题重述}
 随着人工智能算力规模的持续扩张，数据中心的用电需求、碳排放及其与电网的交互影响不断增强，电力成本已成为数据中心运营成本的核心组成部分。在此背景下，“算电协同”成为了算力负荷与电力系统实时耦合优化的现实需求。由于东部地区时延低、实时业务需求高，而西部地区具备电价低、新能源丰富的优势，跨区域算力迁移与能源调度构成一个多目标协同优化问题。赛题设定六个典型区域：区域A、区域B、区域C为东部高负荷区域，区域D为西部算力中心，区域E、区域F分别为光伏与风电资源富集区域。任务到达主时域为第0–2399小时，第2400–2405小时用于结清末端任务，第2406小时不安排任务，仅进行电力与储能终端状态结算。任务分为实时推理、批量推理与人工智能训练三类，均不可抢占、不可拆分或中途迁移。赛题要求基于附件提供的GPU容量、任务轨迹、网络时延、电价、碳强度、新能源出力与储能等数据，依次解决以下四个问题：
 
@@ -459,5 +485,34 @@ T_{k+1}=\alpha T_k,\quad \alpha\in(0,1)
 本文亦存在以下不足：其一，算力需求短期预测精度有限，逐时需求序列近似“均值 + 波动”结构，ETS 与 ARIMA 均退化为水平模型，测试集 MAPE 达 23.39\%，信号分解-重构与组合预测亦未提升，预测对调度的前瞻性支撑有限。其二，多目标权重主要依赖标定，仅问题二给出权重灵敏度分析，问题三、问题四未系统展开，结果对权重选择的稳健性论证不足。其三，模型将电价、碳强度、新能源出力与负荷视为确定性参数，问题四的新能源波动场景仅以“出力降低 30\%”的静态情景近似，未刻画波动分布，不确定性刻画有限。其四，服务质量以开工延迟惩罚与任务完成时限近似，网络仅考虑单向等效时延、忽略带宽与传输能耗，模型对真实算力网络的刻画粒度有限。
 \newpage
 \printbibliography
+\newpage
+\appendix
+\begin{center}
+	\Large\textbf{附录}
+\end{center}
+\section{数据预处理代码}
+\lstinputlisting[title={数据预处理.R}]{../解答/0-数据预处理/数据预处理.R}
+
+\section{问题一代码}
+\lstinputlisting[title={问题一\_需求统计分析.R}]{../解答/1-第一题/问题一_需求统计分析.R}
+\lstinputlisting[title={问题一\_预测实验\_分解改进.R}]{../解答/1-第一题/问题一_预测实验_分解改进.R}
+\lstinputlisting[title={问题一\_预测实验\_组合预测.R}]{../解答/1-第一题/问题一_预测实验_组合预测.R}
+\lstinputlisting[title={问题一\_基础调度.R}]{../解答/1-第一题/问题一_基础调度.R}
+
+\section{问题二代码}
+\lstinputlisting[title={问题二\_碳感知调度.R}]{../解答/2-第二题/问题二_碳感知调度.R}
+
+\section{问题三代码}
+\lstinputlisting[title={问题三\_储能协同优化.R}]{../解答/3-第三题/问题三_储能协同优化.R}
+
+\section{问题四代码}
+\lstinputlisting[title={问题四\_多区域协同优化.R}]{../解答/4-第四题/问题四_多区域协同优化.R}
+\lstinputlisting[title={问题四\_场景对比\_绘图.R}]{../解答/4-第四题/问题四_场景对比_绘图.R}
+
+\section{灵敏度分析代码}
+\lstinputlisting[title={灵敏度分析\_绘图.R}]{../解答/5-灵敏度分析/灵敏度分析_绘图.R}
+\lstinputlisting[title={灵敏度分析\_碳价.R}]{../解答/5-灵敏度分析/灵敏度分析_碳价.R}
+\lstinputlisting[title={灵敏度分析\_储能容量.R}]{../解答/5-灵敏度分析/灵敏度分析_储能容量.R}
+\lstinputlisting[title={灵敏度分析\_新能源波动.R}]{../解答/5-灵敏度分析/灵敏度分析_新能源波动.R}
 
 \end{document}
