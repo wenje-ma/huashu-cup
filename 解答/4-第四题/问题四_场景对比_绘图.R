@@ -1,0 +1,19 @@
+# 问题四：场景对比浮动柱状图（最矮柱顶固定在面板高度1/3，放大差异）
+library(readr);library(dplyr);library(tidyr);library(ggplot2)
+od=file.path("C:/Users/18904/Github/huashu-cup","解答","4-第四题")
+res=read_csv(file.path(od,"问题四_场景对比.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
+resl=pivot_longer(res,cols=-场景,names_to="指标",values_to="值")
+resl$指标=factor(resl$指标,levels=names(res)[-1])
+resl=resl%>%filter(指标!="新能源利用率")     # 该指标四场景相同(0.192)，无对比意义，移除
+resl=resl%>%group_by(指标)%>%mutate(maxv=max(值),minv=min(值),bl=pmax((3*minv-maxv)/2,0)) # 基线:min柱顶=1/3高度
+resl$x=as.numeric(factor(resl$场景,levels=c("基准","碳约束","电价机制","新能源波动")))
+cols=c("基准"="grey55","碳约束"="#E64B35","电价机制"="#4DBBD5","新能源波动"="#00A087")
+g=ggplot(resl)+
+ geom_rect(aes(xmin=x-.32,xmax=x+.32,ymin=bl,ymax=值,fill=场景))+
+ facet_wrap(~指标,scales="free_y",ncol=2)+
+ scale_x_continuous(breaks=1:4,labels=c("基准","碳约束","电价机制","新能源波动"))+
+ scale_fill_manual(values=cols)+
+ labs(x=NULL,y=NULL,fill="场景")+theme_bw()+
+ theme(legend.position="bottom",axis.text.x=element_text(angle=30,hjust=1))
+ggsave(file.path(od,"问题四_场景对比_柱状图.png"),g,width=12,height=8,dpi=150)
+cat("done\n")
