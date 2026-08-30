@@ -1,29 +1,11 @@
-# 灵敏度分析三组曲线图
 library(readr);library(dplyr);library(tidyr);library(ggplot2)
 od=file.path("C:/Users/18904/Github/huashu-cup","解答","5-灵敏度分析")
-cols=c("基准"="grey45","碳约束"="#E64B35","电价机制"="#4DBBD5","新能源波动"="#00A087")
-
-# ---- 图1 碳价灵敏度：购电成本与碳排放 ----
 a=read_csv(file.path(od,"灵敏度_碳价.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
-a1=pivot_longer(a,cols=c(购电成本万元,碳排放吨),names_to="指标",values_to="值")
-g1=ggplot(a1,aes(x=碳价,y=值))+geom_line(color="#2166AC",linewidth=1)+geom_point(size=2.2,color="#2166AC")+
- facet_wrap(~指标,scales="free_y",ncol=1)+
- labs(title="灵敏度分析一：碳价对购电成本与碳排放的影响",x="碳价（元/吨）",y=NULL)+theme_bw()
+g1=ggplot(pivot_longer(a,cols=c(购电成本万元,碳排放吨),names_to="指标",values_to="值"),aes(x=碳价,y=值))+geom_line(color="#2166AC",linewidth=1)+geom_point(size=2.2,color="#2166AC")+facet_wrap(~指标,scales="free_y",ncol=1)+labs(title="灵敏度分析一：碳价对购电成本与碳排放的影响",x="碳价（元/吨）",y=NULL)+theme_bw()
 ggsave(file.path(od,"灵敏度_碳价.png"),g1,width=7,height=6,dpi=150)
-
-# ---- 图2 储能容量灵敏度：削峰填谷效果 ----
 b=read_csv(file.path(od,"灵敏度_储能容量.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
-b1=pivot_longer(b,cols=c(峰值净购电_MW,负荷波动),names_to="指标",values_to="值")
-g2=ggplot(b1,aes(x=容量倍数,y=值))+geom_line(color="#B2182B",linewidth=1)+geom_point(size=2.2,color="#B2182B")+
- facet_wrap(~指标,scales="free_y",ncol=1)+
- labs(title="灵敏度分析二：储能容量对削峰填谷效果的影响",x="储能容量倍数",y=NULL)+theme_bw()
+g2=ggplot(pivot_longer(b,cols=c(峰值净购电_MW,负荷波动),names_to="指标",values_to="值"),aes(x=容量倍数,y=值))+geom_line(color="#B2182B",linewidth=1)+geom_point(size=2.2,color="#B2182B")+facet_wrap(~指标,scales="free_y",ncol=1)+labs(title="灵敏度分析二：储能容量对削峰填谷效果的影响",x="储能容量倍数",y=NULL)+theme_bw()
 ggsave(file.path(od,"灵敏度_储能容量.png"),g2,width=7,height=6,dpi=150)
-
-# ---- 图3 新能源波动灵敏度：出力降低对系统指标影响 ----
 c=read_csv(file.path(od,"灵敏度_新能源波动.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
-c1=pivot_longer(c,cols=-新能源保留,names_to="指标",values_to="值")
-g3=ggplot(c1,aes(x=新能源保留,y=值))+geom_line(color="#1B7837",linewidth=1)+geom_point(size=2.2,color="#1B7837")+
- facet_wrap(~指标,scales="free_y",ncol=2)+
- labs(title="灵敏度分析三：新能源出力降低对系统指标的影响",x="新能源保留比例",y=NULL)+theme_bw()
+g3=ggplot(pivot_longer(c,cols=-新能源保留,names_to="指标",values_to="值"),aes(x=新能源保留,y=值))+geom_line(color="#1B7837",linewidth=1)+geom_point(size=2.2,color="#1B7837")+facet_wrap(~指标,scales="free_y",ncol=2)+labs(title="灵敏度分析三：新能源出力降低对系统指标的影响",x="新能源保留比例",y=NULL)+theme_bw()
 ggsave(file.path(od,"灵敏度_新能源波动.png"),g3,width=10,height=6,dpi=150)
-cat("done\n")

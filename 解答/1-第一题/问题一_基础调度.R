@@ -1,18 +1,15 @@
 library(readr);library(dplyr);library(tidyr);library(ggplot2)
-set.seed(1);od=file.path("C:/Users/18904/Github/huashu-cup","解答","第一题")
-d=read_csv(file.path("C:/Users/18904/Github/huashu-cup","解答","数据预处理","任务轨迹_清洗后.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
+set.seed(1);base="C:/Users/18904/Github/huashu-cup";od=file.path(base,"解答","1-第一题")
+d=read_csv(file.path(base,"解答","0-数据预处理","任务轨迹_清洗后.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
 cap=c(区域A=630,区域B=585,区域C=540,区域D=1472,区域E=1012,区域F=966)
 tasks=d%>%filter(到达小时>=2376)%>%arrange(到达小时,任务编号)
-lat=read_csv(file.path("C:/Users/18904/Github/huashu-cup","题目","附件数据","network_latency_时延矩阵.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
+lat=read_csv(file.path(base,"题目","附件数据","network_latency_时延矩阵.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
 lm=as.matrix(lat[,-1]);rownames(lm)=lat[[1]];colnames(lm)=names(lat)[-1]
 occ=matrix(0,2406,6);colnames(occ)=names(cap);sch=data.frame()
-for(i in 1:nrow(tasks)){
- g=as.numeric(tasks[i,"图形处理器需求量"]);src=as.character(tasks[i,"来源区域"]);at=as.numeric(tasks[i,"到达小时"]);typ=as.character(tasks[i,"任务类型"])
- if(typ=="实时推理任务"){
-  s=at;e=as.numeric(tasks[i,"最晚完成小时"]);cand=names(which(lm[src,]<=as.numeric(tasks[i,"最大网络时延"])))
-  if(occ[s+1,src]+g<=cap[src])reg=src else{free=sapply(cand,function(r)if(occ[s+1,r]+g<=cap[r])occ[s+1,r]else Inf);reg=cand[which.min(free)];if(occ[s+1,reg]+g>cap[reg])next}
- }else{
-  L=ceiling(as.numeric(tasks[i,"连续执行时长_小时"]));dl=as.numeric(tasks[i,"最晚完成小时"]);reg=src;s=at
+for(i in 1:nrow(tasks)){g=as.numeric(tasks[i,"图形处理器需求量"]);src=as.character(tasks[i,"来源区域"]);at=as.numeric(tasks[i,"到达小时"]);typ=as.character(tasks[i,"任务类型"])
+ if(typ=="实时推理任务"){s=at;e=as.numeric(tasks[i,"最晚完成小时"]);cand=names(which(lm[src,]<=as.numeric(tasks[i,"最大网络时延"])))
+  if(occ[s+1,src]+g<=cap[src])reg=src else{free=sapply(cand,function(r)if(occ[s+1,r]+g<=cap[r])occ[s+1,r]else Inf);reg=cand[which.min(free)];if(occ[s+1,reg]+g>cap[reg])next}}
+ else{L=ceiling(as.numeric(tasks[i,"连续执行时长_小时"]));dl=as.numeric(tasks[i,"最晚完成小时"]);reg=src;s=at
   while(s+L<=dl){if(max(occ[(s+1):(s+L),reg])+g<=cap[reg])break;s=s+1};if(s+L>dl)next;e=s+L}
  occ[(s+1):e,reg]=occ[(s+1):e,reg]+g
  sch=rbind(sch,data.frame(任务编号=as.numeric(tasks[i,"任务编号"]),任务类型=typ,来源区域=src,执行区域=reg,图形处理器需求量=g,连续执行时长_小时=as.numeric(tasks[i,"连续执行时长_小时"]),调度开工小时=s,调度完工小时=e))}

@@ -1,6 +1,6 @@
 library(readr);library(dplyr);library(forecast);library(Rlibeemd);library(lightgbm)
-set.seed(1);od=file.path("C:/Users/18904/Github/huashu-cup","解答","第一题")
-d=read_csv(file.path("C:/Users/18904/Github/huashu-cup","解答","数据预处理","逐时图形处理器需求_切分.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
+set.seed(1);base="C:/Users/18904/Github/huashu-cup";od=file.path(base,"解答","第一题")
+d=read_csv(file.path(base,"解答","0-数据预处理","逐时图形处理器需求_切分.csv"),locale=locale(encoding="UTF-8"),show_col_types=FALSE)
 trn=d%>%filter(到达小时<=2375);tst=d%>%filter(到达小时>=2376);y=trn$图形处理器总需求;ytest=tst$图形处理器总需求;h=nrow(tst)
 metric=function(yhat)c(RMSE=sqrt(mean((yhat-ytest)^2)),MAE=mean(abs(yhat-ytest)),MAPE=mean(abs((yhat-ytest)/ytest))*100)
 me=metric(as.numeric(forecast(ets(ts(y,frequency=24)),h=h)$mean));ma=metric(as.numeric(forecast(auto.arima(ts(y,frequency=24)),h=h)$mean))
