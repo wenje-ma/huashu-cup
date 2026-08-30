@@ -1,0 +1,1438 @@
+--- Page 1 ---
+ 
+DOI：10.12158/j.2096-3203.2026.05.004
+计及风光不确定性的数据中心电算协同多目标优化策略
+王一航1， 张靖1,2， 何宇1， 严儒井1， 敖炫1
+（1. 贵州大学电气工程学院，贵州 贵阳 550025；
+2. 贵州省电力系统智能化技术重点实验室，贵州 贵阳 550025）
+摘　
+要：数据中心规模快速发展是智能化时代必然趋势 ，为解决其高能耗 、高碳排的问题，文中提出一种计及风光不
+确定性的数据中心电算协同多目标优化模型。 首先，为减弱新能源出力不确定性对系统运行的影响 ，采用改 进 k-
+means方法对全年风 、光出力预测场景进行缩减 ，得到最佳典型场景 。然后，在数据中心算力负载及储能设备灵活
+性的基础上， 以数据中心日总成本和弃风弃光率最小为目标函数 ，建立电算协同优化模型 。最后，采用最优场景下
+新能源出力进行模拟， 采用带有精英选择策略的非支配遗传算法 （non-dominated sorting genetic algorithm-Ⅱ, NSGA-
+Ⅱ）对优化模型进行求解 ，得到数据中心的最佳运行方案 。通过仿真分析验证该模型的有效性 ，结果表明考虑风-光-
+储联合运行及算力负载灵活性的模型，能够在降低数据中心日总成本和提升新能源消纳率的同时兼顾用户满意度 。
+关键词：数据中心 ；不确定性 ；多目标优化 ；算力负载调度 ；带有精英选择策略的非支配遗传算法 （NSGA-Ⅱ）；场景
+缩减
+中图分类号：TM73 文献标志码
+：A 文章编号： 2096-3203（2026）05-0040-10
+  
+0    引言
+随着全球性数字化的快速发展， 数据中心作为
+海量数据的计算与传输载体， 其应用规模不断扩
+张，所带来的电力消耗也高速增加[1-5]。全球数据中
+心年耗电量于 2024年突 破 650 TW·h，占全球总发
+电量比重从 2020年 的 1.8%攀升 至 3.1%[6]。我国
+“东 数 西 算” 工 程 八 大 枢 纽于 2024年 新 增 机 架
+23.4万架 ，总装机功率达 到 18 GW。预计 到 2035
+年，我国数据中心能耗将达 到 4 500亿 kW·h，并每
+年产生超亿吨的碳排放量[7]。面对 “双碳 ”目标带
+来的能源转型压力， 数据中心作为高能耗系统 ，其
+绿色低碳发展已成为政策引导重点[8-11]。在此背景
+下，如何优化数据中心运行策略以减少能量消耗 、
+提高新能源消纳率已成为当下数据中心面临的巨
+大挑战。
+《数据中心绿色低碳发展专项行动计划 》中明
+确提出， 到 2025年底 ，国家枢纽节点新建数据中心
+的绿电占比应达到 80%[12]。目前，已有研究通过风
+光互补特性提高新能源渗透率与消纳率， 减少对传
+统能源的依赖。文献[13]从容量配置上合理调整
+风、光比例，降低了峰谷差。文献[14]使用混合 Copula
+方法，更加准确地刻画风 、光出力间的互补关系 ，提
+高可再生能源消纳。但考虑到风、 光能源的不确定
+性，新能源消纳很难维持较高的水平。为削减新能
+源不确定性对系统的影响， 文献[15]采用随机规划
+和鲁棒优化相结合的方法表征风、 光的不确定性 ，
+但易产生较大误差。文献[16]通过累积分布的逆
+变换生成随机风光场景， 再随机抽样模拟出力场景
+集，反映出力的波动性。上述文献虽能有效处理风
+光的不确定性， 但整体模型复杂 ，求解时间长 ，且误
+差较大。为简化风、 光不确定性模型 ，部分学者采
+用随机优化方法， 生成大量具有概率分布的随机场
+景。初始的随机场景可通过蒙特卡洛抽样法或者
+拉丁超立方抽样法[17-18]等生成。然而 ，初始场景中
+包含大量相似场景， 会大幅增加模型求解时间。因
+此，采用合理的场景缩减方法 ，可有效处理新能源
+不确定性，大幅提升模型求解效率。
+在数据中心运行策略上， 已有学者围绕跨区域
+协同、算力负载的时空调度等进行研究。文献 [19]
+研究算力负载的时域灵活性， 将数据中心电力需求
+响应能力量化为可转移算力负载量。文献[20-21]
+利用数据中心地理资源差异， 通过用户任务请求的
+时空互补性调度研究不同地区数据中心新能源出
+力。文献[22]细化算力负载类型 ，提出一种计及负
+载特性及用户侧需求响应的双层优化模型。文献
+[23]提出利用区域电价差异 ，重新分配多数据中心
+之间的算力负载， 从而降低总成本。以上研究虽在
+提升经济性或提高可再生能源利用率方面提出了
+多种调度策略， 但均未平衡两目标之间关系 ，实际
+ 
+收稿日期：2025-09-22；修回日期：2025-11-30
+基金项目： 国家自然科学基金资助项目 （52406227）；贵州省
+科技支撑计划（黔科合支撑 [2025]  一 般 021， 黔科合支 撑
+DXGA[2025] 一般007）
+ 
+2026 年5 月 Electric Power Engineering Technology 第4 5 卷　第5 期 40
+
+--- Page 2 ---
+运行存在一定局限性。因此引入多目标求解算法，
+对运行策略进行优化。
+综上， 为进一步挖掘数据中心灵活性潜力 ，在
+兼顾用户满意度的同时， 优化数据中心经济成本和
+新能源消纳率， 文中提出一种计及风光不确定性的
+数 据 中 心 多 目 标 调 度 策 略 。 首 先，利 用 改进 k-
+means方法得到新能源典型出力场景 ；然后，协同考
+虑新能源设备与算力负载的灵活性， 建立电算协同
+的能耗模型； 最后 ，构建以数据中心经济成本和弃
+风弃光率最小为目标的能源与算力负载调度模型，
+采用带有精英选择策略的非支配遗传算法（non-
+dominated  sorting  genetic  algorithm-Ⅱ,  NSGA-Ⅱ）求
+解模型， 得到最优调度策略 ，实现数据中心经济成
+本降低与新能源利用率提升。 
+1    数据中心模型
+数据中心架构如图 1所示 ，主要由分布式可再
+生能源发电机组（风 、光发电机组 ）、储能系统 、服
+务器、冷却设备和照明设备组成。
+ 
+ 
+服务器
+计算需求
+任务
+任务
+云端
+冷却设备
+储能系统
+可再生能源
+照明设备
+服务器
+上级电网
+数据中心
+用户
+任务调度
+能量流
+数据流
+···
+图1   数据中心框架
+Fig.1    Framework of data center 
+1.1    数据中心能耗模型
+数据中心耗能设备主要分为以下 3种 ：信息技
+术（information technology, IT）设备 、冷却设备和照
+明设备[24]。 IT设备作为算力承载主体 ，承担数据计
+算与处理的核心功能， 其能耗占比 达 60%；冷却系
+统通过环境温控保障设备稳定运行， 能耗占比 约
+30%；照明设备作为辅助单元，能耗占比维持在 10%。
+能源利用效率（power usage effectiveness, PUE）指数
+据中心总能耗与 IT设备能耗之间的比值 [25]，能有
+效表征非IT设备能耗的非线性特征。
+考虑到 IT设备能耗主要源于中央处理器 （cen-
+tral processing unit, CPU）， 在固 定 CPU工作电压和
+频率下， 服务器功耗可近似为利用率的线性函数。
+模型具体如下： 
+PIT
+t = Pidle + (Ppeak  Pidle)Ut （1）
+PIT
+t
+t
+Ut
+t
+Pidle
+Ppeak
+式中： 为 时 段 IT设备 能耗； 为 时段服务器利用
+率； 、 分别为单个 服务器静态功率和满载功率。
+服务器利用率可以通过各时刻到达数据中心
+的总任务量和服务器的服务率计算得到， 为保证数
+据中心响应速度，利用率会留有一定裕度。 
+{
+Ut = dt=t
+Ut≤Umax
+（2）
+ 
+t = CIT f CPU
+t （3）
+dt
+t
+t
+t
+Umax
+CIT
+f CPU
+t
+t
+式中： 为 时段数据中 心每台服务器处理的数据负
+载量； 为 时段服务器 的服务率 ； 为服务器最
+大利用率； 为服务器计 算性能系数 ； 为 时 段
+CPU的工作频率。
+基于动态电压频率调节技术， IT设备能耗 [26]可
+以近似为： 
+PIT
+t = C1 + C2Ut( f CPU
+t )
+3
+（4）
+C1
+C2
+式中： 、 为常数系数。
+t
+PNOIT
+t
+非IT设备能耗 由 PUE指数估算得到 ，该指标
+与环境温度和制冷设备效率有关。假定运行过程中，
+PUE指数保持不变 ，则 时段 非 IT设备 能耗 为 ： 
+PNOIT
+t = PIT
+t (  1) （5）
+
+式中： 为数据中心PUE指数。
+t
+PIDC
+t
+数据中心能耗由 IT设备能耗与 非 IT设备能耗
+构成， 时段数据中心总能耗 为： 
+PIDC
+t = n(PIT
+t + PNOIT
+t ) （6）
+n
+式中： 为运行的服务器数量。 
+1.2    算力负载模型
+数据中心根据用户的用网需求， 按照任务的优
+先级和响应速度的快慢， 可以将算力负载分为延时
+敏感型负载和延时宽容型负载[27]。 
+Dt = Dfast
+t + Dslow
+t （7）
+Dt
+t
+Dfast
+t
+Dslow
+t
+t
+式中： 为数据中心 时段总任务需求 ； 、 分
+别为数
+据中心 时段延时敏 感型任务需求和延时宽
+容型任务需求。
+对于延时宽容型任务， 数据中心可对其进行适
+当调节， 以实现算力负载在时间上的需求转移 ，如
+图2所示。
+ 
+ 
+延时敏感型
+任务(60%)
+延时宽容型
+任务(40%)
+1 2 3 24 23 22
+时刻
+算力负载时域调度
+图2   延时宽容型任务时延调度
+Fig.2    Latency-aware scheduling of delay-tolerant tasks 
+41 王一航 等：计及风光不确定性的数据中心电算协同多目标优化策略  
+
+--- Page 3 ---
+■
+||||
+|
+|
+|||
+|
+|
+|
+■
+||
+|
+|
+|||
+|
+|
+|||
+■
+Dt = Dfast
+t + Dslow
+t + Dslow
+t;addIt;add  Dslow
+t;cut It;cut
+EIT
+t = EIT
+t1 + Dslow
+t;cut  Dslow
+t;add
+0≤Dslow
+t;add≤EIT
+t It;add
+0≤Dslow
+t;cut ≤Dslow
+t It;cut
+It;add + It;cut≤1
+24∑
+t=1
+Dslow
+t;add =
+24∑
+t=1
+Dslow
+t;cut
+（8）
+Dslow
+t;add
+Dslow
+t;cut
+t
+EIT
+t
+t
+It;add
+It;cut
+t
+式中： 、 分别为 时段 服务器增加的延时宽
+容型任务和削减的延时宽容型任务； 为 时段服
+务器待
+处理延时宽容型任务； 、 分别为 时段
+增加和削减延时宽容型任务的二进制变量。
+Tmax
+数据中心在优化用电负荷的同时， 需要保证用
+户服务质量（quality of service, QoS）。服务器算力
+负载的传输和排队延迟都服从 M/M/1排队模型 ，均
+不 能 超 过 服 务 水 平 协 议（service  level  agreement,
+SLA）的延迟界限 。 
+0≤ 1
+t  Dt=n ≤Tmax （9）
+ 
+1.3    储能系统模型
+储能设备运行过程中储存电量遵循上下限约束。 
+Eess
+min≤Eess
+t ≤Eess
+max （10）
+Eess
+t
+t
+Eess
+max
+Eess
+min
+式中： 为 时段储能设 备电量 ； 、 分别为
+储能设备电量上、下限。
+储能设备储存电量在每个时段是连续的， 为确
+保每个运行日初始状态一致， 需要加入储能始末状
+态相等的约束。 
+■
+||
+|
+|
+|
+|■
+||
+|||
+|
+■
+Eess
+t = Eess
+t1 +charPchar
+t  Pdischar
+t =dischar
+Eess
+0 = Eess
+24
+0≤Pchar
+t ≤Pess
+ratedIt;char
+0≤Pdischar
+t ≤Pess
+ratedIt;dischar
+It;char + It;dischar≤1
+（11）
+char
+dischar
+Pchar
+t
+Pdischar
+t
+t
+Eess
+0
+Eess
+24
+Pess
+rated
+It;char
+It;dischar
+t
+式 中： 、 分 别 为 储 能 设 备 充、 放 电 效 率；
+、 分 别 为 时 段 储 能 设 备 充、 放 电 功 率；
+、 分别为储能设备始、末状态电量； 为充
+放电额定
+功率； 、 分别为 时段 储能设备
+充、放电二进制变量。 
+1.4    电网供电模型
+数据中心正常运行时， 在电力缺额时段需要向
+电网购电， 其功率小于电网供电功率上限 ；为避免
+数据中心输送功率波动影响电网安稳运行， 暂不考
+虑向电网售电。 
+0≤Pgrid
+t ≤Pgrid
+max （12）
+Pgrid
+t
+t
+Pgrid
+max
+式中： 为 时段数据中 心购电功率 ； 为电网母
+线功率上限。 
+2    新能源不确定性模型
+ 
+2.1    新能源出力模型
+风机输出功率受风速影响，其关系如下： 
+Pwt
+t =
+■
+|■
+|■
+0 v< vin; v≥vout
+k1v + k2 vin≤v< vr
+Pwt
+N vr≤v< vout
+（13）
+ 
+{
+k1 = Pwt
+N=(vr  vin)
+k2 = k1vin
+（14）
+Pwt
+t
+t
+vin
+vout
+vr
+Pwt
+N
+k1
+k2
+式 中： 为 时 段 风 机 输 出 功 率； v为 当 前 风 速 ；
+为切入风速 ； 为切出风 速； 为额定风速 ；
+为风机额定功率； 、 为风电出力 线性变换系数。
+风速模型服从威布尔分布， 风电出力概率密度
+函数可由风速的概率密度函数推导得到， 如式 （15）
+所示，具体步骤见附录A式（A1）—式（A3）。 
+f (Pwt
+t ) = k′
+k1c
+( Pwt
+t  k2
+k1c
+)k′1
+exp
+(
+
+( Pwt
+t  k2
+k1c
+)k′ )
+（15）
+k′
+c
+式中： 、 分别为风速 威布尔分布形状 、尺度参数。
+光伏机组的输出功率受辐射强度影响， 其关系
+如下： 
+■
+||
+■
+||
+■
+Ppv
+t = P
+pv
+N Gt[1 (T pv
+t  T
+pv
+N )]
+GN
+T pv
+t = T amb
+t + Gt(T noct  20)
+GN
+（16）
+Ppv
+t
+t
+Gt
+GN
+t
+T pv
+t
+T
+pv
+N
+T amb
+t
+T noct
+t
+t
+P
+pv
+N
+
+式中： 为 时段光伏输 出功率 ； 、 分别为 时
+段实际光照辐射强度和额定光照辐射强度； 、
+、 、 分别为 时段 光伏面板实际温度 、参
+考温度、 时段环境温 度、标称工作温度 ； 为光伏
+设备额定功率； 为光伏电池功率温度系数。
+光照强度模型服从贝塔分布， 光伏出力概率密
+度函数可由光照强度的概率密度函数推导得到， 如
+式（17）所示 ，具体步骤见附 录 A式 （A4）—式（A7）。 
+f (Ppv
+t ) = Γ( + )
+Γ()Γ( )
+( Ppv
+t
+Ppv
+max
+)1(
+1  Ppv
+t
+Ppv
+max
+) 1
+（17）
+
+ 
+Ppv
+max
+式中： 、 为贝塔分布 形状参数 ； 为光伏最大发
+电功率。
+上述能耗模型服从以下电力平衡约束： 
+Pwt
+t + Ppv
+t + Pgrid
+t + Pdischar
+t = PIDC
+t + Pchar
+t （18）
+ 
+2.2    风、光典型场景生成方法
+风、光出力场景的特征提取与聚类分析是研究
+新能源出力不确定性的重要步骤。文中基于改进
+k-means方法进行场景缩减 ，构建日出力比率 、日峰
+谷差比率、峰谷出力时刻和日均出力等特征指标。对
+比传统的平均出力及变化率指标，文中选取指标从时
+间分布和幅值差异上能够有效表征风、 光出力不确
+ 
+ 42
+
+--- Page 4 ---
+定性，高效降低数据维度。文中指标建立方法如下 ： 
+■
+||||
+|
+|
+||■
+||
+|||
+|
+|
+|
+■
+1 = Prenew
+av =Prenew
+max
+2 = (Prenew
+max  Prenew
+min )=Prenew
+max
+3 = T renew
+max
+4 = T renew
+min
+5 = Prenew
+av = 1
+24
+24∑
+t=1
+Prenew
+t
+（19）
+1、2、3、4、5
+Prenew
+av
+Prenew
+max
+Prenew
+min
+T renew
+max
+T renew
+min
+Prenew
+t
+t
+式中： 分别为新能 源的日出力比
+率， 日峰谷差比率 ， 峰 、 谷出力时刻及日均出力 ；
+为新能源日均出力 ； 、 分别为 新能源
+出力最大值和最小值； 、 分别为峰值 出力
+时刻和谷值出力时刻； 为 时段新能源出力。
+为消除量纲影响， 采用归一化方法对数据进行
+预处理，保证各指标在同一量纲上进行比较。 
+y
+s;m = ys;m  min(ym)
+max(ym)  min(ym) （20）
+y
+s;m
+ys;m
+s
+m
+ym
+m
+式中： 、 分别为第 个 场景下第 个新能源出
+力指标的标准值和指标值； 为第 个新能 源出力
+指标构成的数据集合。
+利用熵权法计算上述指标的权重， 具体步骤见
+附录 A式 （A8）—式（A11）。为确定最优聚类数 ，采
+用轮廓系数（silhouette coefficient, SC）、 误差平方和
+（sum of squared errors, SSE）和密度分离指标 （dunn
+index, DI）综合评估 ，指标具体计算方法见附 录 A
+式（A12）—式（A14）。 
+3    计及不确定性的数据中心电算协同多目
+标优化模型
+ 
+3.1    目标函数
+f1
+为考虑数据中心运行经济性， 容量配置模型以
+数据中心总运行成本 f1最小为目标。以各设备的
+配置容量成本、 维护成本 、运行成本为决策变量 ，
+建立目标函数 如下： 
+■
+||
+|||
+|
+|
+|
+|||
+|
+|
+|||
+|
+|
+|
+|||
+|
+|
+||■
+||
+|||
+|
+|
+|||
+|
+|
+|
+|||
+|
+|
+|||
+|
+|
+|
+||■
+min f1 = Cbuild + Cmaintance + Crun
+Cbuild= 1
+365  i(1 + i)x
+(1 + i)x  1 (C
+pv
+build + Cwt
+build + Cess
+build)
+Cmaintance = 1
+365 (pvC
+pv
+build +wtCwt
+build +essCess
+build)
+Crun = Cpv
+run + Cwt
+run + Cess
+run + Cgrid
+run
+Cpv
+run =
+24∑
+t=1
+pvPpv
+t
+Cwt
+run =
+24∑
+t=1
+wtPwt
+t
+Cess
+run =
+24∑
+t=1
+ess(charPchar
+t + Pdischar
+t =dischar)
+Cgrid
+run =
+24∑
+t=1
+gridPgrid
+t
+（21）
+Cbuild
+i
+x
+C
+pv
+build
+Cwt
+build
+Cess
+build
+Cmaintance
+pv
+wt
+ess
+Crun
+Cpv
+run
+Cwt
+run
+Cess
+run
+Cgrid
+run
+pv
+wt
+ess
+grid
+式中： 为光伏 、风电和 储能的总建设成本 ； 为
+年利率； 为设备使用 年限 ； 、 、 分别
+为光伏、 风电和储能建设成本 ； 为总维护成
+本
+； 、 、 分别为光伏 、风 电、储能的年维护
+成本系数； 为总运行成 本； 、 、 、
+分别为光伏运行成本、 风电运行成本 、储能充放电
+成本、 向电网购电成本 ； 、 、 、 分别为光
+伏单
+位运行成本、 风电单位运行成本 、储能单位充
+放电成本、购电价格。
+f2
+在调度策略上， 仅考虑经济性存在很大的局限
+性，会造成大规模弃风弃光 ，为了尽可能消纳系统
+中的高比例可再生能源， 模型引入多目标优化调度
+模型， 旨在保证系统经济性的同时减少弃风弃光
+率。以系统的弃风弃光功率为决策变量， 建立目标
+函数 如下： 
+min f2 =
+24∑
+t=1
+Pwt
+t;aban +
+24∑
+t=1
+P
+pv
+t;aban
+24∑
+t=1
+(Pwt
+t + Ppv
+t )
+（22）
+Pwt
+t;aban
+P
+pv
+t;aban
+t
+式中： 、 分别为 时段 数据中心弃置的风
+电、光伏功率。 
+3.2    求解方法
+在 多 约 束 多 目 标 优 化 场 景 中， NSGA-Ⅱ与
+MOEA/D均为广泛应用的求解方法。已有研究通
+过齐茨勒-德布 -蒂勒 （Zitzler-Deb-Thiele, ZDT）测试
+函数验证， NSGA-Ⅱ所得 Pareto前沿形状均匀且与
+真实前沿基本吻合， 而 MOEA/D的 Pareto前沿存在
+较多间断点； 随着决策变量增加 ，NSGA-Ⅱ迭代最
+优解次数显著低于 MOEA/D[28]。因此 ，文中选 用
+NSGA-Ⅱ进行求解。
+NSGA-Ⅱ作为一种高效的多目标优化方法， 其
+核心为非支配排序机制和精英保留策略， 通过获 得
+Pareto前沿解集实现多目标协同优化。该算法通过
+快速非支配分层排除劣质解， 结合拥挤度指标保障
+解集的分布性与多样性， 有效避免了传统算法在多
+目标权衡中易陷入局部最优的缺陷。同时， 该算法
+无须将多目标转化为单目标加权处理， 可直观呈现
+目标间的竞争关系， 在解决调度运行方面有着较好
+的表现，整体流程如图3所示。 
+4    算例分析
+ 
+4.1    仿真设置
+文中数据中心所使用服务器均为同一型号， 用
+户的算力负载需求选自阿里巴巴公开运行数据， 并
+进行一定比例的缩放。模型采用贵州全年风光预
+43 王一航 等：计及风光不确定性的数据中心电算协同多目标优化策略  
+
+--- Page 5 ---
+x
+pv
+wt
+ess
+i
+测数据， 采样时间 为 1 h。光伏建设成本 为 3 500
+元/kW；风电建设成本 为 6 500元 /kW；储能建设成
+本为 800元 /kW[29]；设备使用年限 为 25 a；年维 护
+成本系数 、 和 均 取 0.04；年利率 取 0.1 。分
+时电价如附录 A图 A1所示 ，其他数据中心参数如
+表1所示。
+ 
+ 
+表 1    参数设置
+Table 1    Parameter settings
+ 
+参数 数值 参数 数值
+wt
+/[元·（kW·h）−1] 0.13
+Pidle /kW 0.1
+pv
+/[元·（kW·h）−1] 0.14
+Ppeak /kW 0.5
+ess
+/[元·（kW·h）−1] 0.67 n 12 000
+char
+/% 96
+ 1.4
+dischar
+/% 96 Umax/% 90
+ 
+NSGA-Ⅱ 种 群 大 小 设 置为 200， 迭 代 次 数为
+300，交叉概率设置为0.8，变异概率设置为0.2。 
+4.2    容量配置结果
+基于 4.1节仿真参数设置 ，文中构建的容量配
+置为风电建设容量 1 680 kW，光伏建设容量 510 kW，
+储能建设容量800 kW·h。
+该配置下， 风电日建设成本为 3 295.99元 ，日维
+护 成 本为 1  196.71元 ； 光 伏 日 建 设 成 本为 195.62
+元， 日 维 护 成 本为 335.3元 ； 储 能 日 建 设 成 本为
+193.17元，日维护成本为70.14元。 
+4.3    场景聚类分析
+为有效处理风、 光出力数据 ，针对其相关特征
+指标开展降维处理， 减少冗余信息 ，提高计算效率 ，
+再使用熵权法对各指标权重客观赋值。完成降维
+与指标标准化后， 引入改 进 k-means聚类对数据进
+行聚类分析， 通过聚类有效性评价选择最佳聚类
+数。图 4为 SC、DI和 SSE 3个聚类指标随聚类个
+数变化情况。结果表明， SC和 DI在聚类数 为 4时
+达到最大值， SSE在聚类 数 3到 4之间减小幅度明
+显变缓。综上， 当聚类数 为 4时 ，聚类效果最佳 ，密
+度分离效果最优， 评价结果最具合理性 ，因此最终
+选取最优聚类数为4。
+ 
+ 
+2 3 4 5
+0.3
+0.4
+0.5
+0.6
+0.7SC、DI
+聚类数
+SC DI SSE
+40
+50
+60
+70
+80
+90
+SSE
+图4   场景优选指标随聚类数变化情况
+Fig.4    Variation of scenario selection metrics with
+the number of clusters
+ 
+是否生成第一代
+子群?
+非支配性排序
+选择、交叉、变异
+进化代数K=2
+父、子代个体合并
+是否生成新父代
+种群?
+选择、交叉、变异
+K=K+1
+快速非支配性排序
+拥挤度计算
+选择更优个体组成
+新父代种群
+否
+否
+否
+是
+是
+是
+初始化种群参数
+开始
+以经济性与弃风弃光率
+最优为目标函数
+基于改进k-means方
+法进行场景缩减
+数据中心全年能耗、
+算力任务数据
+采用NSGA-Ⅱ对
+优化模型进行求解
+迭代得出Pareto前沿解
+结束
+构建考虑需求响应的数据
+中心容量配置模型
+风速、光照全年
+出力预测数据
+构建风、光特征指标
+熵权法确定权重
+采用SC、SSE、DI评价
+指标确定最佳聚类数
+筛选典型场景
+是否相关性最优?
+场景相关性分析
+否
+是
+改进k-means方法 NSGA-Ⅱ
+是否达到最大
+进化代数?
+图 3    考虑风光不确定性的多目标优化调度流程
+Fig.3    Flowchart of multi-objective optimization scheduling considering wind and solar uncertainties
+ 
+ 44
+
+--- Page 6 ---
+进 一 步 分 析 表 明，各 典 型 场 景 在 聚 类 数为
+4时 ，日均出力水平 、峰谷差幅度和峰值时段分布
+等方面存在明显差异， 分别表现为高出力集中型 、
+低出力平稳型、 波动显著型和中等提前型。上述差
+异说明所选指标能够有效表征风光出力不确定性，
+并为后续场景缩减提供合理支撑， 从而高效降低数
+据维度。
+完成聚类分析后，构建基 于 Spearman相关系数
+的场景优选指标， 筛选最优典型场景。通过计算场
+景内部组内方差和Spearman系数，对分类结果进行
+量化分析， 计算步骤见附 录 A式 （A12）—式（A17），
+结果见附录 B表 B1、表 B2。采用改 进 k-means方
+法最终生成的典型场景如图5所示。
+ 
+ 
+04:00 08:00 12:00 16:00 20:00 24:00
+600
+700
+800
+900
+1 000
+1 100
+1 200
+1 300功率/kW
+时刻
+04:0000:00
+00:00
+08:00 12:00 16:00 20:00 24:00
+时刻
+风电1 风电2 风电3 风电4
+(a) 典型风电出力
+(b) 典型光伏出力
+0
+100
+200
+300
+400功率/kW
+光伏1 光伏2 光伏3 光伏4
+图5   典型新能源场景曲线
+Fig.5    Typical new energy scenario curves
+ 
+根据 2.2节改 进 k-means方法对风 、光出力场
+景的处理，得到典型日出力曲线，如图6所示。
+ 
+ 
+04:0000:00 08:00 12:00 16:00 20:00 24:00
+时刻
+0
+200
+400
+600
+800
+1 000
+1 200新能源预测出力/kW
+风电 光伏
+图6   风光典型日出力
+Fig.6    Typical daily output of wind and solar power 
+4.4    数据中心运行方案对比分析
+设计不同运行方案进行对比， 具体为 ：（1）  场
+景1， 不考虑优化策略 ，即数据中心优化前运行方
+案。（2）  场景 2，仅以数据中心经济性最优为目标
+的运行方案。（3）  场景 3，仅以数据中心弃风弃光
+率最小为目标的运行方案。（4）  场景 4，文中模型 ，
+即以数据中心经济性最优与弃风弃光率最小为目
+标 的 运 行 方 案 。 算 例 中，延 时 宽 容 型 任 务 占比
+40%，场景 2、3、4在 00:00迁移 进 25 000个大模型
+任务，模拟数据中心训练任务。 
+4.4.1    多目标运行结果分析
+基于 3.2节求解方法 和 4.1节参数设置 ，文中提
+出的多目标优化调度模型解得的 Pareto前沿解如
+图7所示。图中所有解均为最优解 ，由图可得 ，数
+据中心运行成本与系统弃风弃光率呈负相关， 即随
+着弃风弃光率的降低， 运行成本会逐渐增加。根据
+对2个目标的决策不同 ，运行成本和弃风弃光率的
+比重分别选取 0.4和 0.6，计算 NSGA-Ⅱ中拥挤度指
+标，选取图7中红色点为文中最优解。
+ 
+ 
+9 050 9 100 9 150 9 200 9 250
+0.020
+0.025
+0.030
+0.035
+0.040
+0.045
+Pareto前沿解 文中选取解
+弃风弃光率
+成本/元
+图7   Pareto前沿解集
+Fig.7    Pareto front solutions
+ 
+文中所得出综合最优解及各场景运行情况如
+表2所示。
+ 
+ 
+表 2    不同场景运行结果
+Table 2    Operating results under different scenarios
+ 
+场景 日建设
+成本/元
+日维护
+成本/元
+日运行
+成本/元 总成本/元 新能源
+消纳率/%
+1 3 465.02 1 258.08 3 883.27 8 606.37 93.92
+2 3 335.23 1 210.96 3 569.45 8 115.64 93.23
+3 4 310.15 1 564.93 3 757.57 9 632.65 97.97
+4 4 027.93 1 462.47 3 621.66 9 112.06 97.71
+ 
+场景 1不考虑数据中心算力负载灵活性 ，且未
+加 入 大 模 型 训 练 任 务，每 个 时 刻 任 务 实 时 计 算，
+CPU频率始终处于固定值 ，数据中心能耗较高 ，运
+行成本相应增加， 但对新能源的消纳水平也有所提
+升。对比场景1，场景2在00:00加入大模型训练任
+务，且频率随着处理算力负载量变化 ，在总体任务
+45 王一航 等：计及风光不确定性的数据中心电算协同多目标优化策略  
+
+--- Page 7 ---
+量增加时， 通过调 节 CPU频率 ， 降低数据中心能
+耗， 进而降低数据中心总成本 ，实现经济性最优 ，
+但新能源消纳率略低于场景 1。对比场 景 1，场景
+3下数据中心通过调节延时宽容型任务 ，将任务从
+新能源匮乏时段迁移至新能源充足时段计算， 新
+能 源 消 纳 率 提升 4.05个 百 分 点 ， 日 总 成 本 提 升
+1 026.28元。
+对 比 场景 1， 场 景 4提 升 了 新 能 源 装 机 容 量
+和 储 能 容 量，日 建 设 成 本 和 日 维 护 成 本 共 提升
+767.30元 ，通过储能设备和调节算力负载灵活性资
+源，利用风 、光互补特性 ，降低源荷侧供需差异 ，从
+而在实现降低弃风弃光率的同时减少数据中心运
+行成本， 场景 4日运行成本降 低 261.61元 ，日总成
+本提升 505.69元 ，新能源消纳率 从 93.92%提升 至
+97.71%。对比场 景 2，场景 4提升了新能源装机容
+量和储能容量， 多目标优化方案增加了少量成本 ，
+但大幅提升了新能源消纳率， 日总成本增 加 996.42
+元， 新能源消纳率增 加 4.48个百分点。对比场 景
+3，场景 4的新能源消纳率降 低 0.26个百分点 ，日总
+成本降低520.59元。
+数据中心算力负载的迁移会影响用户的使用
+体验，用迁移负载量与总任务量的比值表示用户满
+意度， 如图 8所示。该指标在保证简洁性的同时合
+理刻画了负载迁移对用户体验的影响， 在不同运行
+方案下均可进行对比， 能够直观衡量调度对用户体
+验的差异。场景 1未进行算力调度 ，满意度为 1；场
+景2、场景3以单个目标最优求解，算力负载调度较
+为频繁， 满意度分别 为 0.959和 0.961；场景 4从电 -
+算2个维度出发 ，任务调度请求较少 ，削减趋势平
+缓，用户满意度为0.983。
+ 
+ 
+1.000 0.959 0.961 0.983
+场景1 场景2 场景3 场景4
+0
+0.2
+0.4
+0.6
+0.8
+1.0新能源消纳率与用户满意度
+ 总成本  新能源消纳率 用户满意度
+0
+2 000
+4 000
+6 000
+8 000
+10 000
+总成本/元
+图8   用户满意度情况
+Fig.8    User satisfaction status
+ 
+以 场景 4为 例 ， 数 据 中 心 用 电 情 况 如图 9所
+示。风、 光出力与数据中心供需差异值较小 ，能够
+通过利用风、 光互补特性和算力负载的灵活性最大
+程度地消纳新能源及减少电网出力。为延长储能
+设备的使用年限， 增加充放电阈值 ，避免储能设备
+频繁充放电导致电池循环寿命减少。
+ 
+ 
+04:0000:00 08:00 12:00 16:00 20:00 24:00
+时刻
+−1 500
+−1 000
+−500
+0
+500
+1 000
+1 500
+功率/kW
+风电
+光伏
+ 电网购电   数据中心耗能    
+ 储能充放电     弃置电量
+图9   数据中心能耗情况
+Fig.9    Energy consumption of data center
+ 
+场景 4对应的数据中心算力负载调度情况如
+图10所示。 01:00—06:00时段处理大模型训练任
+务以消纳夜间大发风电，将 09:00—10:00和 18:00—
+19:00新能源较低 、电价较高和任务请求较多的时
+段的算力负载迁移至其他时段以消纳新能源和减
+少总成本。分别对比单目标场景 2、3，算力负载调
+度次数减少 30 498次 和 27 920次。由图可见 ，在新
+能源出力富足时段实时计算用户上传的延时敏感
+型和延时宽容型任务； 在电价较高及新能源匮乏时
+段将任务迁移至电价较低或新能源充足的时段， 可
+以实现在算力负载和电力上的双重需求响应。
+ 
+ 
+04:0000:00 08:00 12:00 16:00 20:00 24:00
+时刻
+0
+10 000
+20 000
+30 000
+40 000
+50 000
+60 000
+70 000
+80 000算力任务量
+削减的算力负载
+增加的算力负载  
+调度前算力负载  
+调度后算力负载
+图10   算力负载调度情况
+Fig.10    Computing task scheduling status
+  
+4.4.2    储能对数据中心运行影响
+不同储能容量配置的运行结果如图 11所示 ，
+未配置储能时， 数据中心对新能源的消纳能力显著
+低于装设储能的场景， 其新能源消纳率仅 为 90.16%，
+此时需要向电网购电补足供需差异， 导致其日运行
+成本高达 9 440.92元。储能容量 从 400 kW·h增加
+到800 kW·h， 数据中心的日运行成本增长 306.34元 ，
+对应的新能源消纳率提升 1.9个百分点。进一步将
+储能容量从 800 kW·h增加 到 1 000 kW·h， 数据中
+心日运行成本增加 205.8元 ，但新能源消纳率仅提
+升0.4个百分点。
+ 
+ 46
+
+--- Page 8 ---
+结果表明， 随着储能容量增加 ，单位容量的边
+际成本递增。为兼顾新能源消纳率与日运行成本，
+储能容量为 800 kW·h是最优方案 ，可实现成本与
+消纳效果的最佳平衡。 
+5    结论
+文中聚焦于数据中心高能耗、 高成本和高碳排
+的问题， 基于算力负载灵活性和风光互补特性 ，提
+出一种计及风光不确定性的数据中心多目标调度
+策略，实现数据中心电算协同运行。对大量风、光初
+始场景进行缩减得到最佳场景后， 充分利用新能源
+在时间互补性和算力负载在时域调度上的灵活性，
+以数据中心经济成本和弃风弃光率为目标提出调
+度策略， 能在一定程度上降低数据中心经济成本并
+提升新能源消纳率。通过仿真分析， 得到以下结论 ：
+（1） 利用改 进 k-means方法对新能源数据进行
+聚类分析， 能有效处理风 、光不确定性 ，减少模型求
+解时间。
+（2） 在分时电价基础上 ，利用风-光-储和算力负
+载的灵活性可进一步提升数据中心运行结果的经
+济性与新能源消纳率。
+（3） 从电算协同维度进行多目标优化 ，文中模
+型能有效降低算力负载调度请求， 在保证经济性与
+新能源消纳率的同时具有较高的用户满意度。
+附录见本刊网络版，可点击https://www.epet-
+info.com/dlgcjs/article/abstract/20260504，
+阅读全文。
+参考文献： 
+陈冰，伦振坚，张学昶，等. 面向数据中心的柔性直流配电系统
+多目标综合评估[J]. 高电压技术，2022，48（10）：3987-3995.
+CHEN  Bing,  LUN  Zhenjian,  ZHANG  Xuechang,  et  al.  Multi-
+objective  comprehensive  evaluation  method  of  flexible  DC
+distribution  system  for  data  center  application  scenarios[J].
+High Voltage Engineering, 2022, 48(10): 3987-3995.
+[1]
+曹雨洁，丁肇豪，王鹏，等. 能源互联网背景下数据中心与电力
+系 统 协 同 优 化（二）： 机 遇 与 挑 战[J].  中 国 电 机 工 程 学 报，
+2022，42（10）：3512-3526.
+CAO  Yujie,  DING  Zhaohao,  WANG  Peng,  et  al.  Coordinated
+operation  for  data  center  and  power  system  in  the  context  of
+energy  Internet  (Ⅱ):  opportunities  and  challenges[J].  Proceed-
+ings of the CSEE, 2022, 42(10): 3512-3526.
+[2]
+张益飞, 高赐威 , 严兴煜. 面向电价型需求响应的数据中心能
+耗多目标联合优化策略[J]. 供用电，2024，41（12）：47-53.
+ZHANG Yifei, GAO Ciwei, YAN Xingyu. Multi-objective joint
+optimization strategy for data center energy consumption based
+on price-driven demand response[J]. Distribution & Utilization,
+2024, 41(12): 47-53.
+[3]
+吴成邦, 程志江, 陆海峰, 等. 考虑隐私保护的含互联网数据中
+心的综合能源系统时空联合规划[J].  电力建设，2025，46（4）：
+84-98.
+WU  Chengbang,  CHENG  Zhijiang,  LU  Haifeng,  et  al.  Spatio-
+temporal joint planning for integrated energy systems with Inter-
+net  data  center  considering  privacy  preservation[J].  Electric
+Power Construction, 2025, 46(4): 84-98.
+[4]
+周钱雨凡, 杨苹, 万思洋, 等. 算力电力节点可调节资源的双向
+协同优化调度[J]. 电力建设，2025，46（2）：13-25.
+ZHOU  Qianyufan,  YANG  Ping,  WAN  Siyang,  et  al.  Bidirec-
+tional  collaborative  optimization  scheduling  of  adjustable
+resources in computing node and power node[J]. Electric Power
+Construction, 2025, 46(2): 13-25.
+[5]
+International  Energy  Agency.  Electricity  2025[R].  Paris:  IEA,
+2025.
+[6]
+工业和信息化部. 新型数据中心发展三年行动计划 （2021-
+2023  年 ）[EB/OL].  （2021-07-14）[2025-05-03].  https://www.
+gov. cn/zhengce/zhengceku/2021-07/14/content_5624964.htm.
+Ministry  of  Industry  and  Information  Technology.  Three-year
+action plan for the development of new-type data centers (2021-
+2023)[EB/OL].  (2021-07-14)[2025-05-03].  https://www.gov.
+cn/zhengce/zhengceku/2021-07/14/content_5624964.htm.
+[7]
+FAN  J  Q,  YAN  R  J,  HE  Y,  et  al.  Stochastic  optimization  of
+combined energy and computation task scheduling strategies of
+hybrid  system  with  multi-energy  storage  system  and  data
+center[J]. Renewable Energy, 2025, 242: 122466.
+[8]
+马浩然, 袁至, 王维庆, 等. 考虑数据中心和储能接入的主动配
+电网经济调度研究[J]. 发电技术，2025，46（4）：748-757.
+MA  Haoran,  YUAN  Zhi,  WANG  Weiqing,  et  al.  Research  on
+economic scheduling of active distribution networks with inclu-
+sion  of  data  center  and  energy  storage[J].  Power  Generation
+Technology, 2025, 46(4): 748-757.
+[9]
+梁晨, 曾博, 雷乐意, 等. 算力-电力联合市场下数据中心与配
+电网集成规划: 一种多目标区间 -随机优化方法 [J]. 电力系
+统保护与控制，2025，53（16）：120-135.
+LIANG Chen, ZENG Bo, LEI Yueyi, et al. Integrated planning
+of data centers and distribution networks under the computing-
+electricity  joint  market:  a  multi-objective  interval-stochastic
+[10]
+ 
+400 0 600 800 1 000
+0
+2 000
+4 000
+6 000
+8 000
+10 000
+总成本 新能源消纳率
+储能容量/(kW·h)
+总成本/元
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+新能源消纳率
+图11    不同储能容量下运行状态
+Fig.11    Operation status under different energy
+storage capacities
+47 王一航 等：计及风光不确定性的数据中心电算协同多目标优化策略  
+
+--- Page 9 ---
+optimization  approach[J].  Power  System  Protection  and
+Control, 2025, 53(16): 120-135.
+王雨欣, 叶承晋, 范俊秋, 等. 碳-电多类型市场耦合环境下互
+联数据中心的用能双层优化模型[J].  供用电 ，2025，42（3）：
+58-67.
+WANG  Yuxin,  YE  Chengjin,  FAN  Junqiu,  et  al.  Energy
+consumption  bi-level  optimal  model  of  Internet  data  center
+under  carbon-electricity  multi-type  market  coupling  environ-
+ment[J]. Distribution & Utilization, 2025, 42(3): 58-67.
+[11]
+国家发展改革委， 工业和信息化部 ，国家能源局 ，国家数据
+局. 数据中心绿色低碳发展专项行动计划 [EB/OL]. （2024-
+07-03）[2025-05-03].  https://www.gov.cn/zhengce/zhengceku/
+202407/content_6964165.htm.
+National  Development  and  Reform  Commission,  Ministry  of
+Industry and Information Technology, National Energy Admin-
+istration,  National  Data  Administration.  Action  plan  for  green
+and  low-carbon  development  of  data  centers[EB/OL].  (2024-
+07-03)[2025-05-03].  https://www.gov.cn/zhengce/zhengceku/
+202407/content_6964165.htm.
+[12]
+赵振宇，解冰清. 计及风光互补特性的风光容量优化配置模
+型[J]. 太阳能学报，2023，44（8）：149-156.
+ZHAO  Zhenyu,  XIE  Bingqing.  Optimal  allocation  model  of
+wind-solar  capacity  considering  wind-solar  complementary
+characteristics[J].  Acta  Energiae  Solaris  Sinica,  2023,  44(8):
+149-156.
+[13]
+马燕峰，李鑫，刘金山，等. 考虑风电场时空相关性的多场景
+优化调度[J]. 电力自动化设备，2020，40（2）：55-61.
+MA  Yanfeng,  LI  Xin,  LIU  Jinshan,  et  al.  Multi-scenario  opti-
+mal  dispatch  considering  temporal-spatial  correlation  of  wind
+farms[J]. Electric Power Automation Equipment, 2020, 40(2):
+55-61.
+[14]
+吴孟雪， 房方. 计及风光不确定性的电 -热-氢综合能源系统
+分布鲁棒优化[J]. 电工技术学报，2023，38（13）：3473-3485.
+WU  Mengxue,  FANG  Fang.  Distributionally  robust  optimiza-
+tion of electricity-heat-hydrogen integrated energy system with
+wind  and  solar  uncertainties[J].  Transactions  of  China  Elec-
+trotechnical Society, 2023, 38(13): 3473-3485.
+[15]
+吕海鹏，希望·阿不都瓦依提，孟令鹏. 计及源-荷预测不确定
+性的微电网双级随机优化调度[J].  电力自动化设备 ，2022，
+42（9）：70-78.
+LÜ Haipeng, XIWANG·Abuduwayit, MENG Lingpeng. Two-
+level  stochastic  optimal  scheduling  of  microgrid  considering
+uncertainty  of  source-load  prediction[J].  Electric  Power
+Automation Equipment, 2022, 42(9): 70-78.
+[16]
+潘超，郭晨雨，刘继哲，等. 电-氢混合储能参与的多能系统低
+碳优化[J]. 电网与清洁能源，2024，40（2）：21-29.
+PAN  Chao,  GUO  Chenyu,  LIU  Jizhe,  et  al.  A  study  on  low-
+carbon  optimization  of  the  multi-energy  system  with  electric-
+ity-hydrogen hybrid energy storage participation[J]. Advances
+of  Power  System  &  Hydroelectric  Engineering,  2024,  40(2):
+21-29.
+[17]
+JI L, LIANG X L, XIE Y L, et al. Optimal design and sensitiv-
+ity  analysis  of  the  stand-alone  hybrid  energy  system  with  PV
+and  biomass-CHP  for  remote  villages[J]. Energy,  2021,  225:
+120323.
+[18]
+LIU  Z  H,  LIN  M  H,  WIERMAN  A,  et  al.  Geographical  load
+balancing  with  renewables[J].  ACM  SIGMETRICS  Perfor-
+mance Evaluation Review, 2011, 39(3): 62-66.
+[19]
+杨挺，姜含，侯昱丞，等. 基于计算负荷时-空双维迁移的互联
+多数据中心碳中和调控方法研究[J].  中国电机工程学报 ，
+2022，42（1）：164-176.
+YANG  Ting,  JIANG  Han,  HOU  Yucheng,  et  al.  Study  on
+carbon  neutrality  regulation  method  of  interconnected  multi-
+datacenter based on spatio-temporal dual-dimensional comput-
+ing load migration[J].  Proceedings of the CSEE, 2022, 42(1):
+164-176.
+[20]
+苏娟，董彦君，赵晶，等. “东数西算”背景下多数据中心联合
+消 纳 可 再 生 能 源 途 径 研 究 综 述[J]. 高 电 压 技 术， 2024，
+50（1）：55-64.
+SU  Juan,  DONG  Yanjun,  ZHAO  Jing,  et  al.  Research  of  the
+approach  to  consuming  renewable  energy  across  multiple  data
+centers in the context of "east data, west calculation"[J]. High
+Voltage Engineering, 2024, 50(1): 55-64.
+[21]
+祁兵，曹望璋，李彬，等. 计及负载特征及响应特性的多数据
+中心双层优化模型[J].  电力系统自动化 ，2022，46（21）：30-
+41.
+QI Bing, CAO Wangzhang, LI Bin, et al. Bi-level optimization
+model  of  multiple  data  centers  considering  workload  features
+and response characteristics[J]. Automation of Electric Power
+Systems, 2022, 46(21): 30-41.
+[22]
+TRAN N H, TRAN D H, REN S L, et al. How geo-distributed
+data  centers  do  demand  response:  a  game-theoretic  approach
+[J]. IEEE Transactions on Smart Grid, 2016, 7(2): 937-947.
+[23]
+高晋坤，余娟，刘珏麟，等. 考虑多时段设备耦合的数据中心
+能效优化方法[J]. 电力系统自动化，2022，46（15）：153-161.
+GAO Jinkun, YU Juan, LIU Juelin, et al. Optimization method
+for  energy  efficiency  of  data  center  considering  multi-period
+equipment  coupling[J].  Automation  of  Electric  Power
+Systems, 2022, 46(15): 153-161.
+[24]
+丁肇豪，曹雨洁，张素芳，等. 能源互联网背景下数据中心与
+电力系统协同优化（一）：数据中心能耗模型[J]. 中国电机工
+程学报，2022，42（9）：3161-3176.
+DING  Zhaohao,  CAO  Yujie,  ZHANG  Sufang,  et  al.  Coordi-
+nated operation for data center and power system in the context
+of energy Internet (Ⅰ): energy demand management model of
+data  center[J]. Proceedings  of  the  CSEE,  2022,  42(9):  3161-
+3176.
+[25]
+丁巧宜， 王梓耀 ，潘振宁 ，等. 面向电量 -调频-容量市场的数
+据 中 心 园 区 算 力 及 电 力 资 源 规 划[J]. 电 力 系 统 自 动 化，
+2024，48（1）：59-66.
+DING  Qiaoyi,  WANG  Ziyao,  PAN  Zhenning,  et  al.  Planning
+of computing power and electric power resources in data center
+[26]
+ 
+48
+
+--- Page 10 ---
+parks for electricity, frequency regulation and capacity markets
+[J].  Automation  of  Electric  Power  Systems,  2024,  48(1):  59-
+66.
+刘祎泽，向月. 计及负荷转移需求响应的低碳数据中心光储
+容量优化配置[J]. 电力自动化设备，2024，44（7）：149-155.
+LIU Yize, XIANG Yue. Optimal allocation of photovoltaic and
+storage  capacity  in  low  carbon  data  center  considering  load
+transfer  demand  response[J].  Electric  Power  Automation
+Equipment, 2024, 44(7): 149-155.
+[27]
+汪文文，方玺，何朗，等. NSGA-Ⅱ算法的改进及其在应急管
+理中的应用[J]. 计算机工程与应用，2018，54（16）：241-247.
+WANG  Wenwen,  FANG  Xi,  HE  Lang,  et  al.  Research  on
+improved  NSGA-Ⅱ algorithm  and  its  application  in   emer-
+gency  management[J].  Computer  Engineering  and  Applica-
+tions, 2018, 54(16): 241-247.
+[28]
+可思为，董萍，马铭宇，等. 考虑风光荷时空互补的多能源绿[29]
+色 数 据 中 心 多 目 标 配 置 方 法[J]. 电 力 系 统 保 护 与 控 制，
+2024，52（22）：22-33.
+KE  Siwei,  DONG  Ping,  MA  Mingyu,  et  al.  A  multi-objective
+allocation method for multi-energy green data centers consider-
+ing wind, solar and load spatial-temporal complementarity[J].
+Power System Protection and Control, 2024, 52(22): 22-33.
+作者简介：
+王一航
+王一航（2000），男，硕士，研究方 向为综合
+能 源 系 统 优 化 调 度（E-mail：1647673753@qq.
+com）；
+张靖（1979），男，博士，教授，研究方向为电
+力系统分析、稳定和控制等；
+何宇（1978），女，硕士，副教授，研究方向为
+电力系统运行与保护。
+A multi-objective power-computing collaborative optimization strategy for data
+centers considering wind and solar uncertainty
+WANG Yihang1,  ZHANG Jing1,2,  HE Yu1,  YAN Rujing1,  AO Xuan1
+(1.  College of Electrical Engineering, Guizhou University, Guiyang 550025, China;
+2.  Guizhou Provincial Key Laboratory of Power System Intelligent Technologies, Guiyang 550025, China)
+Abstract： The  rapid  expansion  of  data  centers  is  an  inevitable  trend  in  the  intelligent  era.  To  address  the  challenges  of  high
+energy  consumption  and  carbon  emissions,  a  multi-objective  optimization  model  for  power-computing  collaboration  in  data
+centers  is  proposed,  with  uncertainty  in  renewable  energy  output  considered.  An  improved k-means  algorithm  is  applied  to
+reduce  annual  forecast  scenarios  of  wind  and  solar  power  output.  A  set  of  typical  representative  scenarios  is  extracted  to
+mitigate  the  impact  of  renewable  energy  uncertainty  on  system  operation.  Based  on  the  flexibility  of  computing  loads  and
+energy storage systems, a collaborative optimization model is constructed. The objectives minimize the daily total cost of data
+center operation and the curtailment rate of wind and solar energy. The optimization model is solved under the optimal scenario
+of  renewable  energy  output  using  the  non-dominated  sorting  genetic  algorithm-Ⅱ (NSGA -Ⅱ)  with  an  elitism  selection
+strategy.  The  results  demonstrate  that  joint  scheduling  of  wind,  solar,  and  storage  systems,  together  with  flexible  computing
+loads can effectively reduce daily operating costs, and improve renewable energy utilization, and maintain user satisfaction.
+Keywords： data  center;  uncertainty;  multi-objective  optimization;  computing  load  scheduling;  non-dominated  sorting  genetic
+algorithm-Ⅱ (NSGA-Ⅱ); scenario reduction
+（编辑　方晶）
+49 王一航 等：计及风光不确定性的数据中心电算协同多目标优化策略  
